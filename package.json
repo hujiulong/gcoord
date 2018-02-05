@@ -1,36 +1,36 @@
 {
-  "name": "gcoord",
-  "version": "0.0.1-alpha",
-  "description": "",
-  "main": "dist/gcoord.js",
-  "module": "dist/gcoord.esm.js",
-  "scripts": {
-    "rollup": "rollup -c ./rollup.config.js",
-    "uglify": "uglifyjs dist/gcoord.js -c -m -o dist/gcoord.js --source-map filename=dist/gcoord.js.map --in-source-map dist/gcoord.js.map --source-map-url gcoord.js.map --comments",
-    "build": "npm run rollup && npm run uglify",
-    "test": "jest"
-  },
-  "jest": {
-    "verbose": true,
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.jsx?$"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hujiulong/gcoord.git"
-  },
-  "author": "Jiulong Hu <me@hujiulong.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/hujiulong/gcoord/issues"
-  },
-  "homepage": "https://github.com/hujiulong/gcoord#readme",
-  "devDependencies": {
-    "babel-core": "^6.26.0",
-    "babel-plugin-external-helpers": "^6.22.0",
-    "babel-preset-env": "^1.6.1",
-    "jest": "^22.1.4",
-    "rollup": "^0.55.3",
-    "rollup-plugin-babel": "^3.0.3",
-    "uglify-js": "^3.3.9"
-  }
+    "name": "gcoord",
+    "version": "0.0.1-alpha",
+    "description": "",
+    "main": "dist/gcoord.js",
+    "module": "dist/gcoord.esm.js",
+    "scripts": {
+        "rollup": "rollup -c ./rollup.config.js",
+        "uglify": "uglifyjs dist/gcoord.js -c -m -o dist/gcoord.js --source-map filename=dist/gcoord.js.map --in-source-map dist/gcoord.js.map --source-map-url gcoord.js.map --comments",
+        "build": "npm run rollup && npm run uglify",
+        "test": "jest"
+    },
+    "jest": {
+        "verbose": true,
+        "roots": ["<rootDir>/test/"]
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/hujiulong/gcoord.git"
+    },
+    "author": "Jiulong Hu <me@hujiulong.com>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/hujiulong/gcoord/issues"
+    },
+    "homepage": "https://github.com/hujiulong/gcoord#readme",
+    "devDependencies": {
+        "babel-core": "^6.26.0",
+        "babel-plugin-external-helpers": "^6.22.0",
+        "babel-preset-env": "^1.6.1",
+        "jest": "^22.1.4",
+        "rollup": "^0.55.3",
+        "rollup-plugin-babel": "^3.0.3",
+        "uglify-js": "^3.3.9"
+    }
 }

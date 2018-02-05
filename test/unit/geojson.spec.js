@@ -54,10 +54,6 @@ test( 'test validation', () => {
     } ).not.toThrow();
 
     expect( function() {
-        validateId( 0 );
-    } ).not.toThrow();
-
-    expect( function() {
         validateId( 1 );
     } ).not.toThrow();
 
