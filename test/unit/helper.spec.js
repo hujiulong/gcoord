@@ -2,7 +2,106 @@ import {
     isNumber,
     isObject,
     isArray,
+    coordEach
 } from '../../src/helper.js'
+
+import {
+    feature,
+    point,
+    lineString,
+    polygon,
+    multiPoint,
+    multiLineString,
+    multiPolygon,
+    geometryCollection,
+    featureCollection
+} from '../../src/geojson.js'
+
+const pt = point( [ 0, 0 ], {
+    a: 1
+} );
+const line = lineString( [
+    [ 0, 0 ],
+    [ 1, 1 ]
+] );
+const poly = polygon( [
+    [
+        [ 0, 0 ],
+        [ 1, 1 ],
+        [ 0, 1 ],
+        [ 0, 0 ]
+    ]
+] );
+const multiPt = multiPoint( [
+    [ 0, 0 ],
+    [ 1, 1 ]
+] );
+const multiLine = multiLineString( [
+    [
+        [ 0, 0 ],
+        [ 1, 1 ]
+    ],
+    [
+        [ 3, 3 ],
+        [ 4, 4 ]
+    ]
+] );
+const multiPoly = multiPolygon( [
+    [
+        [
+            [ 0, 0 ],
+            [ 1, 1 ],
+            [ 0, 1 ],
+            [ 0, 0 ]
+        ]
+    ],
+    [
+        [
+            [ 3, 3 ],
+            [ 2, 2 ],
+            [ 1, 2 ],
+            [ 3, 3 ]
+        ]
+    ]
+] );
+const geomCollection = geometryCollection( [ pt.geometry, line.geometry, multiLine.geometry ], {
+    a: 0
+} );
+const fcNull = featureCollection([feature(null), feature(null)]);
+const fcMixed = featureCollection( [
+    point( [ 0, 0 ] ),
+    lineString( [
+        [ 1, 1 ],
+        [ 2, 2 ]
+    ] ),
+    multiLineString( [
+        [
+            [ 1, 1 ],
+            [ 0, 0 ]
+        ],
+        [
+            [ 4, 4 ],
+            [ 5, 5 ]
+        ]
+    ] )
+] );
+
+function featureAndCollection( geometry ) {
+    const feature = {
+        type: 'Feature',
+        geometry: geometry,
+        properties: {
+            a: 1
+        }
+    };
+
+    const featureCollection = {
+        type: 'FeatureCollection',
+        features: [ feature ]
+    };
+
+    return [ geometry, feature, featureCollection ];
+}
 
 test( 'isNumber', () => {
 
@@ -25,7 +124,9 @@ test( 'isNumber', () => {
     expect( isNumber( NaN ) ).toBeFalsy();
     expect( isNumber( undefined ) ).toBeFalsy();
     expect( isNumber( null ) ).toBeFalsy();
-    expect( isNumber( { a: 1 } ) ).toBeFalsy();
+    expect( isNumber( {
+        a: 1
+    } ) ).toBeFalsy();
     expect( isNumber( {} ) ).toBeFalsy();
     expect( isNumber( [ 1, 2, 3 ] ) ).toBeFalsy();
     expect( isNumber( [] ) ).toBeFalsy();
@@ -35,7 +136,9 @@ test( 'isNumber', () => {
 
 test( 'isObject', () => {
     // true
-    expect( isObject( { a: 1 } ) ).toBeTruthy();
+    expect( isObject( {
+        a: 1
+    } ) ).toBeTruthy();
     expect( isObject( {} ) ).toBeTruthy();
 
     // false
@@ -60,9 +163,104 @@ test( 'isArray', () => {
     // false
     expect( isArray( 123 ) ).toBeFalsy();
     expect( isArray( {} ) ).toBeFalsy();
-    expect( isArray( { a: 1 } ) ).toBeFalsy();
+    expect( isArray( {
+        a: 1
+    } ) ).toBeFalsy();
     expect( isArray( null ) ).toBeFalsy();
     expect( isArray( NaN ) ).toBeFalsy();
     expect( isArray( undefined ) ).toBeFalsy();
+
+} );
+
+test( 'coordEach', () => {
+
+    expect( () => coordEach( {} ) ).toThrow();
+
+    featureAndCollection( pt.geometry ).forEach( input => {
+        coordEach( input, ( coord, index ) => {
+            expect( coord ).toEqual( [ 0, 0 ] );
+            expect( index ).toBe( 0 );
+        } );
+    } );
+
+    featureAndCollection( line.geometry ).forEach( input => {
+        const output = [];
+        let lastIndex;
+        coordEach( input, ( coord, index ) => {
+            output.push( coord );
+            lastIndex = index;
+        } );
+        expect( output ).toEqual( [
+            [ 0, 0 ],
+            [ 1, 1 ]
+        ] );
+        expect( lastIndex ).toBe( 1 );
+    } );
+
+    featureAndCollection( poly.geometry ).forEach( input => {
+        const output = [];
+        let lastIndex;
+        coordEach( input, ( coord, index ) => {
+            output.push( coord );
+            lastIndex = index;
+        } );
+        expect( output ).toEqual( [
+            [ 0, 0 ],
+            [ 1, 1 ],
+            [ 0, 1 ],
+            [ 0, 0 ]
+        ] );
+        expect( lastIndex ).toBe( 3 );
+    } );
+
+    featureAndCollection( poly.geometry ).forEach( input => {
+        const output = [];
+        let lastIndex;
+        coordEach( input, ( coord, index ) => {
+            output.push( coord );
+            lastIndex = index;
+        }, true );
+        expect( lastIndex ).toBe( 2 );
+    } );
+
+    let coords = [];
+    let coordIndexes = [];
+    let featureIndexes = [];
+    let multiFeatureIndexes = [];
+
+    coordEach( multiPoly, ( coord, coordIndex, featureIndex, multiFeatureIndex ) => {
+        coords.push( coord );
+        coordIndexes.push( coordIndex );
+        featureIndexes.push( featureIndex );
+        multiFeatureIndexes.push( multiFeatureIndex );
+    } );
+    expect( coordIndexes ).toEqual( [ 0, 1, 2, 3, 4, 5, 6, 7 ] );
+    expect( featureIndexes ).toEqual( [ 0, 0, 0, 0, 0, 0, 0, 0 ] );
+    expect( multiFeatureIndexes ).toEqual( [ 0, 0, 0, 0, 1, 1, 1, 1 ] );
+    expect( coords.length ).toBe( 8 );
+
+    coords = [];
+    coordIndexes = [];
+    featureIndexes = [];
+    multiFeatureIndexes = [];
+
+    coordEach( fcMixed, ( coord, coordIndex, featureIndex, multiFeatureIndex ) => {
+        coords.push( coord );
+        coordIndexes.push( coordIndex );
+        featureIndexes.push( featureIndex );
+        multiFeatureIndexes.push( multiFeatureIndex );
+    } );
+    expect( coordIndexes ).toEqual( [ 0, 1, 2, 3, 4, 5, 6 ] );
+    expect( featureIndexes ).toEqual( [ 0, 1, 1, 2, 2, 2, 2 ] );
+    expect( multiFeatureIndexes ).toEqual( [ 0, 0, 0, 0, 0, 1, 1 ] );
+    expect( coords.length ).toBe( 7 );
+
+    let count = 0;
+    coordEach( fcNull, () => count++ );
+    expect( count ).toBe( 0 );
+
+    count = 0;
+    coordEach( null, () => count++ );
+    expect( count ).toBe( 0 );
 
 } );
