@@ -1,11 +1,14 @@
-import BD09 from './BD09.js'
+import {
+    assert,
+    isNumber
+} from '../helper.js'
 
 const { sin, cos, sqrt, abs, PI } = Math;
 
 const a = 6378245;
 const ee = 0.006693421622965823;
 
-function toWGS84( coord ) {
+export function GCJ02toWGS84( coord ) {
 
     const [ lon, lat ] = coord;
 
@@ -13,7 +16,7 @@ function toWGS84( coord ) {
 
     let [ wgsLon, wgsLat ] = [ lon, lat ];
 
-    let tempPoint = fromWGS84( wgsLon, wgsLat );
+    let tempPoint = WGS84toGCJ02( [ wgsLon, wgsLat ] );
 
     let dx = tempPoint[ 0 ] - lon;
     let dy = tempPoint[ 1 ] - lat;
@@ -22,15 +25,15 @@ function toWGS84( coord ) {
         wgsLon -= dx;
         wgsLat -= dy;
 
-        tempPoint = fromWGS84( wgsLon, wgsLat );
-        dx = tempPoint[ 0 ] - gcjLon;
-        dy = tempPoint[ 1 ] - gcjLat;
+        tempPoint = WGS84toGCJ02( [ wgsLon, wgsLat ] );
+        dx = tempPoint[ 0 ] - lon;
+        dy = tempPoint[ 1 ] - lat;
     }
 
     return [ wgsLon, wgsLat ];
 }
 
-function fromWGS84( coord ) {
+export function WGS84toGCJ02( coord ) {
 
     const [ lon, lat ] = coord;
 
@@ -48,7 +51,7 @@ function transformLat( x, y ) {
     ret += ( 20 * sin( y * PI ) + 40 * sin( y / 3 * PI ) ) * 2 / 3;
     ret += ( 160 * sin( y / 12 * PI ) + 320 * sin( y * PI / 30 ) ) * 2 / 3;
     return ret;
-};
+}
 
 function transformLon( x, y ) {
     let ret = 300 + x + 2 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * sqrt( abs( x ) );
@@ -56,7 +59,7 @@ function transformLon( x, y ) {
     ret += ( 20 * sin( x * PI ) + 40 * sin( x / 3 * PI ) ) * 2 / 3;
     ret += ( 150 * sin( x / 12 * PI ) + 300 * sin( x / 30 * PI ) ) * 2 / 3;
     return ret;
-};
+}
 
 function delta( lon, lat ) {
 
@@ -80,15 +83,4 @@ function isInChina( lon, lat ) {
     assert( !isNumber( lon ) || !isNumber( lat ), 'lon and lat must be numbers' );
 
 	return lon >= 72.004 && lon <= 137.8347 && lat >= 0.8293 && lat <= 55.8271;
-};
-
-export default {
-    from: {
-        WGS84: fromWGS84,
-        BD09: BD09.to.GCJ02,
-    },
-    to: {
-        WGS84: toWGS84,
-        BD09: BD09.from.GCJ02,
-    }
 }

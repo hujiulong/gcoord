@@ -14,7 +14,7 @@ export function assert( condition, msg ) {
  * //=false
  */
 export function isNumber( num ) {
-    return !isNaN( num ) && num !== null;
+    return !isNaN( num ) && num !== null && !isArray( num );
 }
 
 /**
