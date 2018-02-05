@@ -2,5 +2,11 @@
   "presets": [
     ["env", { "modules": false }]
   ],
-  "plugins": ["external-helpers"]
+  "plugins": ["external-helpers"],
+  "env": {
+    "test": {
+      "presets": [["env"]],
+      "plugins": ["external-helpers"]
+    }
+  }
 }
