@@ -136,17 +136,44 @@ test( 'featureCollection', () => {
 
 test( 'multilinestring', () => {
 
-    expect( multiLineString( [[[0, 0], [10, 10]], [[5, 0], [15, 8]]] ) ).toEqual( {
+    expect( multiLineString( [
+        [
+            [ 0, 0 ],
+            [ 10, 10 ]
+        ],
+        [
+            [ 5, 0 ],
+            [ 15, 8 ]
+        ]
+    ] ) ).toEqual( {
         type: 'Feature',
         properties: {},
         geometry: {
             type: 'MultiLineString',
-            coordinates: [[[0, 0], [10, 10]], [[5, 0], [15, 8]]]
+            coordinates: [
+                [
+                    [ 0, 0 ],
+                    [ 10, 10 ]
+                ],
+                [
+                    [ 5, 0 ],
+                    [ 15, 8 ]
+                ]
+            ]
         }
     } );
 
 
-    expect( multiLineString( [[[0, 0], [10, 10]], [[5, 0], [15, 8]]], {
+    expect( multiLineString( [
+        [
+            [ 0, 0 ],
+            [ 10, 10 ]
+        ],
+        [
+            [ 5, 0 ],
+            [ 15, 8 ]
+        ]
+    ], {
         test: 23
     } ) ).toEqual( {
         type: 'Feature',
@@ -391,6 +418,126 @@ test( 'multipolygon', () => {
 
 } );
 
+test( 'geometry', () => {
+
+    expect( geometry( 'Point', [ 100, 0 ] ) ).toEqual( {
+        type: 'Point',
+        coordinates: [ 100, 0 ]
+    } );
+
+    expect( geometry( 'LineString', [
+        [ 101, 0 ],
+        [ 102, 1 ]
+    ] ) ).toEqual( {
+        type: 'LineString',
+        coordinates: [
+            [ 101, 0 ],
+            [ 102, 1 ]
+        ]
+    } );
+
+    expect( geometry( 'Polygon', [
+        [
+            [ 5, 10 ],
+            [ 20, 40 ],
+            [ 40, 0 ],
+            [ 5, 10 ]
+        ]
+    ] ) ).toEqual( {
+        type: 'Polygon',
+        coordinates: [
+            [
+                [ 5, 10 ],
+                [ 20, 40 ],
+                [ 40, 0 ],
+                [ 5, 10 ]
+            ]
+        ]
+    } );
+
+    expect( geometry( 'MultiPoint', [
+        [ 0, 0 ],
+        [ 10, 10 ]
+    ] ) ).toEqual( {
+        type: 'MultiPoint',
+        coordinates: [
+            [ 0, 0 ],
+            [ 10, 10 ]
+        ]
+    } );
+
+    expect( geometry( 'MultiLineString', [
+        [
+            [ 0, 0 ],
+            [ 10, 10 ]
+        ],
+        [
+            [ 5, 0 ],
+            [ 15, 8 ]
+        ]
+    ] ) ).toEqual( {
+        type: 'MultiLineString',
+        coordinates: [
+            [
+                [ 0, 0 ],
+                [ 10, 10 ]
+            ],
+            [
+                [ 5, 0 ],
+                [ 15, 8 ]
+            ]
+        ]
+    } );
+
+    expect( geometry( 'MultiPolygon', [
+        [
+            [
+                [ 94, 57 ],
+                [ 78, 49 ],
+                [ 94, 43 ],
+                [ 94, 57 ]
+            ]
+        ],
+        [
+            [
+                [ 93, 19 ],
+                [ 63, 7 ],
+                [ 79, 0 ],
+                [ 93, 19 ]
+            ]
+        ]
+    ] ) ).toEqual( {
+        type: 'MultiPolygon',
+        coordinates: [
+            [
+                [
+                    [ 94, 57 ],
+                    [ 78, 49 ],
+                    [ 94, 43 ],
+                    [ 94, 57 ]
+                ]
+            ],
+            [
+                [
+                    [ 93, 19 ],
+                    [ 63, 7 ],
+                    [ 79, 0 ],
+                    [ 93, 19 ]
+                ]
+            ]
+        ]
+    } );
+
+    expect( () => geometry( 'a', [ 100, 0 ] ) ).toThrow();
+
+    expect( geometry( 'Point', [ 100, 0 ], { bbox: [ 10, 20, 30, 40 ] } ) ).toEqual( {
+        type: 'Point',
+        coordinates: [ 100, 0 ],
+         bbox: [ 10, 20, 30, 40 ]
+    } );
+
+} );
+
 test( 'geometrycollection', () => {
     const pt = {
         type: 'Point',
@@ -509,77 +656,77 @@ test( 'Handle Id & BBox properties', () => {
     } ) ).toThrow();
 } );
 
-// test( 'gcoord-geojson -- points', () => {
-//     const points = gcoord.points( [
-//         [ -75, 39 ],
-//         [ -80, 45 ],
-//         [ -78, 50 ]
-//     ], {
-//         foo: 'bar'
-//     }, {
-//         id: 'hello'
-//     } );
-//
-//     expect( points.features.length ).toBe( 3 );
-//     expect( points.id ).toBe( 'hello' );
-//     expect( points.features[ 0 ].properties.foo ).toBe( 'bar' );
-//
-// } );
-//
-// test( 'gcoord-geojson -- lineStrings', () => {
-//     var linestrings = gcoord.lineStrings( [
-//         [
-//             [ -24, 63 ],
-//             [ -23, 60 ],
-//             [ -25, 65 ],
-//             [ -20, 69 ]
-//         ],
-//         [
-//             [ -14, 43 ],
-//             [ -13, 40 ],
-//             [ -15, 45 ],
-//             [ -10, 49 ]
-//         ]
-//     ], {
-//         foo: 'bar'
-//     }, {
-//         id: 'hello'
-//     } );
-//
-//     expect( linestrings.features.length ).toBe( 2 );
-//     expect( linestrings.id ).toBe( 'hello' );
-//     expect( linestrings.features[ 0 ].properties.foo ).toBe( 'bar' );
-//
-// } );
-//
-// test( 'gcoord-geojson -- polygons', () => {
-//     var polygons = gcoord.polygons( [
-//         [
-//             [
-//                 [ -5, 52 ],
-//                 [ -4, 56 ],
-//                 [ -2, 51 ],
-//                 [ -7, 54 ],
-//                 [ -5, 52 ]
-//             ]
-//         ],
-//         [
-//             [
-//                 [ -15, 42 ],
-//                 [ -14, 46 ],
-//                 [ -12, 41 ],
-//                 [ -17, 44 ],
-//                 [ -15, 42 ]
-//             ]
-//         ],
-//     ], {
-//         foo: 'bar'
-//     }, {
-//         id: 'hello'
-//     } );
-//
-//     expect( polygons.features.length ).toBe( 2 );
-//     expect( polygons.id ).toBe( 'hello' );
-//     expect( polygons.features[ 0 ].properties.foo ).toBe( 'bar' );
-//
-// } );
+test( 'points', () => {
+    const pts = points( [
+        [ -75, 39 ],
+        [ -80, 45 ],
+        [ -78, 50 ]
+    ], {
+        foo: 'bar'
+    }, {
+        id: 'hello'
+    } );
+
+    expect( pts.features.length ).toBe( 3 );
+    expect( pts.id ).toBe( 'hello' );
+    expect( pts.features[ 0 ].properties.foo ).toBe( 'bar' );
+
+} );
+
+test( 'lineStrings', () => {
+    let lines = lineStrings( [
+        [
+            [ -24, 63 ],
+            [ -23, 60 ],
+            [ -25, 65 ],
+            [ -20, 69 ]
+        ],
+        [
+            [ -14, 43 ],
+            [ -13, 40 ],
+            [ -15, 45 ],
+            [ -10, 49 ]
+        ]
+    ], {
+        foo: 'bar'
+    }, {
+        id: 'hello'
+    } );
+
+    expect( lines.features.length ).toBe( 2 );
+    expect( lines.id ).toBe( 'hello' );
+    expect( lines.features[ 0 ].properties.foo ).toBe( 'bar' );
+
+} );
+
+test( 'polygons', () => {
+    let pgs = polygons( [
+        [
+            [
+                [ -5, 52 ],
+                [ -4, 56 ],
+                [ -2, 51 ],
+                [ -7, 54 ],
+                [ -5, 52 ]
+            ]
+        ],
+        [
+            [
+                [ -15, 42 ],
+                [ -14, 46 ],
+                [ -12, 41 ],
+                [ -17, 44 ],
+                [ -15, 42 ]
+            ]
+        ],
+    ], {
+        foo: 'bar'
+    }, {
+        id: 'hello'
+    } );
+
+    expect( pgs.features.length ).toBe( 2 );
+    expect( pgs.id ).toBe( 'hello' );
+    expect( pgs.features[ 0 ].properties.foo ).toBe( 'bar' );
+
+} );
