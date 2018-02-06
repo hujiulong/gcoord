@@ -13,14 +13,16 @@ export default {
         {
             file: pkg.main,
             format: 'umd',
-            name: 'gcoord',
+            name: pkg.name,
             banner: banner,
+            exports: 'named',
             sourcemap: true
         },
         {
             file: pkg.module,
             format: 'es',
             banner: banner,
+            exports: 'named',
             sourcemap: true
         }
     ],
