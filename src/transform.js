@@ -5,7 +5,7 @@ import {
     coordEach,
 } from './helper.js'
 
-import CRS from './crs/index.js'
+import * as CRS from './crs/index.js'
 
 /**
  * transform
