@@ -33,7 +33,7 @@ export function transform( input, fromCRS, toCRS ) {
     let isPosition = false;
     if ( isArray( input ) ) {
         assert( input.length < 2, 'position must be at 2 numbers long' );
-        assert( !isNumber( input[ 0 ] ) || !input( coordinates[ 1 ] ), 'position must contain numbers' );
+        assert( !isNumber( input[ 0 ] ) || !isNumber( input[ 1 ] ), 'position must contain numbers' );
         isPosition = true;
     }
 
@@ -47,7 +47,9 @@ export function transform( input, fromCRS, toCRS ) {
             const newCoord = convert( coord );
             coord[ 0 ] = newCoord[ 0 ];
             coord[ 1 ] = newCoord[ 1 ];
-        } )
+        } );
+
+        output = input;
     }
 
     return output;
