@@ -8,23 +8,23 @@ const banner = `/* @preserve
 `;
 
 export default {
-	input: 'src/index.js',
-	output: [
-		{
-			file: pkg.main,
-			format: 'umd',
-			name: 'gcoord',
-			banner: banner,
-			sourcemap: true
-		},
-		{
-			file: pkg.module,
-			format: 'es',
-			banner: banner,
-			sourcemap: true
-		}
-	],
-	legacy: true, // Needed to create files loadable by IE8
+    input: 'src/index.js',
+    output: [
+        {
+            file: pkg.main,
+            format: 'umd',
+            name: 'gcoord',
+            banner: banner,
+            sourcemap: true
+        },
+        {
+            file: pkg.module,
+            format: 'es',
+            banner: banner,
+            sourcemap: true
+        }
+    ],
+    legacy: true, // Needed to create files loadable by IE8
     plugins: [
         babel()
     ]
