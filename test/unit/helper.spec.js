@@ -13,6 +13,7 @@ import {
     multiPoint,
     multiLineString,
     multiPolygon,
+    geometry,
     geometryCollection,
     featureCollection
 } from '../../src/geojson.js'
@@ -30,6 +31,22 @@ const poly = polygon( [
         [ 1, 1 ],
         [ 0, 1 ],
         [ 0, 0 ]
+    ]
+] );
+const polyWithHole = polygon( [
+    [
+        [ 100.0, 0.0 ],
+        [ 101.0, 0.0 ],
+        [ 101.0, 1.0 ],
+        [ 100.0, 1.0 ],
+        [ 100.0, 0.0 ]
+    ],
+    [
+        [ 100.2, 0.2 ],
+        [ 100.8, 0.2 ],
+        [ 100.8, 0.8 ],
+        [ 100.2, 0.8 ],
+        [ 100.2, 0.2 ]
     ]
 ] );
 const multiPt = multiPoint( [
@@ -64,10 +81,9 @@ const multiPoly = multiPolygon( [
         ]
     ]
 ] );
-const geomCollection = geometryCollection( [ pt.geometry, line.geometry, multiLine.geometry ], {
-    a: 0
-} );
-const fcNull = featureCollection([feature(null), feature(null)]);
+const geomCollection = geometryCollection( [ pt.geometry, line.geometry ] );
+const geomCollectionDeep = geometryCollection( [ geomCollection.geometry ] );
+const fcNull = featureCollection( [ feature( null ), feature( null ) ] );
 const fcMixed = featureCollection( [
     point( [ 0, 0 ] ),
     lineString( [
@@ -197,6 +213,30 @@ test( 'coordEach', () => {
         expect( lastIndex ).toBe( 1 );
     } );
 
+    featureAndCollection( multiPt.geometry ).forEach( input => {
+        const output = [];
+        let lastIndex;
+        coordEach( input, ( coord, index ) => {
+            output.push( coord );
+            lastIndex = index;
+        } );
+        expect( output ).toEqual( [
+            [ 0, 0 ],
+            [ 1, 1 ]
+        ] );
+        expect( lastIndex ).toBe( 1 );
+    } );
+
+    featureAndCollection( poly.geometry ).forEach( input => {
+        const output = [];
+        let lastIndex;
+        coordEach( input, ( coord, index ) => {
+            output.push( coord );
+            lastIndex = index;
+        }, true );
+        expect( lastIndex ).toBe( 2 );
+    } );
+
     featureAndCollection( poly.geometry ).forEach( input => {
         const output = [];
         let lastIndex;
@@ -213,20 +253,11 @@ test( 'coordEach', () => {
         expect( lastIndex ).toBe( 3 );
     } );
 
-    featureAndCollection( poly.geometry ).forEach( input => {
-        const output = [];
-        let lastIndex;
-        coordEach( input, ( coord, index ) => {
-            output.push( coord );
-            lastIndex = index;
-        }, true );
-        expect( lastIndex ).toBe( 2 );
-    } );
-
     let coords = [];
     let coordIndexes = [];
     let featureIndexes = [];
     let multiFeatureIndexes = [];
+    let geometryIndexes = [];
 
     coordEach( multiPoly, ( coord, coordIndex, featureIndex, multiFeatureIndex ) => {
         coords.push( coord );
@@ -255,6 +286,35 @@ test( 'coordEach', () => {
     expect( multiFeatureIndexes ).toEqual( [ 0, 0, 0, 0, 0, 1, 1 ] );
     expect( coords.length ).toBe( 7 );
 
+    coords = [];
+    coordIndexes = [];
+    featureIndexes = [];
+    multiFeatureIndexes = [];
+    geometryIndexes = [];
+
+    coordEach( polyWithHole, ( coords, coordIndex, featureIndex, multiFeatureIndex, geometryIndex ) => {
+        coordIndexes.push( coordIndex )
+        featureIndexes.push( featureIndex )
+        multiFeatureIndexes.push( multiFeatureIndex )
+        geometryIndexes.push( geometryIndex )
+    } );
+    expect( coordIndexes ).toEqual( [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ] );
+    expect( featureIndexes ).toEqual( [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] );
+    expect( multiFeatureIndexes ).toEqual( [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] );
+    expect( geometryIndexes ).toEqual( [ 0, 0, 0, 0, 0, 1, 1, 1, 1, 1 ] );
+
+    coordEach( geomCollectionDeep, ( coords, coordIndex, featureIndex, multiFeatureIndex, geometryIndex ) => {
+        coordIndexes.push( coordIndex )
+        featureIndexes.push( featureIndex )
+        multiFeatureIndexes.push( multiFeatureIndex )
+        geometryIndexes.push( geometryIndex )
+    }, null, true );
+    expect( coordIndexes ).toEqual( [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 1 ] );
+    expect( featureIndexes ).toEqual( [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] );
+    expect( multiFeatureIndexes ).toEqual( [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] );
+    expect( geometryIndexes ).toEqual( [ 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0 ] );
+
+
     let count = 0;
     coordEach( fcNull, () => count++ );
     expect( count ).toBe( 0 );
@@ -262,5 +322,48 @@ test( 'coordEach', () => {
     count = 0;
     coordEach( null, () => count++ );
     expect( count ).toBe( 0 );
+
+    count = 0;
+    coordEach( {
+        type: null
+    }, ( coord, index ) => {
+        count++;
+    }, true );
+    expect( count ).toBe( 0 );
+
+    count = 0;
+    coordEach( pt, () => {
+        count++;
+        return false;
+    } );
+    expect( count ).toBe( 1 );
+
+    count = 0;
+    coordEach( line, () => {
+        count++;
+        return false;
+    } );
+    expect( count ).toBe( 1 );
+
+    count = 0;
+    coordEach( poly, () => {
+        count++;
+        return false;
+    } );
+    expect( count ).toBe( 1 );
+
+    count = 0;
+    coordEach( multiPoly, () => {
+        count++;
+        return false;
+    } );
+    expect( count ).toBe( 1 );
+
+    count = 0;
+    coordEach( geomCollectionDeep, () => {
+        count++;
+        return false;
+    } );
+    expect( count ).toBe( 1 );
 
 } );
