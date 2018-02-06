@@ -125,7 +125,6 @@ export function coordEach( geojson, callback, excludeWrapCoord ) {
             let geomType = geometry.type;
 
             wrapShrink = ( excludeWrapCoord && ( geomType === 'Polygon' || geomType === 'MultiPolygon' ) ) ? 1 : 0;
-
             switch ( geomType ) {
                 case null:
                     break;
@@ -157,7 +156,7 @@ export function coordEach( geojson, callback, excludeWrapCoord ) {
                     break;
                 case 'MultiPolygon':
                     for ( j = 0; j < coords.length; j++ ) {
-                        if ( geomType === 'MultiPolygon' ) geometryIndex = 0;
+                        geometryIndex = 0;
                         for ( k = 0; k < coords[ j ].length; k++ ) {
                             for ( l = 0; l < coords[ j ][ k ].length - wrapShrink; l++ ) {
                                 if ( callback( coords[ j ][ k ][ l ], coordIndex, featureIndex, multiFeatureIndex, geometryIndex ) === false ) return false;
