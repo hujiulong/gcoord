@@ -39,6 +39,11 @@ GCJ-02（G-Guojia国家，C-Cehui测绘，J-Ju局），又被称为火星坐标�
 ### BD-09 - 百度坐标系
 BD-09（Baidu, BD）是百度地图使用的地理坐标系，其在GCJ-02上多增加了一次变换，用来保护用户隐私。从百度产品中得到的坐标都是BD-09坐标系。
 
+<p align="center">
+  <img src="./crs.jpg">
+  <p align="center">不同坐标系下的点在百度地图上会有偏移</p>
+</p>
+
 ### 相互转换
 GCJ-02和BD-09都是用来对地理数据进行加密的，所以也不会公开逆向转换的方法。理论上，GCJ-02的加密过程是不可逆的，但是可以通过一些方法来逼近接原始坐标，并且这种方式的精度很高。gcoord使用的纠偏方式达到了厘米级的精度，能满足绝大多数情况。
 
@@ -50,19 +55,60 @@ npm install gcoord --save
 或者直接下载[gcoord.js](https://unpkg.com/gcoord/dist/gcoord.js)
 
 ## 使用
+例如从手机的GPS得到一个经纬度坐标，需要将其展示在百度地图上，则应该将当前坐标从WGS-84坐标系转换为BD-09坐标系
+```js
+var result = gcoord.transform(
+    [ 116.403988, 39.914266 ],    // 经纬度坐标
+    gcoord.WGS84,                 // 当前坐标系
+    gcoord.BD09                   // 目标坐标系
+);
+
+console.log( result );  // [ 116.41661560068297, 39.92196580126834 ]
+```
+同时gcoord还可以生成GeoJSON以及转换GeoJSON的坐标系，详细使用方式可以参考[API](#api)
+
+## API
+
+* **坐标转换**
+    * [transform](#transform-input-from-to-)
+    * [CRS](#crs)
+* **GeoJSON**
+    * [feature](#feature-geometry-properties-options---)
+    * [geometry](#geometry-type-coordinates-options--)
+    * [point](#point-coordinates-properties-options---)
+    * [points](#points-coordinates-properties-options---)
+    * [polygon](#polygon-coordinates-properties-options---)
+    * [polygons](#polygons-coordinates-properties-options---)
+    * [lineString](#linestring-coordinates-properties-options---)
+    * [lineStrings](#linestrings-coordinates-properties-options---)
+    * [featureCollection](#featurecollection-features-options--)
+    * [multiLineString](#multilinestring-coordinates-properties-options---)
+    * [multiPoint](#multipoint-coordinates-properties-options---)
+    * [multiPolygon](#multipolygon-coordinates-properties-options---)
+    * [geometryCollection](#geometrycollection-geometries-properties-options---)
+
+-------
+
 ### transform( input, from, to )
 进行坐标转换
 
--   `input` **geojson|string|Array<number>** geoJSON对象，或geoJSON字符串，或经纬度数组
--   `from` **CRS** 当前坐标系
--   `to` **CRS** 目标坐标系
+**参数**
+-   `input` **[geojson][geojson] | [ string][string] | [ Array][Array]&lt;[number][number]>** geoJSON对象，或geoJSON字符串，或经纬度数组
+-   `from` **[CRS][CRS]** 当前坐标系
+-   `to` **[CRS][CRS]** 目标坐标系
+
+**返回值**
+
+**[geojson][geojson] | [ Array][Array]&lt;[number][number]>**
 
 **示例**
 ```js
 // 将GCJ02坐标转换为WGS84坐标
 var result = gcoord.transform( [ 123, 45 ], gcoord.GCJ02, gcoord.WGS84 );
 console.log( result );  // [ 122.99395597, 44.99804071 ]
+```
 
+```js
 // 转换GeoJSON坐标
 var geojson = {
     "type": "Point",
@@ -70,25 +116,43 @@ var geojson = {
 }
 gcoord.transform( geojson, gcoord.GCJ02, gcoord.WGS84 );
 console.log( geojson.coordinates ); // [ 122.99395597, 44.99804071 ]
+```
 
+```js
 // 生成GeoJSON并转换坐标
 var geojson = gcoord.point( [ 123, 45 ] );
 gcoord.transform( geojson, gcoord.GCJ02, gcoord.WGS84 );
 console.log( geojson.coordinates ); // [ 122.99395597, 44.99804071 ]
 ```
-返回数组或GeoJSON对象（由输入决定），注意：transform同时也会改变输入对象
+返回数组或GeoJSON对象（由输入决定），**注意：当输入为geojson时，transform会改变输入对象**
+
+### CRS
+CRS为坐标系，目标支持以下几种坐标系
+
+| CRS              | 说明    |
+| --------         | ----- |
+| gcoord.WGS84     | WGS-84坐标系，GPS设备获取的经纬度坐标   |
+| gcoord.GCJ02     | GCJ-02坐标系，google中国地图、soso地图、aliyun地图、mapabc地图和高德地图所用的经纬度坐标   |
+| gcoord.BD09      | BD-O9坐标系，百度地图采用的经纬度坐标    |
+| gcoord.WGS84     | WGS-84坐标系别名，同WGS-84  |
+| gcoord.EPSG4326  | WGS-84坐标系别名，同WGS-84  |
+
 
 ### feature( geometry[, properties[, options ] ] )
 生成一个 GeoJSON [Feature][Feature]
 
+**参数**
 -   `geometry` **[Geometry][Geometry]** 输入geometry
 -   `properties` **[Object][Object]** 属性 (可选, 默认值 `{}`)
 -   `options` **[Object][Object]** 选项 (可选, 默认值 `{}`)
-    -   `options.bbox` **[Array][Array]&lt;[number][number]>?** 外包围框 [west, south, east, north]
-    -   `options.id` **([string][string] \| [number][number])?** Feature的id
+    -   `options.bbox` **[Array][Array]&lt;[number][number]>** 外包围框 [west, south, east, north]
+    -   `options.id` **([string][string] \| [number][number])** Feature的id
+
+**返回值**
+
+**[Feature][Feature]**
 
 **示例**
-
 ```javascript
 var geometry = {
     "type": "Point",
@@ -98,20 +162,21 @@ var geometry = {
 var feature = gcoord.feature( geometry );
 ```
 
-**返回值**
-**[Feature][Feature]**
-
-## geometry( type, coordinates[, options ] )
+### geometry( type, coordinates[, options ] )
 生成一个GeoJSON [Geometry][Geometry]
 如果需要创建GeometryCollection，可以使用`gcoord.geometryCollection`
 
+**参数**
 -   `type` **[string][string]** Geometry 类型
 -   `coordinates` **[Array][Array]&lt;[number][number]>** 坐标
 -   `options` **[Object][Object]** 选项 (可选, 默认值 `{}`)
-    -   `options.bbox` **[Array][Array]&lt;[number][number]>?** 外包围框 [west, south, east, north]
+    -   `options.bbox` **[Array][Array]&lt;[number][number]>** 外包围框 [west, south, east, north]
+
+**返回值**
+
+**[Geometry][Geometry]**
 
 **示例**
-
 ```javascript
 var type = 'Point';
 var coordinates = [ 110, 50 ];
@@ -119,41 +184,43 @@ var coordinates = [ 110, 50 ];
 var geometry = gcoord.geometry( type, coordinates );
 ```
 
-**返回值**
-**[Geometry][Geometry]**
-
-## point( coordinates[, properties[, options ] ] )
+### point( coordinates[, properties[, options ] ] )
 生成一个 [Point][Point][Feature][Feature]
 
+**参数**
 -   `coordinates` **[Array][Array]&lt;[number][number]>** 坐标
 -   `properties` **[Object][Object]** 属性 (可选, 默认值 `{}`)
 -   `options` **[Object][Object]** 选项 (可选, 默认值 `{}`)
-    -   `options.bbox` **[Array][Array]&lt;[number][number]>?** 外包围框 [west, south, east, north]
-    -   `options.id` **([string][string] \| [number][number])?** Feature的id
+    -   `options.bbox` **[Array][Array]&lt;[number][number]>** 外包围框 [west, south, east, north]
+    -   `options.id` **([string][string] \| [number][number])** Feature的id
+
+**返回值**
+
+**[Feature][Feature]&lt;[Point][Point]>**
 
 **示例**
-
 ```javascript
 var point = gcoord.point([-75.343, 39.984]);
 
 //=point
 ```
 
-**返回值** **[Feature][Feature]&lt;[Point](https://tools.ietf.org/html/rfc7946#section-3.1.2)>**
-
-## points
+### points( coordinates[, properties[, options ] ] )
 
 生成一个 [Point][Point][FeatureCollection][FeatureCollection]
 
-
+**参数**
 -   `coordinates` **[Array][Array]&lt;[Array][Array]&lt;[number][number]>>** 坐标
 -   `properties` **[Object][Object]** 每个feature的属性 (可选, 默认值 `{}`)
 -   `options` **[Object][Object]** 选项 (可选, 默认值 `{}`)
-    -   `options.bbox` **[Array][Array]&lt;[number][number]>?** 外包围框 [west, south, east, north]
-    -   `options.id` **([string][string] \| [number][number])?** FeatureCollection的id
+    -   `options.bbox` **[Array][Array]&lt;[number][number]>** 外包围框 [west, south, east, north]
+    -   `options.id` **([string][string] \| [number][number])** FeatureCollection的id
+
+**返回值**
+
+**[FeatureCollection][FeatureCollection]&lt;[Point][Point]>**
 
 **示例**
-
 ```javascript
 var points = gcoord.points([
   [-75, 39],
@@ -164,40 +231,42 @@ var points = gcoord.points([
 //=points
 ```
 
-**返回值** **[FeatureCollection][FeatureCollection]&lt;[Point](https://tools.ietf.org/html/rfc7946#section-3.1.2)>**
-
-## polygon
+### polygon( coordinates[, properties[, options ] ] )
 
 生成一个 [Polygon][Polygon] [Feature][Feature]
 
-
+**参数**
 -   `coordinates` **[Array][Array]&lt;[Array][Array]&lt;[Array][Array]&lt;[number][number]>>>** 坐标
 -   `properties` **[Object][Object]** 属性 (可选, 默认值 `{}`)
 -   `options` **[Object][Object]** 选项 (可选, 默认值 `{}`)
-    -   `options.bbox` **[Array][Array]&lt;[number][number]>?** 外包围框 [west, south, east, north]
-    -   `options.id` **([string][string] \| [number][number])?** Feature的id
+    -   `options.bbox` **[Array][Array]&lt;[number][number]>** 外包围框 [west, south, east, north]
+    -   `options.id` **([string][string] \| [number][number])** Feature的id
+
+**返回值**
+
+**[Feature][Feature]&lt;[Polygon][Polygon]>**
 
 **示例**
-
 ```javascript
 var polygon = gcoord.polygon([[[-5, 52], [-4, 56], [-2, 51], [-7, 54], [-5, 52]]], { name: 'poly1' });
 
 //=polygon
 ```
 
-**返回值**
-**[Feature][Feature]&lt;[Polygon][Polygon]>**
-
-## polygons
+### polygons( coordinates[, properties[, options ] ] )
 
 生成一个 [Polygon][Polygon] [FeatureCollection][FeatureCollection]
 
-
+**参数**
 -   `coordinates` **[Array][Array]&lt;[Array][Array]&lt;[Array][Array]&lt;[Array][Array]&lt;[number][number]>>>>** 坐标
 -   `properties` **[Object][Object]** 属性 (可选, 默认值 `{}`)
 -   `options` **[Object][Object]** 选项 (可选, 默认值 `{}`)
-    -   `options.bbox` **[Array][Array]&lt;[number][number]>?** 外包围框 [west, south, east, north]
-    -   `options.id` **([string][string] \| [number][number])?** FeatureCollection的id
+    -   `options.bbox` **[Array][Array]&lt;[number][number]>** 外包围框 [west, south, east, north]
+    -   `options.id` **([string][string] \| [number][number])** FeatureCollection的id
+
+**返回值**
+
+**[FeatureCollection][FeatureCollection]&lt;[Polygon][Polygon]>**
 
 **示例**
 
@@ -210,20 +279,22 @@ var polygons = gcoord.polygons([
 //=polygons
 ```
 
-**返回值** **[FeatureCollection][FeatureCollection]&lt;[Polygon][Polygon]>**
-
-## lineString
+### lineString( coordinates[, properties[, options ] ] )
 
 生成一个 [LineString][LineString] [Feature][Feature]
 
+**参数**
 -   `coordinates` **[Array][Array]&lt;[Array][Array]&lt;[number][number]>>** 坐标
 -   `properties` **[Object][Object]** 属性 (可选, 默认值 `{}`)
 -   `options` **[Object][Object]** 选项 (可选, 默认值 `{}`)
-    -   `options.bbox` **[Array][Array]&lt;[number][number]>?** 外包围框 [west, south, east, north]
-    -   `options.id` **([string][string] \| [number][number])?** Feature的id
+    -   `options.bbox` **[Array][Array]&lt;[number][number]>** 外包围框 [west, south, east, north]
+    -   `options.id` **([string][string] \| [number][number])** Feature的id
+
+**返回值**
+
+**[Feature][Feature]&lt;[LineString][LineString]>**
 
 **示例**
-
 ```javascript
 var linestring1 = gcoord.lineString([[-24, 63], [-23, 60], [-25, 65], [-20, 69]], {name: 'line 1'});
 var linestring2 = gcoord.lineString([[-14, 43], [-13, 40], [-15, 45], [-10, 49]], {name: 'line 2'});
@@ -232,22 +303,22 @@ var linestring2 = gcoord.lineString([[-14, 43], [-13, 40], [-15, 45], [-10, 49]]
 //=linestring2
 ```
 
-**返回值**
-**[Feature][Feature]&lt;[LineString][LineString]>**
-
-## lineStrings
+### lineStrings( coordinates[, properties[, options ] ] )
 
 生成一个 [LineString][LineString] [FeatureCollection][FeatureCollection]
 
-
+**参数**
 -   `coordinates` **[Array][Array]&lt;[Array][Array]&lt;[number][number]>>** 坐标
 -   `properties` **[Object][Object]** 属性 (可选, 默认值 `{}`)
 -   `options` **[Object][Object]** 选项 (可选, 默认值 `{}`)
-    -   `options.bbox` **[Array][Array]&lt;[number][number]>?** 外包围框 [west, south, east, north]
-    -   `options.id` **([string][string] \| [number][number])?** FeatureCollection的id
+    -   `options.bbox` **[Array][Array]&lt;[number][number]>** 外包围框 [west, south, east, north]
+    -   `options.id` **([string][string] \| [number][number])** FeatureCollection的id
+
+**返回值**
+
+**[FeatureCollection][FeatureCollection]&lt;[LineString][LineString]>**
 
 **示例**
-
 ```javascript
 var linestrings = gcoord.lineStrings([
   [[-24, 63], [-23, 60], [-25, 65], [-20, 69]],
@@ -257,20 +328,21 @@ var linestrings = gcoord.lineStrings([
 //=linestrings
 ```
 
-**返回值** **[FeatureCollection][FeatureCollection]&lt;[LineString][LineString]>**
-
-## featureCollection
+### featureCollection( features[, options ] )
 
 生成一个 [FeatureCollection][FeatureCollection].
 
-
+**参数**
 -   `features` **[Array][Array]&lt;[Feature][Feature]>** input features
 -   `options` **[Object][Object]** 选项 (可选, 默认值 `{}`)
-    -   `options.bbox` **[Array][Array]&lt;[number][number]>?** 外包围框 [west, south, east, north]
-    -   `options.id` **([string][string] \| [number][number])?** Feature的id
+    -   `options.bbox` **[Array][Array]&lt;[number][number]>** 外包围框 [west, south, east, north]
+    -   `options.id` **([string][string] \| [number][number])** Feature的id
+
+**返回值**
+
+**[FeatureCollection][FeatureCollection]**
 
 **示例**
-
 ```javascript
 var locationA = gcoord.point([-75.343, 39.984], {name: 'Location A'});
 var locationB = gcoord.point([-75.833, 39.284], {name: 'Location B'});
@@ -285,38 +357,42 @@ var collection = gcoord.featureCollection([
 //=collection
 ```
 
-**返回值**
-**[FeatureCollection][FeatureCollection]**
-
-## multiLineString
+### multiLineString( coordinates[, properties[, options ] ] )
 
 生成一个 [Feature&lt;MultiLineString>](Feature<MultiLineString>)
 
+**参数**
 -   `coordinates` **[Array][Array]&lt;[Array][Array]&lt;[Array][Array]&lt;[number][number]>>>** 坐标
 -   `properties` **[Object][Object]** 属性 (可选, 默认值 `{}`)
 -   `options` **[Object][Object]** 选项 (可选, 默认值 `{}`)
-    -   `options.bbox` **[Array][Array]&lt;[number][number]>?** 外包围框 [west, south, east, north]
-    -   `options.id` **([string][string] \| [number][number])?** Feature的id
+    -   `options.bbox` **[Array][Array]&lt;[number][number]>** 外包围框 [west, south, east, north]
+    -   `options.id` **([string][string] \| [number][number])** Feature的id
+
+**返回值**
+
+**[Feature][Feature]&lt;[MultiLineString][MultiLineString]>**
 
 **示例**
-
 ```javascript
 var multiLine = gcoord.multiLineString([[[0,0],[10,10]]]);
 
 //=multiLine
 ```
 
-**返回值** **[Feature][Feature]&lt;[MultiLineString](https://tools.ietf.org/html/rfc7946#section-3.1.5)>**
-
-## multiPoint
+### multiPoint( coordinates[, properties[, options ] ] )
 
 生成一个 [Feature&lt;MultiPoint>](Feature<MultiPoint>)
 
+**参数**
 -   `coordinates` **[Array][Array]&lt;[Array][Array]&lt;[number][number]>>** 坐标
 -   `properties` **[Object][Object]** 属性 (可选, 默认值 `{}`)
 -   `options` **[Object][Object]** 选项 (可选, 默认值 `{}`)
-    -   `options.bbox` **[Array][Array]&lt;[number][number]>?** 外包围框 [west, south, east, north]
-    -   `options.id` **([string][string] \| [number][number])?** Feature的id
+    -   `options.bbox` **[Array][Array]&lt;[number][number]>** 外包围框 [west, south, east, north]
+    -   `options.id` **([string][string] \| [number][number])** Feature的id
+
+**返回值**
+
+**[Feature][Feature]&lt;[MultiPoint][MultiPoint]>**
 
 **示例**
 
@@ -326,18 +402,20 @@ var multiPt = gcoord.multiPoint([[0,0],[10,10]]);
 //=multiPt
 ```
 
-**返回值** **[Feature][Feature]&lt;[MultiPoint](https://tools.ietf.org/html/rfc7946#section-3.1.3)>**
-
-## multiPolygon
+### multiPolygon( coordinates[, properties[, options ] ] )
 
 生成一个 [Feature&lt;MultiPolygon>](Feature<MultiPolygon>)
 
-
+**参数**
 -   `coordinates` **[Array][Array]&lt;[Array][Array]&lt;[Array][Array]&lt;[Array][Array]&lt;[number][number]>>>>** 坐标
 -   `properties` **[Object][Object]** 属性 (可选, 默认值 `{}`)
 -   `options` **[Object][Object]** 选项 (可选, 默认值 `{}`)
-    -   `options.bbox` **[Array][Array]&lt;[number][number]>?** 外包围框 [west, south, east, north]
-    -   `options.id` **([string][string] \| [number][number])?** Feature的id
+    -   `options.bbox` **[Array][Array]&lt;[number][number]>** 外包围框 [west, south, east, north]
+    -   `options.id` **([string][string] \| [number][number])** Feature的id
+
+**返回值**
+
+**[Feature][Feature]&lt;[MultiPolygon][MultiPolygon]>**
 
 **示例**
 
@@ -346,10 +424,8 @@ var multiPoly = gcoord.multiPolygon([[[[0,0],[0,10],[10,10],[10,0],[0,0]]]]);
 
 //=multiPoly
 ```
-**返回值**
- **[Feature][Feature]&lt;[MultiPolygon](https://tools.ietf.org/html/rfc7946#section-3.1.7)>**
 
-## geometryCollection
+### geometryCollection( geometries[, properties[, options ] ] )
 
 生成一个 [Feature&lt;GeometryCollection>](Feature<GeometryCollection>)
 
@@ -357,8 +433,12 @@ var multiPoly = gcoord.multiPolygon([[[[0,0],[0,10],[10,10],[10,0],[0,0]]]]);
 -   `geometries` **[Array][Array]&lt;[Geometry][Geometry]>** 一个 GeoJSON Geometries数组
 -   `properties` **[Object][Object]** 属性 (可选, 默认值 `{}`)
 -   `options` **[Object][Object]** 选项 (可选, 默认值 `{}`)
-    -   `options.bbox` **[Array][Array]&lt;[number][number]>?** 外包围框 [west, south, east, north]
-    -   `options.id` **([string][string] \| [number][number])?** Feature的id
+    -   `options.bbox` **[Array][Array]&lt;[number][number]>** 外包围框 [west, south, east, north]
+    -   `options.id` **([string][string] \| [number][number])** Feature的id
+
+**返回值**
+
+**[Feature][Feature]&lt;[GeometryCollection][GeometryCollection]>**
 
 **示例**
 
@@ -376,8 +456,7 @@ var collection = gcoord.geometryCollection([pt, line]);
 //=collection
 ```
 
-**返回值** **[Feature][Feature]&lt;[GeometryCollection][GeometryCollection]>**
-
+[CRS]: #CRS
 
 [number]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
@@ -385,6 +464,7 @@ var collection = gcoord.geometryCollection([pt, line]);
 [Object]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object
 [Error]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error
 
+[geojson]: https://tools.ietf.org/html/rfc7946#page-6
 [Feature]: https://tools.ietf.org/html/rfc7946#section-3.2
 [FeatureCollection]: https://tools.ietf.org/html/rfc7946#section-3.3
 [Geometry]: https://tools.ietf.org/html/rfc7946#section-3.1
@@ -392,7 +472,9 @@ var collection = gcoord.geometryCollection([pt, line]);
 [Point]: https://tools.ietf.org/html/rfc7946#section-3.1.2
 [Polygon]: https://tools.ietf.org/html/rfc7946#section-3.1.6
 [LineString]: https://tools.ietf.org/html/rfc7946#section-3.1.4
+[MultiPoint]: https://tools.ietf.org/html/rfc7946#section-3.1.3
 [MultiPolygon]: https://tools.ietf.org/html/rfc7946#section-3.1.7
+[MultiLineString]: https://tools.ietf.org/html/rfc7946#section-3.1.5
 
 ## LICENSE
 MIT
