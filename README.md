@@ -94,8 +94,8 @@ console.log( result );  // [ 116.41661560068297, 39.92196580126834 ]
 
 **参数**
 -   `input` **[geojson][geojson] | [ string][string] | [ Array][Array]&lt;[number][number]>** geoJSON对象，或geoJSON字符串，或经纬度数组
--   `from` **[CRS][CRS]** 当前坐标系
--   `to` **[CRS][CRS]** 目标坐标系
+-   `from` **[CRS](#crs)** 当前坐标系
+-   `to` **[CRS](#crs)** 目标坐标系
 
 **返回值**
 
@@ -134,7 +134,7 @@ CRS为坐标系，目标支持以下几种坐标系
 | gcoord.WGS84     | WGS-84坐标系，GPS设备获取的经纬度坐标   |
 | gcoord.GCJ02     | GCJ-02坐标系，google中国地图、soso地图、aliyun地图、mapabc地图和高德地图所用的经纬度坐标   |
 | gcoord.BD09      | BD-O9坐标系，百度地图采用的经纬度坐标    |
-| gcoord.WGS84     | WGS-84坐标系别名，同WGS-84  |
+| gcoord.WGS1984   | WGS-84坐标系别名，同WGS-84  |
 | gcoord.EPSG4326  | WGS-84坐标系别名，同WGS-84  |
 
 
@@ -455,8 +455,6 @@ var collection = gcoord.geometryCollection([pt, line]);
 
 //=collection
 ```
-
-[CRS]: #CRS
 
 [number]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
