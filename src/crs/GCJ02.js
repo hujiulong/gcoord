@@ -8,7 +8,7 @@ const { sin, cos, sqrt, abs, PI } = Math;
 const a = 6378245;
 const ee = 0.006693421622965823;
 
-export function GCJ02toWGS84( coord ) {
+export function GCJ02ToWGS84( coord ) {
 
     const [ lon, lat ] = coord;
 
@@ -16,7 +16,7 @@ export function GCJ02toWGS84( coord ) {
 
     let [ wgsLon, wgsLat ] = [ lon, lat ];
 
-    let tempPoint = WGS84toGCJ02( [ wgsLon, wgsLat ] );
+    let tempPoint = WGS84ToGCJ02( [ wgsLon, wgsLat ] );
 
     let dx = tempPoint[ 0 ] - lon;
     let dy = tempPoint[ 1 ] - lat;
@@ -25,7 +25,7 @@ export function GCJ02toWGS84( coord ) {
         wgsLon -= dx;
         wgsLat -= dy;
 
-        tempPoint = WGS84toGCJ02( [ wgsLon, wgsLat ] );
+        tempPoint = WGS84ToGCJ02( [ wgsLon, wgsLat ] );
         dx = tempPoint[ 0 ] - lon;
         dy = tempPoint[ 1 ] - lat;
     }
@@ -33,7 +33,7 @@ export function GCJ02toWGS84( coord ) {
     return [ wgsLon, wgsLat ];
 }
 
-export function WGS84toGCJ02( coord ) {
+export function WGS84ToGCJ02( coord ) {
 
     const [ lon, lat ] = coord;
 

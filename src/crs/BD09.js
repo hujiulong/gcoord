@@ -2,7 +2,7 @@ const { sin, cos, atan2, sqrt, abs, PI } = Math;
 
 const baiduFactor = PI * 3000.0 / 180.0;
 
-export function BD09toGCJ02( coord ) {
+export function BD09ToGCJ02( coord ) {
 
     const [ lon, lat ] = coord;
 
@@ -16,7 +16,7 @@ export function BD09toGCJ02( coord ) {
     return [ newLon, newLat ];
 }
 
-export function GCJ02toBD09( coord ) {
+export function GCJ02ToBD09( coord ) {
 
     const [ lon, lat ] = coord;
 
