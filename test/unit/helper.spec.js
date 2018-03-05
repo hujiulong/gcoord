@@ -1,4 +1,5 @@
 import {
+    assert,
     isNumber,
     isObject,
     isArray,
@@ -118,6 +119,14 @@ function featureAndCollection( geometry ) {
 
     return [ geometry, feature, featureCollection ];
 }
+
+test( 'assert', () => {
+
+    expect( () => {
+        assert( true, 'error msg' );
+    } ).toThrow();
+
+} );
 
 test( 'isNumber', () => {
 
