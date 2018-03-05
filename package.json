@@ -15,6 +15,11 @@
     "roots": [
       "<rootDir>/test/"
     ],
+    "testRegex": ".*\\.(test|spec)\\.jsx?$",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test/helpers/"
+    ],
     "coverageDirectory": "./coverage/",
     "collectCoverage": true
   },
