@@ -16,7 +16,7 @@ import {
     geometry,
     geometryCollection,
     featureCollection
-} from '../../src/geojson.js'
+} from '../helpers/geojson.js'
 
 const pt = point( [ 0, 0 ], {
     a: 1

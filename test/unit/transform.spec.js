@@ -9,7 +9,7 @@ import {
 
 import {
     point
-} from '../../src/geojson.js'
+} from '../helpers/geojson.js'
 
 test( 'transform - position', () => {
     let result;
