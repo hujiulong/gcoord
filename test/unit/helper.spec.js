@@ -1,4 +1,5 @@
 import {
+    assert,
     isNumber,
     isObject,
     isArray,
@@ -16,7 +17,7 @@ import {
     geometry,
     geometryCollection,
     featureCollection
-} from '../../src/geojson.js'
+} from '../helpers/geojson.js'
 
 const pt = point( [ 0, 0 ], {
     a: 1
@@ -118,6 +119,14 @@ function featureAndCollection( geometry ) {
 
     return [ geometry, feature, featureCollection ];
 }
+
+test( 'assert', () => {
+
+    expect( () => {
+        assert( true, 'error msg' );
+    } ).toThrow();
+
+} );
 
 test( 'isNumber', () => {
 
