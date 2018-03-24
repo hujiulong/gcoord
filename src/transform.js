@@ -25,7 +25,7 @@ export function transform( input, fromCRS, toCRS ) {
     const to = from.to[ toCRS ];
     assert( !to, 'toCRS is invalid' );
 
-    const type = typeof( input );
+    const type = typeof ( input );
     assert( type !== 'string' && type !== 'object', 'input must be an geojson or an array of position' );
 
     if ( type === 'string' ) input = JSON.parse( input );
@@ -43,7 +43,7 @@ export function transform( input, fromCRS, toCRS ) {
     if ( isPosition ) {
         output = convert( input );
     } else {
-        coordEach( input, function( coord ) {
+        coordEach( input, function ( coord ) {
             const newCoord = convert( coord );
             coord[ 0 ] = newCoord[ 0 ];
             coord[ 1 ] = newCoord[ 1 ];

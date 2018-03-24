@@ -323,7 +323,6 @@ test( 'coordEach', () => {
     expect( multiFeatureIndexes ).toEqual( [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] );
     expect( geometryIndexes ).toEqual( [ 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0 ] );
 
-
     let count = 0;
     coordEach( fcNull, () => count++ );
     expect( count ).toBe( 0 );
