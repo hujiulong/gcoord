@@ -49,7 +49,7 @@ test( 'transform - geojson', () => {
     expect( result[ 0 ] ).toBeCloseTo( 123.00607541, 5 );
     expect( result[ 1 ] ).toBeCloseTo( 45.00197815, 5 );
 
-    let pt = point( [ 123, 45 ] );
+    const pt = point( [ 123, 45 ] );
     geojson = transform( JSON.stringify( pt ), WGS84, GCJ02 );
     result = geojson.geometry.coordinates;
 

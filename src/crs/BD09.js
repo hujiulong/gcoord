@@ -1,4 +1,4 @@
-const { sin, cos, atan2, sqrt, abs, PI } = Math;
+const { sin, cos, atan2, sqrt, PI } = Math;
 
 const baiduFactor = PI * 3000.0 / 180.0;
 

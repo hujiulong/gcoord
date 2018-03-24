@@ -31,8 +31,8 @@ export function feature( geometry, properties, options ) {
     // Optional Parameters
     options = options || {};
     assert( !isObject( options ), 'options is invalid' );
-    let bbox = options.bbox;
-    let id = options.id;
+    const bbox = options.bbox;
+    const id = options.id;
 
     // Validation
     assert( geometry === undefined, 'geometry is required' );
@@ -41,7 +41,7 @@ export function feature( geometry, properties, options ) {
     if ( id !== 0 && id ) validateId( id );
 
     // Main
-    let feat = {
+    const feat = {
         type: 'Feature'
     };
     if ( id === 0 || id ) feat.id = id;
@@ -73,7 +73,7 @@ export function geometry( type, coordinates, options ) {
     // Optional Parameters
     options = options || {};
     assert( !isObject( options ), 'options is invalid' );
-    let bbox = options.bbox;
+    const bbox = options.bbox;
 
     // Validation
     assert( !type, 'type is required' );
@@ -159,7 +159,7 @@ export function points( coordinates, properties, options ) {
     assert( !coordinates, 'coordinates is required' );
     assert( !isArray( coordinates ), 'coordinates must be an Array' );
 
-    return featureCollection( coordinates.map( function( coords ) {
+    return featureCollection( coordinates.map( function ( coords ) {
         return point( coords, properties );
     } ), options );
 }
@@ -183,7 +183,7 @@ export function polygon( coordinates, properties, options ) {
     assert( !coordinates, 'coordinates is required' );
 
     for ( let i = 0; i < coordinates.length; i++ ) {
-        let ring = coordinates[ i ];
+        const ring = coordinates[ i ];
         assert( ring.length < 4, 'Each LinearRing of a Polygon must have 4 or more Positions.' )
         for ( let j = 0; j < ring[ ring.length - 1 ].length; j++ ) {
             // Check if first point of Polygon contains two numbers
@@ -220,7 +220,7 @@ export function polygons( coordinates, properties, options ) {
     assert( !coordinates, 'coordinates is required' );
     assert( !isArray( coordinates ), 'coordinates must be an Array' );
 
-    return featureCollection( coordinates.map( function( coords ) {
+    return featureCollection( coordinates.map( function ( coords ) {
         return polygon( coords, properties );
     } ), options );
 }
@@ -276,7 +276,7 @@ export function lineStrings( coordinates, properties, options ) {
     assert( !coordinates, 'coordinates is required' );
     assert( !isArray( coordinates ), 'coordinates must be an Array' );
 
-    return featureCollection( coordinates.map( function( coords ) {
+    return featureCollection( coordinates.map( function ( coords ) {
         return lineString( coords, properties );
     } ), options );
 }
@@ -307,8 +307,8 @@ export function featureCollection( features, options ) {
     // Optional Parameters
     options = options || {};
     assert( !isObject( options ), 'options is invalid' );
-    let bbox = options.bbox;
-    let id = options.id;
+    const bbox = options.bbox;
+    const id = options.id;
 
     // Validation
     assert( !features, 'No features passed' );
@@ -317,7 +317,7 @@ export function featureCollection( features, options ) {
     if ( id ) validateId( id );
 
     // Main
-    let fc = {
+    const fc = {
         type: 'FeatureCollection'
     };
     if ( id ) fc.id = id;
@@ -464,7 +464,7 @@ export function validateBBox( bbox ) {
     assert( !bbox, 'bbox is required' );
     assert( !isArray( bbox ), 'bbox must be an Array' );
     assert( bbox.length !== 4 && bbox.length !== 6, 'bbox must be an Array of 4 or 6 numbers' );
-    bbox.forEach( function( num ) {
+    bbox.forEach( function ( num ) {
         assert( !isNumber( num ), 'bbox must only contain numbers' );
     } );
 }

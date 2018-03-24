@@ -6,7 +6,7 @@ test( 'WGS84 to BD09', () => {
 
     const transform = WGS84.to.BD09;
 
-    let result = transform( [ 123, 45 ] );
+    const result = transform( [ 123, 45 ] );
     expect( result[ 0 ] ).toBeCloseTo( 123.0124491, 5 );
     expect( result[ 1 ] ).toBeCloseTo( 45.0083293, 5 );
 

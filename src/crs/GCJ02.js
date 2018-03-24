@@ -71,7 +71,7 @@ function delta( lon, lat ) {
 
     magic = 1 - ee * magic * magic;
 
-    let sqrtMagic = sqrt( magic );
+    const sqrtMagic = sqrt( magic );
     dLon = ( dLon * 180 ) / ( a / sqrtMagic * cos( radLat ) * PI );
     dLat = ( dLat * 180 ) / ( ( a * ( 1 - ee ) ) / ( magic * sqrtMagic ) * PI );
 
@@ -82,5 +82,5 @@ function isInChina( lon, lat ) {
     assert( lon === undefined || lat === undefined, 'lon and lat are required' );
     assert( !isNumber( lon ) || !isNumber( lat ), 'lon and lat must be numbers' );
 
-	return lon >= 72.004 && lon <= 137.8347 && lat >= 0.8293 && lat <= 55.8271;
+    return lon >= 72.004 && lon <= 137.8347 && lat >= 0.8293 && lat <= 55.8271;
 }

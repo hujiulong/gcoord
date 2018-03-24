@@ -51,7 +51,7 @@ export function isArray( input ) {
 export function compose() {
     const args = arguments;
     const start = args.length - 1;
-    return function() {
+    return function () {
         let i = start;
         let result = args[ start ].apply( this, arguments );
         while ( i-- ) result = args[ i ].call( this, result );
@@ -85,15 +85,17 @@ export function compose() {
 export function coordEach( geojson, callback, excludeWrapCoord ) {
     // Handles null Geometry -- Skips this GeoJSON
     if ( geojson === null ) return;
+    /* eslint-disable-next-line */
     let j, k, l, geometry, stopG, coords,
         geometryMaybeCollection,
         wrapShrink = 0,
         coordIndex = 0,
-        isGeometryCollection,
-        type = geojson.type,
-        isFeatureCollection = type === 'FeatureCollection',
-        isFeature = type === 'Feature',
-        stop = isFeatureCollection ? geojson.features.length : 1;
+        isGeometryCollection;
+
+    const type = geojson.type;
+    const isFeatureCollection = type === 'FeatureCollection';
+    const isFeature = type === 'Feature';
+    const stop = isFeatureCollection ? geojson.features.length : 1;
 
     // This logic may look a little weird. The reason why it is that way
     // is because it's trying to be fast. GeoJSON supports multiple kinds
@@ -108,21 +110,21 @@ export function coordEach( geojson, callback, excludeWrapCoord ) {
     // few numbers and booleans, rather than any temporary arrays as would
     // be required with the normalization approach.
     for ( let featureIndex = 0; featureIndex < stop; featureIndex++ ) {
-        geometryMaybeCollection = ( isFeatureCollection ? geojson.features[ featureIndex ].geometry :
-            ( isFeature ? geojson.geometry : geojson ) );
+        geometryMaybeCollection = ( isFeatureCollection ? geojson.features[ featureIndex ].geometry
+            : ( isFeature ? geojson.geometry : geojson ) );
         isGeometryCollection = ( geometryMaybeCollection ) ? geometryMaybeCollection.type === 'GeometryCollection' : false;
         stopG = isGeometryCollection ? geometryMaybeCollection.geometries.length : 1;
 
         for ( let geomIndex = 0; geomIndex < stopG; geomIndex++ ) {
             let multiFeatureIndex = 0;
             let geometryIndex = 0;
-            geometry = isGeometryCollection ?
-                geometryMaybeCollection.geometries[ geomIndex ] : geometryMaybeCollection;
+            geometry = isGeometryCollection
+                ? geometryMaybeCollection.geometries[ geomIndex ] : geometryMaybeCollection;
 
             // Handles null Geometry -- Skips this geometry
             if ( geometry === null ) continue;
             coords = geometry.coordinates;
-            let geomType = geometry.type;
+            const geomType = geometry.type;
 
             wrapShrink = ( excludeWrapCoord && ( geomType === 'Polygon' || geomType === 'MultiPolygon' ) ) ? 1 : 0;
             switch ( geomType ) {
@@ -168,8 +170,7 @@ export function coordEach( geojson, callback, excludeWrapCoord ) {
                     }
                     break;
                 case 'GeometryCollection':
-                    for ( j = 0; j < geometry.geometries.length; j++ )
-                        if ( coordEach( geometry.geometries[ j ], callback, excludeWrapCoord ) === false ) return false;
+                    for ( j = 0; j < geometry.geometries.length; j++ ) { if ( coordEach( geometry.geometries[ j ], callback, excludeWrapCoord ) === false ) return false; }
                     break;
                 default:
                     throw new Error( 'Unknown Geometry Type' );
