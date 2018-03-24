@@ -24,3 +24,13 @@ test( 'GCJ02 to BD09', () => {
     expect( result[ 1 ] ).toBeCloseTo( 45.00636899, 5 );
 
 } );
+
+test( 'GCJ02 to EPSG3857', () => {
+
+    const transform = GCJ02.to.EPSG3857;
+
+    const result = transform( [ 123, 45 ] );
+    expect( result[ 0 ] ).toBeCloseTo( 13691624.549486386, 5 );
+    expect( result[ 1 ] ).toBeCloseTo( 5621213.042452029, 5 );
+
+} );
