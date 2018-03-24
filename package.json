@@ -1,7 +1,7 @@
 {
   "name": "gcoord",
-  "version": "0.0.1",
-  "description": "",
+  "version": "0.0.2",
+  "description": "geographic coordinate library",
   "main": "dist/gcoord.js",
   "module": "dist/gcoord.esm.js",
   "scripts": {
@@ -14,6 +14,11 @@
     "verbose": true,
     "roots": [
       "<rootDir>/test/"
+    ],
+    "testRegex": ".*\\.(test|spec)\\.jsx?$",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test/helpers/"
     ],
     "coverageDirectory": "./coverage/",
     "collectCoverage": true

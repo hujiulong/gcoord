@@ -3,7 +3,7 @@ import {
     isNumber,
     isObject,
     isArray,
-} from './helper.js'
+} from '../../src/helper.js'
 
 // https://github.com/Turfjs/turf/blob/master/packages/turf-helpers/index.mjs
 
