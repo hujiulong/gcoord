@@ -1,6 +1,6 @@
 {
   "name": "gcoord",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "geographic coordinate library",
   "main": "dist/gcoord.js",
   "module": "dist/gcoord.esm.js",
