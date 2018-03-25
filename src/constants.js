@@ -7,6 +7,7 @@ export const WebMercator = 'WebMercator';
 // EPSG
 export const EPSG4326 = WGS84;
 export const EPSG3857 = WebMercator;
+export const EPSG900913 = WebMercator;
 
 export const Baidu = BD09;
 export const BMap = BD09;
