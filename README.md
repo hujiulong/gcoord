@@ -108,9 +108,17 @@ CRS为坐标系，目标支持以下几种坐标系
 | gcoord.WGS84     | WGS-84坐标系，GPS设备获取的经纬度坐标   |
 | gcoord.GCJ02     | GCJ-02坐标系，google中国地图、soso地图、aliyun地图、mapabc地图和高德地图所用的经纬度坐标   |
 | gcoord.BD09      | BD-O9坐标系，百度地图采用的经纬度坐标    |
+| gcoord.Baidu     | 百度坐标系，BD-O9坐标系别名，同BD-O9  |
+| gcoord.BMap      | 百度地图，BD-O9坐标系别名，同BD-O9  |
+| gcoord.AMap      | 高德地图，同GCJ-O2  |
+| gcoord.WebMercator   | Web Mercator投影，墨卡托投影，同EPSG3857，单位：米 |
 | gcoord.WGS1984   | WGS-84坐标系别名，同WGS-84  |
 | gcoord.EPSG4326  | WGS-84坐标系别名，同WGS-84  |
+| gcoord.EPSG3857  | Web Mercator投影，同WebMercator，单位：米  |
+| gcoord.EPSG900913 | Web Mercator投影，同WebMercator，单位：米  |
 
+**支持更多坐标系？**
+gcoord的目标是处理web地图中的坐标，目前支持的坐标系已经能满足绝大部分要求了，同时gcoord也能保持轻量。如果需要更专业的坐标系处理工具，可以使用[proj4js](https://github.com/proj4js/proj4js)等开源库
 
 
 [number]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
