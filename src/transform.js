@@ -15,18 +15,18 @@ import * as CRS from './crs/index.js'
  */
 export function transform( input, fromCRS, toCRS ) {
 
-    assert( !input, 'input is required' );
-    assert( !fromCRS, 'fromCRS is required' );
-    assert( !toCRS, 'toCRS is required' );
+    assert( !input, 'coordinate is required' );
+    assert( !fromCRS, 'original coordinate system is required' );
+    assert( !toCRS, 'target coordinate system is required' );
 
     const from = CRS[ fromCRS ];
-    assert( !from, 'fromCRS is invalid' );
+    assert( !from, 'original coordinate system is invalid' );
 
     const to = from.to[ toCRS ];
-    assert( !to, 'toCRS is invalid' );
+    assert( !to, 'target coordinate system is invalid' );
 
     const type = typeof ( input );
-    assert( type !== 'string' && type !== 'object', 'input must be an geojson or an array of position' );
+    assert( type !== 'string' && type !== 'object', 'coordinate must be an geojson or an array of position' );
 
     if ( type === 'string' ) input = JSON.parse( input );
 
