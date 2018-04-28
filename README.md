@@ -107,10 +107,10 @@ CRS为坐标系，目标支持以下几种坐标系
 | --------         | ----- |
 | gcoord.WGS84     | WGS-84坐标系，GPS设备获取的经纬度坐标   |
 | gcoord.GCJ02     | GCJ-02坐标系，google中国地图、soso地图、aliyun地图、mapabc地图和高德地图所用的经纬度坐标   |
-| gcoord.BD09      | BD-O9坐标系，百度地图采用的经纬度坐标    |
-| gcoord.Baidu     | 百度坐标系，BD-O9坐标系别名，同BD-O9  |
-| gcoord.BMap      | 百度地图，BD-O9坐标系别名，同BD-O9  |
-| gcoord.AMap      | 高德地图，同GCJ-O2  |
+| gcoord.BD09      | BD-09坐标系，百度地图采用的经纬度坐标    |
+| gcoord.Baidu     | 百度坐标系，BD-09坐标系别名，同BD-09  |
+| gcoord.BMap      | 百度地图，BD-09坐标系别名，同BD-09  |
+| gcoord.AMap      | 高德地图，同GCJ-02  |
 | gcoord.WebMercator   | Web Mercator投影，墨卡托投影，同EPSG3857，单位：米 |
 | gcoord.WGS1984   | WGS-84坐标系别名，同WGS-84  |
 | gcoord.EPSG4326  | WGS-84坐标系别名，同WGS-84  |
