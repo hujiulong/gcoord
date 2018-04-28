@@ -38,6 +38,9 @@ test( 'transform - position', () => {
     expect( result[ 0 ] ).toBeCloseTo( 122.99363304, 5 );
     expect( result[ 1 ] ).toBeCloseTo( 44.99365430, 5 );
 
+    result = transform( [ 123, 45 ], WGS84, WGS84 );
+    expect( result ).toEqual( [ 123, 45 ] );
+
 } );
 
 test( 'transform - geojson', () => {
@@ -55,5 +58,10 @@ test( 'transform - geojson', () => {
 
     expect( result[ 0 ] ).toBeCloseTo( 123.00607541, 5 );
     expect( result[ 1 ] ).toBeCloseTo( 45.00197815, 5 );
+
+    geojson = transform( point( [ 123, 45 ], { a: 1 } ), GCJ02, GCJ02 );
+    result = geojson.geometry.coordinates;
+
+    expect( result ).toEqual( [ 123, 45 ] );
 
 } );
