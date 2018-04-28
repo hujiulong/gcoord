@@ -22,6 +22,8 @@ export function transform( input, fromCRS, toCRS ) {
     const from = CRS[ fromCRS ];
     assert( !from, 'original coordinate system is invalid' );
 
+    if ( fromCRS === toCRS ) return input;
+
     const to = from.to[ toCRS ];
     assert( !to, 'target coordinate system is invalid' );
 
