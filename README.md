@@ -8,6 +8,8 @@
 
 **gcoord**( **g**eographic **coord**inates)是一个处理地理坐标系的js库，用来修正百度地图、高德地图及其它互联网地图坐标系不统一的问题
 
+(**gcoord** is a JS library for converting Chinese geographic coordinate encryption. In most cases, only Chinese developers need to use it, so there is no English document. If you need an English document, please open a new issue)
+
 ### Features
 * 📦 **轻量** - 无外部依赖，gzip后大小仅2kb
 * 🐠 **兼容性强** - 能在node环境以及所有现代浏览器（IE8+）中运行
