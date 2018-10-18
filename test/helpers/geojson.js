@@ -1,9 +1,9 @@
 import {
-    assert,
-    isNumber,
-    isObject,
-    isArray,
-} from '../../src/helper.js'
+  assert,
+  isNumber,
+  isObject,
+  isArray,
+} from '../../src/helper.js';
 
 // https://github.com/Turfjs/turf/blob/master/packages/turf-helpers/index.mjs
 
@@ -27,28 +27,28 @@ import {
  *
  * //=feature
  */
-export function feature( geometry, properties, options ) {
-    // Optional Parameters
-    options = options || {};
-    assert( !isObject( options ), 'options is invalid' );
-    const bbox = options.bbox;
-    const id = options.id;
+export function feature(geometry, properties, options) {
+  // Optional Parameters
+  options = options || {};
+  assert(!isObject(options), 'options is invalid');
+  const bbox = options.bbox;
+  const id = options.id;
 
-    // Validation
-    assert( geometry === undefined, 'geometry is required' );
-    assert( properties && properties.constructor !== Object, 'properties must be an Object' );
-    if ( bbox ) validateBBox( bbox );
-    if ( id !== 0 && id ) validateId( id );
+  // Validation
+  assert(geometry === undefined, 'geometry is required');
+  assert(properties && properties.constructor !== Object, 'properties must be an Object');
+  if (bbox) validateBBox(bbox);
+  if (id !== 0 && id) validateId(id);
 
-    // Main
-    const feat = {
-        type: 'Feature'
-    };
-    if ( id === 0 || id ) feat.id = id;
-    if ( bbox ) feat.bbox = bbox;
-    feat.properties = properties || {};
-    feat.geometry = geometry;
-    return feat;
+  // Main
+  const feat = {
+    type: 'Feature',
+  };
+  if (id === 0 || id) feat.id = id;
+  if (bbox) feat.bbox = bbox;
+  feat.properties = properties || {};
+  feat.geometry = geometry;
+  return feat;
 }
 
 /**
@@ -69,44 +69,44 @@ export function feature( geometry, properties, options ) {
  *
  * //=geometry
  */
-export function geometry( type, coordinates, options ) {
-    // Optional Parameters
-    options = options || {};
-    assert( !isObject( options ), 'options is invalid' );
-    const bbox = options.bbox;
+export function geometry(type, coordinates, options) {
+  // Optional Parameters
+  options = options || {};
+  assert(!isObject(options), 'options is invalid');
+  const bbox = options.bbox;
 
-    // Validation
-    assert( !type, 'type is required' );
-    assert( !coordinates, 'coordinates is required' );
-    assert( !isArray( coordinates ), 'coordinates must be an Array' );
-    if ( bbox ) validateBBox( bbox );
+  // Validation
+  assert(!type, 'type is required');
+  assert(!coordinates, 'coordinates is required');
+  assert(!isArray(coordinates), 'coordinates must be an Array');
+  if (bbox) validateBBox(bbox);
 
-    // Main
-    let geom;
-    switch ( type ) {
-        case 'Point':
-            geom = point( coordinates ).geometry;
-            break;
-        case 'LineString':
-            geom = lineString( coordinates ).geometry;
-            break;
-        case 'Polygon':
-            geom = polygon( coordinates ).geometry;
-            break;
-        case 'MultiPoint':
-            geom = multiPoint( coordinates ).geometry;
-            break;
-        case 'MultiLineString':
-            geom = multiLineString( coordinates ).geometry;
-            break;
-        case 'MultiPolygon':
-            geom = multiPolygon( coordinates ).geometry;
-            break;
-        default:
-            throw new Error( type + ' is invalid' );
-    }
-    if ( bbox ) geom.bbox = bbox;
-    return geom;
+  // Main
+  let geom;
+  switch (type) {
+    case 'Point':
+      geom = point(coordinates).geometry;
+      break;
+    case 'LineString':
+      geom = lineString(coordinates).geometry;
+      break;
+    case 'Polygon':
+      geom = polygon(coordinates).geometry;
+      break;
+    case 'MultiPoint':
+      geom = multiPoint(coordinates).geometry;
+      break;
+    case 'MultiLineString':
+      geom = multiLineString(coordinates).geometry;
+      break;
+    case 'MultiPolygon':
+      geom = multiPolygon(coordinates).geometry;
+      break;
+    default:
+      throw new Error(`${type} is invalid`);
+  }
+  if (bbox) geom.bbox = bbox;
+  return geom;
 }
 
 /**
@@ -124,16 +124,16 @@ export function geometry( type, coordinates, options ) {
  *
  * //=point
  */
-export function point( coordinates, properties, options ) {
-    assert( !coordinates, 'coordinates is required' );
-    assert( !isArray( coordinates ), 'coordinates must be an Array' );
-    assert( coordinates.length < 2, 'coordinates must be at least 2 numbers long' );
-    assert( !isNumber( coordinates[ 0 ] ) || !isNumber( coordinates[ 1 ] ), 'coordinates must contain numbers' );
+export function point(coordinates, properties, options) {
+  assert(!coordinates, 'coordinates is required');
+  assert(!isArray(coordinates), 'coordinates must be an Array');
+  assert(coordinates.length < 2, 'coordinates must be at least 2 numbers long');
+  assert(!isNumber(coordinates[0]) || !isNumber(coordinates[1]), 'coordinates must contain numbers');
 
-    return feature( {
-        type: 'Point',
-        coordinates: coordinates
-    }, properties, options );
+  return feature({
+    type: 'Point',
+    coordinates,
+  }, properties, options);
 }
 
 /**
@@ -155,13 +155,11 @@ export function point( coordinates, properties, options ) {
  *
  * //=points
  */
-export function points( coordinates, properties, options ) {
-    assert( !coordinates, 'coordinates is required' );
-    assert( !isArray( coordinates ), 'coordinates must be an Array' );
+export function points(coordinates, properties, options) {
+  assert(!coordinates, 'coordinates is required');
+  assert(!isArray(coordinates), 'coordinates must be an Array');
 
-    return featureCollection( coordinates.map( function ( coords ) {
-        return point( coords, properties );
-    } ), options );
+  return featureCollection(coordinates.map(coords => point(coords, properties)), options);
 }
 
 /**
@@ -179,23 +177,23 @@ export function points( coordinates, properties, options ) {
  *
  * //=polygon
  */
-export function polygon( coordinates, properties, options ) {
-    assert( !coordinates, 'coordinates is required' );
+export function polygon(coordinates, properties, options) {
+  assert(!coordinates, 'coordinates is required');
 
-    for ( let i = 0; i < coordinates.length; i++ ) {
-        const ring = coordinates[ i ];
-        assert( ring.length < 4, 'Each LinearRing of a Polygon must have 4 or more Positions.' )
-        for ( let j = 0; j < ring[ ring.length - 1 ].length; j++ ) {
-            // Check if first point of Polygon contains two numbers
-            assert( i === 0 && j === 0 && !isNumber( ring[ 0 ][ 0 ] ) || !isNumber( ring[ 0 ][ 1 ] ), 'coordinates must contain numbers' );
-            assert( ring[ ring.length - 1 ][ j ] !== ring[ 0 ][ j ], 'First and last Position are not equivalent.' );
-        }
+  for (let i = 0; i < coordinates.length; i++) {
+    const ring = coordinates[i];
+    assert(ring.length < 4, 'Each LinearRing of a Polygon must have 4 or more Positions.');
+    for (let j = 0; j < ring[ring.length - 1].length; j++) {
+      // Check if first point of Polygon contains two numbers
+      assert(i === 0 && j === 0 && !isNumber(ring[0][0]) || !isNumber(ring[0][1]), 'coordinates must contain numbers');
+      assert(ring[ring.length - 1][j] !== ring[0][j], 'First and last Position are not equivalent.');
     }
+  }
 
-    return feature( {
-        type: 'Polygon',
-        coordinates: coordinates
-    }, properties, options );
+  return feature({
+    type: 'Polygon',
+    coordinates,
+  }, properties, options);
 }
 
 /**
@@ -216,13 +214,11 @@ export function polygon( coordinates, properties, options ) {
  *
  * //=polygons
  */
-export function polygons( coordinates, properties, options ) {
-    assert( !coordinates, 'coordinates is required' );
-    assert( !isArray( coordinates ), 'coordinates must be an Array' );
+export function polygons(coordinates, properties, options) {
+  assert(!coordinates, 'coordinates is required');
+  assert(!isArray(coordinates), 'coordinates must be an Array');
 
-    return featureCollection( coordinates.map( function ( coords ) {
-        return polygon( coords, properties );
-    } ), options );
+  return featureCollection(coordinates.map(coords => polygon(coords, properties)), options);
 }
 
 /**
@@ -242,16 +238,16 @@ export function polygons( coordinates, properties, options ) {
  * //=linestring1
  * //=linestring2
  */
-export function lineString( coordinates, properties, options ) {
-    assert( !coordinates, 'coordinates is required' );
-    assert( coordinates.length < 2, 'coordinates must be an array of two or more positions' );
-    // Check if first point of LineString contains two numbers
-    assert( !isNumber( coordinates[ 0 ][ 1 ] ) || !isNumber( coordinates[ 0 ][ 1 ] ), 'coordinates must contain numbers' );
+export function lineString(coordinates, properties, options) {
+  assert(!coordinates, 'coordinates is required');
+  assert(coordinates.length < 2, 'coordinates must be an array of two or more positions');
+  // Check if first point of LineString contains two numbers
+  assert(!isNumber(coordinates[0][1]) || !isNumber(coordinates[0][1]), 'coordinates must contain numbers');
 
-    return feature( {
-        type: 'LineString',
-        coordinates: coordinates
-    }, properties, options );
+  return feature({
+    type: 'LineString',
+    coordinates,
+  }, properties, options);
 }
 
 /**
@@ -272,13 +268,11 @@ export function lineString( coordinates, properties, options ) {
  *
  * //=linestrings
  */
-export function lineStrings( coordinates, properties, options ) {
-    assert( !coordinates, 'coordinates is required' );
-    assert( !isArray( coordinates ), 'coordinates must be an Array' );
+export function lineStrings(coordinates, properties, options) {
+  assert(!coordinates, 'coordinates is required');
+  assert(!isArray(coordinates), 'coordinates must be an Array');
 
-    return featureCollection( coordinates.map( function ( coords ) {
-        return lineString( coords, properties );
-    } ), options );
+  return featureCollection(coordinates.map(coords => lineString(coords, properties)), options);
 }
 
 /**
@@ -303,27 +297,27 @@ export function lineStrings( coordinates, properties, options ) {
  *
  * //=collection
  */
-export function featureCollection( features, options ) {
-    // Optional Parameters
-    options = options || {};
-    assert( !isObject( options ), 'options is invalid' );
-    const bbox = options.bbox;
-    const id = options.id;
+export function featureCollection(features, options) {
+  // Optional Parameters
+  options = options || {};
+  assert(!isObject(options), 'options is invalid');
+  const bbox = options.bbox;
+  const id = options.id;
 
-    // Validation
-    assert( !features, 'No features passed' );
-    assert( !isArray( features ), 'features must be an Array' );
-    if ( bbox ) validateBBox( bbox );
-    if ( id ) validateId( id );
+  // Validation
+  assert(!features, 'No features passed');
+  assert(!isArray(features), 'features must be an Array');
+  if (bbox) validateBBox(bbox);
+  if (id) validateId(id);
 
-    // Main
-    const fc = {
-        type: 'FeatureCollection'
-    };
-    if ( id ) fc.id = id;
-    if ( bbox ) fc.bbox = bbox;
-    fc.features = features;
-    return fc;
+  // Main
+  const fc = {
+    type: 'FeatureCollection',
+  };
+  if (id) fc.id = id;
+  if (bbox) fc.bbox = bbox;
+  fc.features = features;
+  return fc;
 }
 
 /**
@@ -343,13 +337,13 @@ export function featureCollection( features, options ) {
  *
  * //=multiLine
  */
-export function multiLineString( coordinates, properties, options ) {
-    assert( !coordinates, 'coordinates is required' );
+export function multiLineString(coordinates, properties, options) {
+  assert(!coordinates, 'coordinates is required');
 
-    return feature( {
-        type: 'MultiLineString',
-        coordinates: coordinates
-    }, properties, options );
+  return feature({
+    type: 'MultiLineString',
+    coordinates,
+  }, properties, options);
 }
 
 /**
@@ -369,13 +363,13 @@ export function multiLineString( coordinates, properties, options ) {
  *
  * //=multiPt
  */
-export function multiPoint( coordinates, properties, options ) {
-    assert( !coordinates, 'coordinates is required' );
+export function multiPoint(coordinates, properties, options) {
+  assert(!coordinates, 'coordinates is required');
 
-    return feature( {
-        type: 'MultiPoint',
-        coordinates: coordinates
-    }, properties, options );
+  return feature({
+    type: 'MultiPoint',
+    coordinates,
+  }, properties, options);
 }
 
 /**
@@ -396,13 +390,13 @@ export function multiPoint( coordinates, properties, options ) {
  * //=multiPoly
  *
  */
-export function multiPolygon( coordinates, properties, options ) {
-    assert( !coordinates, 'coordinates is required' );
+export function multiPolygon(coordinates, properties, options) {
+  assert(!coordinates, 'coordinates is required');
 
-    return feature( {
-        type: 'MultiPolygon',
-        coordinates: coordinates
-    }, properties, options );
+  return feature({
+    type: 'MultiPolygon',
+    coordinates,
+  }, properties, options);
 }
 
 /**
@@ -429,14 +423,14 @@ export function multiPolygon( coordinates, properties, options ) {
  *
  * //=collection
  */
-export function geometryCollection( geometries, properties, options ) {
-    assert( !geometries, 'geometries is required' );
-    assert( !isArray( geometries ), 'geometries must be an Array' );
+export function geometryCollection(geometries, properties, options) {
+  assert(!geometries, 'geometries is required');
+  assert(!isArray(geometries), 'geometries must be an Array');
 
-    return feature( {
-        type: 'GeometryCollection',
-        geometries: geometries
-    }, properties, options );
+  return feature({
+    type: 'GeometryCollection',
+    geometries,
+  }, properties, options);
 }
 
 /**
@@ -460,13 +454,13 @@ export function geometryCollection( geometries, properties, options ) {
  * validateBBox(undefined)
  * //=Error
  */
-export function validateBBox( bbox ) {
-    assert( !bbox, 'bbox is required' );
-    assert( !isArray( bbox ), 'bbox must be an Array' );
-    assert( bbox.length !== 4 && bbox.length !== 6, 'bbox must be an Array of 4 or 6 numbers' );
-    bbox.forEach( function ( num ) {
-        assert( !isNumber( num ), 'bbox must only contain numbers' );
-    } );
+export function validateBBox(bbox) {
+  assert(!bbox, 'bbox is required');
+  assert(!isArray(bbox), 'bbox must be an Array');
+  assert(bbox.length !== 4 && bbox.length !== 6, 'bbox must be an Array of 4 or 6 numbers');
+  bbox.forEach((num) => {
+    assert(!isNumber(num), 'bbox must only contain numbers');
+  });
 }
 
 /**
@@ -490,7 +484,7 @@ export function validateBBox( bbox ) {
  * validateId(undefined)
  * //=Error
  */
-export function validateId( id ) {
-    assert( !id, 'id is required' );
-    assert( [ 'string', 'number' ].indexOf( typeof id ) === -1, 'id must be a number or a string' );
+export function validateId(id) {
+  assert(!id, 'id is required');
+  assert(['string', 'number'].indexOf(typeof id) === -1, 'id must be a number or a string');
 }

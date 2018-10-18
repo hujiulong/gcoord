@@ -6,7 +6,7 @@
 [![gzip size](http://img.badgesize.io/https://unpkg.com/gcoord/dist/gcoord.js?compression=gzip)](https://unpkg.com/gcoord/dist/gcoord.js)
 [![LICENSE](https://img.shields.io/npm/l/vue.svg)](https://www.npmjs.com/package/gcoord)
 
-**gcoord**( **g**eographic **coord**inates)是一个处理地理坐标系的js库，用来修正百度地图、高德地图及其它互联网地图坐标系不统一的问题
+**gcoord**(**g**eographic **coord**inates)是一个处理地理坐标系的js库，用来修正百度地图、高德地图及其它互联网地图坐标系不统一的问题
 
 (**gcoord** is a JS library for converting Chinese geographic coordinate encryption. In most cases, only Chinese developers need to use it, so there is no English document. If you need an English document, please open a new issue)
 
@@ -33,9 +33,9 @@ npm install gcoord --save
 ## 引入
 CommonJS:
 ```js
-const gcoord = require( 'gcoord' );
+const gcoord = require('gcoord');
 // 或者
-const { transform, WGS84, GCJ02 } = require( 'gcoord' );
+const { transform, WGS84, GCJ02 } = require('gcoord');
 ```
 ES Module:
 ```js
@@ -50,18 +50,18 @@ import { transform, WGS84, GCJ02 } from 'gcoord'
 例如从手机的GPS得到一个经纬度坐标，需要将其展示在百度地图上，则应该将当前坐标从[WGS-84](#wgs-84---世界大地测量系统)坐标系转换为[BD-09](#bd-09---百度坐标系)坐标系
 ```js
 var result = gcoord.transform(
-    [ 116.403988, 39.914266 ],    // 经纬度坐标
-    gcoord.WGS84,                 // 当前坐标系
-    gcoord.BD09                   // 目标坐标系
+  [116.403988, 39.914266],    // 经纬度坐标
+  gcoord.WGS84,               // 当前坐标系
+  gcoord.BD09                 // 目标坐标系
 );
 
-console.log( result );  // [ 116.41661560068297, 39.92196580126834 ]
+console.log(result);  // [116.41661560068297, 39.92196580126834]
 ```
 同时gcoord还可以转换GeoJSON对象的坐标系，详细使用方式可以参考[API](#api)
 
 ## API
 
-### transform( input, from, to )
+### transform(input, from, to)
 进行坐标转换
 
 **参数**
@@ -76,18 +76,18 @@ console.log( result );  // [ 116.41661560068297, 39.92196580126834 ]
 **示例**
 ```js
 // 将GCJ02坐标转换为WGS84坐标
-var result = gcoord.transform( [ 123, 45 ], gcoord.GCJ02, gcoord.WGS84 );
-console.log( result );  // [ 122.99395597, 44.99804071 ]
+var result = gcoord.transform([123, 45], gcoord.GCJ02, gcoord.WGS84);
+console.log(result);  // [122.99395597, 44.99804071]
 ```
 
 ```js
 // 转换GeoJSON坐标
 var geojson = {
-    "type": "Point",
-    "coordinates": [ 123, 45 ]
+  "type": "Point",
+  "coordinates": [123, 45]
 }
-gcoord.transform( geojson, gcoord.GCJ02, gcoord.WGS84 );
-console.log( geojson.coordinates ); // [ 122.99395597, 44.99804071 ]
+gcoord.transform(geojson, gcoord.GCJ02, gcoord.WGS84);
+console.log(geojson.coordinates); // [122.99395597, 44.99804071]
 ```
 
 返回数组或GeoJSON对象（由输入决定），**注意：当输入为GeoJSON时，transform会改变输入对象**

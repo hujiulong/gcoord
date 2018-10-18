@@ -1,11 +1,11 @@
 import {
-    assert,
-    isNumber,
-    isArray,
-    coordEach,
-} from './helper.js'
+  assert,
+  isNumber,
+  isArray,
+  coordEach,
+} from './helper.js';
 
-import * as CRS from './crs/index.js'
+import * as CRS from './crs/index.js';
 
 /**
  * transform
@@ -13,46 +13,46 @@ import * as CRS from './crs/index.js'
  * @param {geojson|position} input
  * @returns {geojson|position} output
  */
-export function transform( input, fromCRS, toCRS ) {
+/* eslint-disable no-param-reassign */
+export default function transform(input, fromCRS, toCRS) {
+  assert(!input, 'coordinate is required');
+  assert(!fromCRS, 'original coordinate system is required');
+  assert(!toCRS, 'target coordinate system is required');
 
-    assert( !input, 'coordinate is required' );
-    assert( !fromCRS, 'original coordinate system is required' );
-    assert( !toCRS, 'target coordinate system is required' );
+  const from = CRS[fromCRS];
+  assert(!from, 'original coordinate system is invalid');
 
-    const from = CRS[ fromCRS ];
-    assert( !from, 'original coordinate system is invalid' );
+  if (fromCRS === toCRS) return input;
 
-    if ( fromCRS === toCRS ) return input;
+  const to = from.to[toCRS];
+  assert(!to, 'target coordinate system is invalid');
 
-    const to = from.to[ toCRS ];
-    assert( !to, 'target coordinate system is invalid' );
+  const type = typeof (input);
+  assert(type !== 'string' && type !== 'object', 'coordinate must be an geojson or an array of position');
 
-    const type = typeof ( input );
-    assert( type !== 'string' && type !== 'object', 'coordinate must be an geojson or an array of position' );
+  if (type === 'string') input = JSON.parse(input);
 
-    if ( type === 'string' ) input = JSON.parse( input );
+  let isPosition = false;
+  if (isArray(input)) {
+    assert(input.length < 2, 'position must be at 2 numbers long');
+    assert(!isNumber(input[0]) || !isNumber(input[1]), 'position must contain numbers');
+    isPosition = true;
+  }
 
-    let isPosition = false;
-    if ( isArray( input ) ) {
-        assert( input.length < 2, 'position must be at 2 numbers long' );
-        assert( !isNumber( input[ 0 ] ) || !isNumber( input[ 1 ] ), 'position must contain numbers' );
-        isPosition = true;
-    }
+  let output = null;
+  const convert = to;
 
-    let output = null;
-    const convert = to;
+  if (isPosition) {
+    output = convert(input);
+  } else {
+    coordEach(input, (coord) => {
+      const newCoord = convert(coord);
+      coord[0] = newCoord[0];
+      coord[1] = newCoord[1];
+    });
 
-    if ( isPosition ) {
-        output = convert( input );
-    } else {
-        coordEach( input, function ( coord ) {
-            const newCoord = convert( coord );
-            coord[ 0 ] = newCoord[ 0 ];
-            coord[ 1 ] = newCoord[ 1 ];
-        } );
+    output = input;
+  }
 
-        output = input;
-    }
-
-    return output;
+  return output;
 }

@@ -4,6 +4,7 @@
   "description": "geographic coordinate library",
   "main": "dist/gcoord.js",
   "module": "dist/gcoord.esm.js",
+  "types": "index.d.ts",
   "scripts": {
     "rollup": "rollup -c ./rollup.config.js",
     "uglify": "uglifyjs dist/gcoord.js -c -m -o dist/gcoord.js --source-map filename=dist/gcoord.js.map --in-source-map dist/gcoord.js.map --source-map-url gcoord.js.map --comments",
@@ -16,6 +17,7 @@
     "roots": [
       "<rootDir>/test/"
     ],
+    "testURL": "http://localhost/",
     "testRegex": ".*\\.(test|spec)\\.jsx?$",
     "coveragePathIgnorePatterns": [
       "/node_modules/",
@@ -35,13 +37,13 @@
   },
   "homepage": "https://github.com/hujiulong/gcoord#readme",
   "devDependencies": {
-    "@hujiulong/eslint-config": "^0.0.5",
+    "@hujiulong/eslint-config": "^0.0.6",
     "babel-core": "^6.26.0",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-preset-env": "^1.6.1",
     "codecov": "^3.0.0",
-    "eslint": "^4.19.1",
-    "jest": "^22.1.4",
+    "eslint": "^5.7.0",
+    "jest": "^23.6.0",
     "rollup": "^0.55.3",
     "rollup-plugin-babel": "^3.0.3",
     "uglify-js": "^3.3.9"
