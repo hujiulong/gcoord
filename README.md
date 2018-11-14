@@ -11,11 +11,12 @@
 (**gcoord** is a JS library for converting Chinese geographic coordinate encryption. In most cases, only Chinese developers need to use it, so there is no English document. If you need an English document, please open a new issue)
 
 ### Features
-* 📦 **轻量** - 无外部依赖，gzip后大小仅2kb
-* 🐠 **兼容性强** - 能在node环境以及所有现代浏览器（IE8+）中运行
-* 🚀 **稳定高效** - 100%测试覆盖
-* 🌏 **多坐标系支持** - 支持转换互联网地图中所有常见坐标系，可以任意相互转换
-* 📌 **多格式支持** - 支持转换坐标数组和GeoJSON
+* **轻量** - 无外部依赖，gzip后大小仅2kb
+* **兼容性强** - 能在node环境以及所有现代浏览器（IE8+）中运行
+* **稳定高效** - 100%测试覆盖
+* **多坐标系支持** - 支持转换互联网地图中所有常见坐标系，可以任意相互转换
+* **多格式支持** - 支持转换坐标数组和GeoJSON
+* **支持TypeScript** - 支持TypeScript项目
 
 ### 为什么需要转换坐标系？
 因为国内对地理坐标有特殊的政策，所有电子地图必须对位置做偏移处理，这导致了从底层接口得到的经纬度坐标展示在地图上会有偏移。这种偏移不是线性的，不能简单地通过加减某个值来校正，并且不同的地图提供商采用的算法也不一样，例如百度地图和高德地图就采用了不同的偏移方式。更详细的信息可以阅读下文的[关于坐标系](#关于坐标系)。
