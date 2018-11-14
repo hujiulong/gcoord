@@ -10,9 +10,9 @@ import {
   BMap,
   AMap,
   WebMercator,
-} from './constants.js';
+} from './constants';
 
-import transform from './transform.js';
+import transform from './transform';
 
 export {
   WGS84,

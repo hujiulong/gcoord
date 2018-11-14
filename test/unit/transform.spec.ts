@@ -1,15 +1,15 @@
-import transform from '../../src/transform.js';
+import transform from '../../src/transform.ts';
 import {
   WGS84,
   WGS1984,
   GCJ02,
   BD09,
   EPSG4326,
-} from '../../src/constants.js';
+} from '../../src/constants.ts';
 
 import {
   point,
-} from '../helpers/geojson.js';
+} from '../helpers/geojson';
 
 test('transform - position', () => {
   let result;
@@ -63,4 +63,48 @@ test('transform - geojson', () => {
   result = geojson.geometry.coordinates;
 
   expect(result).toEqual([123, 45]);
+
 });
+
+
+test('transform - input check', () => {
+
+  expect(() => {
+    transform('', WGS84, GCJ02)
+  }).toThrow();
+
+  expect(() => {
+    transform('foo', WGS84, GCJ02)
+  }).toThrow();
+
+  expect(() => {
+    transform(true, WGS84, GCJ02)
+  }).toThrow();
+
+  expect(() => {
+    transform([123], WGS84, GCJ02)
+  }).toThrow();
+
+  expect(() => {
+    transform([123, 'foo'], WGS84, GCJ02)
+  }).toThrow();
+
+  const pt = point([123, 45]);
+
+  expect(() => {
+    transform(pt, 'Unknown', WGS84)
+  }).toThrow();
+
+  expect(() => {
+    transform(pt, WGS84, 'Unknown')
+  }).toThrow();
+
+  expect(() => {
+    transform(pt, WGS84)
+  }).toThrow();
+
+  expect(() => {
+    transform(pt)
+  }).toThrow();
+
+})

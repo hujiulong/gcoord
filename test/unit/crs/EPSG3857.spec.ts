@@ -1,6 +1,6 @@
 import {
   EPSG3857,
-} from '../../../src/crs/index.js';
+} from '../../../src/crs/index.ts';
 
 test('EPSG3857 to WGS84', () => {
   const transform = EPSG3857.to.WGS84;

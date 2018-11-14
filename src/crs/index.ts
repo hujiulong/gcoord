@@ -1,9 +1,15 @@
-import { GCJ02ToWGS84, WGS84ToGCJ02 } from './GCJ02.js';
-import { BD09ToGCJ02, GCJ02ToBD09 } from './BD09.js';
-import { ESPG3857ToWGS84, WGS84ToEPSG3857 } from './EPSG3857.js';
-import { compose } from '../helper.js';
+import { GCJ02ToWGS84, WGS84ToGCJ02 } from './GCJ02';
+import { BD09ToGCJ02, GCJ02ToBD09 } from './BD09';
+import { ESPG3857ToWGS84, WGS84ToEPSG3857 } from './EPSG3857';
+import { compose } from '../helper';
 
-const WGS84 = {
+export interface CRS {
+  to: {
+    [key: string]: Function
+  }
+}
+
+const WGS84: CRS = {
   to: {
     GCJ02: WGS84ToGCJ02,
     BD09: compose(GCJ02ToBD09, WGS84ToGCJ02),
@@ -11,7 +17,7 @@ const WGS84 = {
   },
 };
 
-const GCJ02 = {
+const GCJ02: CRS = {
   to: {
     WGS84: GCJ02ToWGS84,
     BD09: GCJ02ToBD09,
@@ -19,7 +25,7 @@ const GCJ02 = {
   },
 };
 
-const BD09 = {
+const BD09: CRS = {
   to: {
     WGS84: compose(GCJ02ToWGS84, BD09ToGCJ02),
     GCJ02: BD09ToGCJ02,
@@ -27,7 +33,7 @@ const BD09 = {
   },
 };
 
-const EPSG3857 = {
+const EPSG3857: CRS = {
   to: {
     WGS84: ESPG3857ToWGS84,
     GCJ02: compose(WGS84ToGCJ02, ESPG3857ToWGS84),

@@ -4,27 +4,13 @@
   "description": "geographic coordinate library",
   "main": "dist/gcoord.js",
   "module": "dist/gcoord.esm.js",
-  "types": "index.d.ts",
+  "types": "dist/types/index.d.ts",
   "scripts": {
     "rollup": "rollup -c ./rollup.config.js",
     "uglify": "uglifyjs dist/gcoord.js -c -m -o dist/gcoord.js --source-map filename=dist/gcoord.js.map --in-source-map dist/gcoord.js.map --source-map-url gcoord.js.map --comments",
     "build": "npm run rollup && npm run uglify",
-    "lint": "eslint --fix src",
+    "lint": "eslint src/transform.ts",
     "test": "jest && codecov"
-  },
-  "jest": {
-    "verbose": true,
-    "roots": [
-      "<rootDir>/test/"
-    ],
-    "testURL": "http://localhost/",
-    "testRegex": ".*\\.(test|spec)\\.jsx?$",
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "/test/helpers/"
-    ],
-    "coverageDirectory": "./coverage/",
-    "collectCoverage": true
   },
   "repository": {
     "type": "git",
@@ -37,15 +23,14 @@
   },
   "homepage": "https://github.com/hujiulong/gcoord#readme",
   "devDependencies": {
-    "@hujiulong/eslint-config": "^0.0.6",
-    "babel-core": "^6.26.0",
-    "babel-plugin-external-helpers": "^6.22.0",
-    "babel-preset-env": "^1.6.1",
+    "@types/jest": "^23.3.9",
     "codecov": "^3.0.0",
     "eslint": "^5.7.0",
     "jest": "^23.6.0",
-    "rollup": "^0.55.3",
-    "rollup-plugin-babel": "^3.0.3",
+    "rollup": "^0.67.1",
+    "rollup-plugin-typescript2": "^0.18.0",
+    "ts-jest": "^23.10.4",
+    "typescript": "^3.1.6",
     "uglify-js": "^3.3.9"
   }
 }

@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES3",
+    "outDir": "./.tmp/ts",
+    "strict": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "declarationDir": "./dist/types/"
+  },
+  "include": [
+		"src/**/*.ts"
+	]
+}

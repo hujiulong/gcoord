@@ -1,6 +1,6 @@
 import {
   GCJ02,
-} from '../../../src/crs/index.js';
+} from '../../../src/crs/index.ts';
 
 test('GCJ02 to WGS84', () => {
   const transform = GCJ02.to.WGS84;

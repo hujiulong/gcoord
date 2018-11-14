@@ -1,14 +1,14 @@
-import babel from 'rollup-plugin-babel';
-import pkg from './package.json';
+import pkg from './package.json'
+import typescript from 'rollup-plugin-typescript2'
 
 const banner = `/* @preserve
  * gcoord ${pkg.version}, ${pkg.description}
- * Copyright (c) 2018 Jiulong Hu <me@hujiulong.com>
+ * Copyright (c) ${(new Date()).getFullYear()} Jiulong Hu <me@hujiulong.com>
  */
 `;
 
 export default {
-  input: 'src/index.js',
+  input: 'src/index.ts',
   output: [
     {
       file: pkg.main,
@@ -21,11 +21,13 @@ export default {
       file: pkg.module,
       format: 'es',
       banner,
-      sourcemap: true,
-    },
+      sourcemap: true
+    }
   ],
-  legacy: true, // Needed to create files loadable by IE8
   plugins: [
-    babel(),
-  ],
+    typescript({
+      cacheRoot: './.tmp/.rpt2_cache',
+      useTsconfigDeclarationDir: true
+    })
+  ]
 };

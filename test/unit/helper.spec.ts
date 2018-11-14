@@ -2,9 +2,10 @@ import {
   assert,
   isNumber,
   isObject,
+  isString,
   isArray,
   coordEach,
-} from '../../src/helper.js';
+} from '../../src/helper.ts';
 
 import {
   feature,
@@ -17,7 +18,7 @@ import {
   geometry,
   geometryCollection,
   featureCollection,
-} from '../helpers/geojson.js';
+} from '../helpers/geojson.ts';
 
 const pt = point([0, 0], {
   a: 1,
@@ -152,7 +153,6 @@ test('isNumber', () => {
   expect(isNumber({})).toBeFalsy();
   expect(isNumber([1, 2, 3])).toBeFalsy();
   expect(isNumber([])).toBeFalsy();
-  expect(isNumber(isNumber)).toBeFalsy();
 });
 
 test('isObject', () => {
@@ -172,7 +172,21 @@ test('isObject', () => {
   expect(isObject(null)).toBeFalsy();
   expect(isObject([1, 2, 3])).toBeFalsy();
   expect(isObject([])).toBeFalsy();
-  expect(isObject(isNumber)).toBeFalsy();
+});
+
+test('isString', () => {
+  // true
+  expect(isString('')).toBeTruthy();
+  expect(isString('foo')).toBeTruthy();
+
+  // false
+  expect(isString(123)).toBeFalsy();
+  expect(isString(Infinity)).toBeFalsy();
+  expect(isString(NaN)).toBeFalsy();
+  expect(isString(undefined)).toBeFalsy();
+  expect(isString(null)).toBeFalsy();
+  expect(isString([1, 2, 3])).toBeFalsy();
+  expect(isString([])).toBeFalsy();
 });
 
 test('isArray', () => {

@@ -1,6 +1,6 @@
 import {
   WGS84,
-} from '../../../src/crs/index.js';
+} from '../../../src/crs/index.ts';
 
 test('WGS84 to BD09', () => {
   const transform = WGS84.to.BD09;

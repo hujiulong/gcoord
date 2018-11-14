@@ -1,6 +1,6 @@
 import {
   BD09,
-} from '../../../src/crs/index.js';
+} from '../../../src/crs/index.ts';
 
 test('BD09 to GCJ02', () => {
   const transform = BD09.to.GCJ02;

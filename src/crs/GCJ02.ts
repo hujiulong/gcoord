@@ -1,7 +1,8 @@
 import {
   assert,
   isNumber,
-} from '../helper.js';
+} from '../helper';
+import { Position } from '../geojson';
 
 const {
   sin, cos, sqrt, abs, PI,
@@ -10,10 +11,10 @@ const {
 const a = 6378245;
 const ee = 0.006693421622965823;
 
-export function GCJ02ToWGS84(coord) {
+export function GCJ02ToWGS84(coord: Position): Position {
   const [lon, lat] = coord;
 
-  if (!isInChina(lon, lat)) return [lon, lat];
+  if (!isInChinaBbox(lon, lat)) return [lon, lat];
 
   let [wgsLon, wgsLat] = [lon, lat];
 
@@ -34,17 +35,17 @@ export function GCJ02ToWGS84(coord) {
   return [wgsLon, wgsLat];
 }
 
-export function WGS84ToGCJ02(coord) {
+export function WGS84ToGCJ02(coord: Position): Position {
   const [lon, lat] = coord;
 
-  if (!isInChina(lon, lat)) return [lon, lat];
+  if (!isInChinaBbox(lon, lat)) return [lon, lat];
 
   const d = delta(lon, lat);
 
   return [lon + d[0], lat + d[1]];
 }
 
-function transformLat(x, y) {
+function transformLat(x: number, y: number): number {
   let ret = -100 + 2 * x + 3 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * sqrt(abs(x));
   ret += (20 * sin(6 * x * PI) + 20 * sin(2 * x * PI)) * 2 / 3;
   ret += (20 * sin(y * PI) + 40 * sin(y / 3 * PI)) * 2 / 3;
@@ -52,7 +53,7 @@ function transformLat(x, y) {
   return ret;
 }
 
-function transformLon(x, y) {
+function transformLon(x: number, y: number): number {
   let ret = 300 + x + 2 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * sqrt(abs(x));
   ret += (20 * sin(6 * x * PI) + 20 * sin(2 * x * PI)) * 2 / 3;
   ret += (20 * sin(x * PI) + 40 * sin(x / 3 * PI)) * 2 / 3;
@@ -60,7 +61,7 @@ function transformLon(x, y) {
   return ret;
 }
 
-function delta(lon, lat) {
+function delta(lon: number, lat: number): number[] {
   let dLon = transformLon(lon - 105, lat - 35);
   let dLat = transformLat(lon - 105, lat - 35);
 
@@ -76,9 +77,7 @@ function delta(lon, lat) {
   return [dLon, dLat];
 }
 
-function isInChina(lon, lat) {
-  assert(lon === undefined || lat === undefined, 'lon and lat are required');
-  assert(!isNumber(lon) || !isNumber(lat), 'lon and lat must be numbers');
-
+// roughly check whether coordinates are in China.
+function isInChinaBbox(lon: number, lat: number): boolean {
   return lon >= 72.004 && lon <= 137.8347 && lat >= 0.8293 && lat <= 55.8271;
 }
