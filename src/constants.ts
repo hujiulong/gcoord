@@ -11,3 +11,6 @@ export const BMap = BD09;
 export const AMap = GCJ02;
 
 export const WebMercator = EPSG3857;
+export const EPSG3758 = EPSG3857;
+export const EPSG102100 = EPSG3857;
+export const BD09Meter = 'BD09Meter';
