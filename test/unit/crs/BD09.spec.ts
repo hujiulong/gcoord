@@ -35,3 +35,20 @@ test('BD09 to EPSG3857', () => {
     expect(Math.abs(result[1] - coords.EPSG3857[1])).toBeLessThan(1);
   });
 });
+
+test('BD09 to BD09Meter', () => {
+  const transform = BD09.to.BD09Meter;
+
+  const result = transform([123, 45]);
+  expect(result[0]).toBeCloseTo(13692446.35077864, 5);
+  expect(result[1]).toBeCloseTo(5591020.962240655, 5);
+});
+
+
+test('Bd09 to BD09Meter 2', () => {
+  const transform = BD09.to.BD09Meter;
+
+  const result = transform([-123, -45]);
+  expect(result[0]).toBeCloseTo(-13692446.35077864, 5);
+  expect(result[1]).toBeCloseTo(-5591020.962240655, 5);
+})

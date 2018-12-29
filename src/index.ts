@@ -10,6 +10,7 @@ import {
   BMap,
   AMap,
   WebMercator,
+  BD09Meter
 } from './constants';
 
 import transform from './transform';
@@ -26,7 +27,7 @@ export {
   BMap,
   AMap,
   WebMercator,
-
+  BD09Meter,
   transform,
 };
 
@@ -42,6 +43,6 @@ export default {
   BMap,
   AMap,
   WebMercator,
-
+  BD09Meter,
   transform,
 };
