@@ -5,7 +5,7 @@ import {
   isString,
   isArray,
   coordEach,
-} from '../../src/helper.ts';
+} from '../../src/helper';
 
 import {
   feature,
@@ -18,7 +18,7 @@ import {
   geometry,
   geometryCollection,
   featureCollection,
-} from '../helpers/geojson.ts';
+} from '../helpers/geojson';
 
 const pt = point([0, 0], {
   a: 1,

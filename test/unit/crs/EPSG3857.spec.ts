@@ -37,3 +37,14 @@ test('EPSG3857 to BD09', () => {
     expect(result[1]).toBeCloseTo(coords.BD09[1], 4);
   });
 });
+
+test('EPSG3857 to BD09MC', () => {
+  const transform = EPSG3857.to.BD09MC;
+
+  each('china-cities.json', item => {
+    const { coords } = item;
+    const result = transform(coords.EPSG3857);
+    expect(Math.abs(result[0] - coords.BD09MC[0])).toBeLessThan(1);
+    expect(Math.abs(result[1] - coords.BD09MC[1])).toBeLessThan(1);
+  });
+});

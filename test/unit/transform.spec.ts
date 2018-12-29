@@ -1,45 +1,60 @@
-import transform from '../../src/transform.ts';
+import transform from '../../src/transform';
 import {
   WGS84,
-  WGS1984,
   GCJ02,
   BD09,
-  EPSG4326,
-} from '../../src/constants.ts';
-
+  BD09MC,
+  EPSG3857,
+} from '../../src/constants';
 import {
   point,
 } from '../helpers/geojson';
+import each from '../fixtures/each';
 
 test('transform - position', () => {
-  let result;
 
-  result = transform([123, 45], WGS84, GCJ02);
-  expect(result[0]).toBeCloseTo(123.00607541, 5);
-  expect(result[1]).toBeCloseTo(45.00197815, 5);
+  each('china-cities.json', item => {
+    let result;
+    const { coords } = item;
 
-  result = transform([123, 45], WGS84, BD09);
-  expect(result[0]).toBeCloseTo(123.0124491, 5);
-  expect(result[1]).toBeCloseTo(45.0083293, 5);
+    result = transform(coords.WGS84, WGS84, GCJ02);
+    expect(result[0]).toBeCloseTo(coords.GCJ02[0], 4);
+    expect(result[1]).toBeCloseTo(coords.GCJ02[1], 4);
 
-  result = transform([123, 45], GCJ02, WGS84);
-  expect(result[0]).toBeCloseTo(122.99395597, 5);
-  expect(result[1]).toBeCloseTo(44.99804071, 5);
+    result = transform(coords.WGS84, WGS84, BD09);
+    expect(result[0]).toBeCloseTo(coords.BD09[0], 4);
+    expect(result[1]).toBeCloseTo(coords.BD09[1], 4);
 
-  result = transform([123, 45], GCJ02, BD09);
-  expect(result[0]).toBeCloseTo(123.00636499, 5);
-  expect(result[1]).toBeCloseTo(45.00636899, 5);
+    result = transform(coords.WGS84, WGS84, BD09MC);
+    expect(Math.abs(result[0] - coords.BD09MC[0])).toBeLessThan(1);
+    expect(Math.abs(result[1] - coords.BD09MC[1])).toBeLessThan(1);
 
-  result = transform([123, 45], BD09, WGS84);
-  expect(result[0]).toBeCloseTo(122.98762210, 5);
-  expect(result[1]).toBeCloseTo(44.99171540, 5);
+    result = transform(coords.WGS84, WGS84, EPSG3857);
+    expect(result[0]).toBeCloseTo(coords.EPSG3857[0], 2);
+    expect(result[1]).toBeCloseTo(coords.EPSG3857[1], 2);
 
-  result = transform([123, 45], BD09, GCJ02);
-  expect(result[0]).toBeCloseTo(122.99363304, 5);
-  expect(result[1]).toBeCloseTo(44.99365430, 5);
+    result = transform(coords.GCJ02, GCJ02, WGS84);
+    expect(result[0]).toBeCloseTo(coords.WGS84[0], 4);
+    expect(result[1]).toBeCloseTo(coords.WGS84[1], 4);
 
-  result = transform([123, 45], WGS84, WGS84);
-  expect(result).toEqual([123, 45]);
+    result = transform(coords.GCJ02, GCJ02, BD09);
+    expect(result[0]).toBeCloseTo(coords.BD09[0], 5);
+    expect(result[1]).toBeCloseTo(coords.BD09[1], 5);
+
+    result = transform(coords.EPSG3857, EPSG3857, GCJ02);
+    expect(result[0]).toBeCloseTo(coords.GCJ02[0], 4);
+    expect(result[1]).toBeCloseTo(coords.GCJ02[1], 4);
+
+    result = transform(coords.BD09, BD09, GCJ02);
+    expect(result[0]).toBeCloseTo(coords.GCJ02[0], 5);
+    expect(result[1]).toBeCloseTo(coords.GCJ02[1], 5);
+
+    result = transform(coords.BD09, BD09, BD09MC);
+    expect(result[0]).toBeCloseTo(coords.BD09MC[0], 1);
+    expect(result[1]).toBeCloseTo(coords.BD09MC[1], 1);
+  });
+
+  expect(transform([123, 45], WGS84, WGS84)).toEqual([123, 45]);
 });
 
 test('transform - geojson', () => {

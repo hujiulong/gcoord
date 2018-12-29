@@ -28,6 +28,17 @@ test('GCJ02 to BD09', () => {
   });
 });
 
+test('GCJ02 to BD09MC', () => {
+  const transform = GCJ02.to.BD09MC;
+
+  each('china-cities.json', item => {
+    const { coords } = item;
+    const result = transform(coords.GCJ02);
+    expect(result[0]).toBeCloseTo(coords.BD09MC[0], 1);
+    expect(result[1]).toBeCloseTo(coords.BD09MC[1], 1);
+  });
+});
+
 test('GCJ02 to EPSG3857', () => {
   const transform = GCJ02.to.EPSG3857;
 

@@ -14,6 +14,17 @@ test('WGS84 to BD09', () => {
   });
 });
 
+test('WGS84 to BD09MC', () => {
+  const transform = WGS84.to.BD09MC;
+
+  each('china-cities.json', item => {
+    const { coords } = item;
+    const result = transform(coords.WGS84);
+    expect(Math.abs(result[0] - coords.BD09MC[0])).toBeLessThan(1);
+    expect(Math.abs(result[1] - coords.BD09MC[1])).toBeLessThan(1);
+  });
+});
+
 test('WGS84 to GCJ02', () => {
   const transform = WGS84.to.GCJ02;
 

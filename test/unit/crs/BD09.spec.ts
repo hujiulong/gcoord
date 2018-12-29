@@ -36,19 +36,17 @@ test('BD09 to EPSG3857', () => {
   });
 });
 
-test('BD09 to BD09Meter', () => {
-  const transform = BD09.to.BD09Meter;
+test('BD09 to BD09MC', () => {
+  const transform = BD09.to.BD09MC;
 
-  const result = transform([123, 45]);
-  expect(result[0]).toBeCloseTo(13692446.35077864, 5);
-  expect(result[1]).toBeCloseTo(5591020.962240655, 5);
+  each('china-cities.json', item => {
+    const { coords } = item;
+    const result = transform(coords.BD09);
+    expect(result[0]).toBeCloseTo(coords.BD09MC[0], 1);
+    expect(result[1]).toBeCloseTo(coords.BD09MC[1], 1);
+  });
+
+  const result = transform([-123, -45])
+  expect(result[0]).toBeCloseTo(-13692446.35077864, 6);
+  expect(result[1]).toBeCloseTo(-5591020.962240655, 6);
 });
-
-
-test('Bd09 to BD09Meter 2', () => {
-  const transform = BD09.to.BD09Meter;
-
-  const result = transform([-123, -45]);
-  expect(result[0]).toBeCloseTo(-13692446.35077864, 5);
-  expect(result[1]).toBeCloseTo(-5591020.962240655, 5);
-})
