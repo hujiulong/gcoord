@@ -101,6 +101,9 @@ CRS为坐标系，目标支持以下几种坐标系
 | gcoord.WGS84       | [lng,lat] | WGS-84坐标系，GPS设备获取的经纬度坐标   |
 | gcoord.GCJ02       | [lng,lat] | GCJ-02坐标系，google中国地图、soso地图、aliyun地图、mapabc地图和高德地图所用的经纬度坐标   |
 | gcoord.BD09        | [lng,lat] | BD-09坐标系，百度地图采用的经纬度坐标    |
+| gcoord.BD09LL      | [lng,lat] | 同BD09  |
+| gcoord.BD09MC      | [x,y]     | BD-09米制坐标，百度地图采用的米制坐标，单位：米  |
+| gcoord.BD09Meter   | [x,y]     | 同BD09MC |
 | gcoord.Baidu       | [lng,lat] | 百度坐标系，BD-09坐标系别名，同BD-09  |
 | gcoord.BMap        | [lng,lat] | 百度地图，BD-09坐标系别名，同BD-09  |
 | gcoord.AMap        | [lng,lat] | 高德地图，同GCJ-02  |
