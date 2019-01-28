@@ -56,6 +56,7 @@ export default function transform(input: any, crsFrom: string, crsTo: string): G
   if (isArray(input)) {
     if (input.length < 2) error('position must be at 2 numbers long');
     if (!isNumber(input[0]) || !isNumber(input[1])) error('position must contain numbers');
+    input = input.map(Number);
     isPosition = true;
   }
 

@@ -17,6 +17,10 @@ test('transform - position', () => {
     let result;
     const { coords } = item;
 
+    result = transform(coords.WGS84.map(String), WGS84, GCJ02);
+    expect(result[0]).toBeCloseTo(coords.GCJ02[0], 4);
+    expect(result[1]).toBeCloseTo(coords.GCJ02[1], 4);
+
     result = transform(coords.WGS84, WGS84, GCJ02);
     expect(result[0]).toBeCloseTo(coords.GCJ02[0], 4);
     expect(result[1]).toBeCloseTo(coords.GCJ02[1], 4);
