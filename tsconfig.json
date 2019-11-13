@@ -8,6 +8,6 @@
     "declarationDir": "./dist/types/"
   },
   "include": [
-		"src/**/*.ts"
+    "src"
 	]
 }

@@ -1,5 +1,6 @@
 import pkg from './package.json'
 import typescript from 'rollup-plugin-typescript2'
+import { terser } from 'rollup-plugin-terser'
 
 const banner = `/* @preserve
  * gcoord ${pkg.version}, ${pkg.description}
@@ -16,6 +17,7 @@ export default {
       name: pkg.name,
       banner,
       sourcemap: true,
+      plugins: [terser()]
     },
     {
       file: pkg.module,
