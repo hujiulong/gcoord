@@ -84,7 +84,7 @@ const multiPoly = multiPolygon([
   ],
 ]);
 const geomCollection = geometryCollection([pt.geometry, line.geometry]);
-const geomCollectionDeep = geometryCollection([geomCollection.geometry]);
+const geomCollectionDeep = geometryCollection([geomCollection.geometry as any]);
 const fcNull = featureCollection([feature(null), feature(null)]);
 const fcMixed = featureCollection([
   point([0, 0]),
@@ -124,6 +124,9 @@ function featureAndCollection(geometry) {
 test('assert', () => {
   expect(() => {
     assert(true, 'error msg');
+  }).not.toThrow();
+  expect(() => {
+    assert(false, 'error msg');
   }).toThrow();
 });
 
@@ -206,6 +209,7 @@ test('isArray', () => {
 });
 
 test('coordEach', () => {
+  // @ts-ignore
   expect(() => coordEach({})).toThrow();
 
   featureAndCollection(pt.geometry).forEach((input) => {
@@ -324,7 +328,7 @@ test('coordEach', () => {
     featureIndexes.push(featureIndex);
     multiFeatureIndexes.push(multiFeatureIndex);
     geometryIndexes.push(geometryIndex);
-  }, null, true);
+  });
   expect(coordIndexes).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 1]);
   expect(featureIndexes).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   expect(multiFeatureIndexes).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
@@ -339,6 +343,7 @@ test('coordEach', () => {
   expect(count).toBe(0);
 
   count = 0;
+  // @ts-ignore
   coordEach({
     type: null,
   }, (coord, index) => {

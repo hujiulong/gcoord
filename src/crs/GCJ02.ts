@@ -1,7 +1,3 @@
-import {
-  assert,
-  isNumber,
-} from '../helper';
 import { Position } from '../geojson';
 
 const {

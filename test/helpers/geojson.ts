@@ -1,11 +1,15 @@
 import {
-  assert,
+  BBox, Feature, FeatureCollection,
+  Geometry, GeometryCollection,
+  Id, LineString, MultiLineString, MultiPoint,
+  MultiPolygon, Point, Polygon, Position,
+  Properties,
+} from '../../src/geojson';
+import {
   isNumber,
-  isObject,
-  isArray,
 } from '../../src/helper';
 
-// https://github.com/Turfjs/turf/blob/master/packages/turf-helpers/index.mjs
+// https://github.com/Turfjs/turf/blob/master/packages/turf-helpers/index.ts
 
 /**
  * Wraps a GeoJSON {@link Geometry} in a GeoJSON {@link Feature}.
@@ -18,36 +22,25 @@ import {
  * @param {string|number} [options.id] Identifier associated with the Feature
  * @returns {Feature} a GeoJSON Feature
  * @example
- * let geometry = {
- *   "type": "Point",
- *   "coordinates": [110, 50]
- * };
- *
- * let feature = turf.feature(geometry);
- *
- * //=feature
- */
-export function feature(geometry, properties, options) {
-  // Optional Parameters
-  options = options || {};
-  assert(!isObject(options), 'options is invalid');
-  const bbox = options.bbox;
-  const id = options.id;
-
-  // Validation
-  assert(geometry === undefined, 'geometry is required');
-  assert(properties && properties.constructor !== Object, 'properties must be an Object');
-  if (bbox) validateBBox(bbox);
-  if (id !== 0 && id) validateId(id);
-
-  // Main
-  const feat = {
-    type: 'Feature',
-  };
-  if (id === 0 || id) feat.id = id;
-  if (bbox) feat.bbox = bbox;
+ * var geometry = {
+  *   "type": "Point",
+  *   "coordinates": [110, 50]
+  * };
+  *
+  * var feature = feature(geometry);
+  *
+  * //=feature
+  */
+export function feature<G = Geometry, P = Properties>(
+  geom: G,
+  properties?: P,
+  options: { bbox?: BBox, id?: Id } = {},
+): Feature<G, P> {
+  const feat: any = { type: "Feature" };
+  if (options.id === 0 || options.id) { feat.id = options.id; }
+  if (options.bbox) { feat.bbox = options.bbox; }
   feat.properties = properties || {};
-  feat.geometry = geometry;
+  feat.geometry = geom;
   return feat;
 }
 
@@ -57,56 +50,29 @@ export function feature(geometry, properties, options) {
  *
  * @name geometry
  * @param {string} type Geometry Type
- * @param {Array<number>} coordinates Coordinates
+ * @param {Array<any>} coordinates Coordinates
  * @param {Object} [options={}] Optional Parameters
- * @param {Array<number>} [options.bbox] Bounding Box Array [west, south, east, north] associated with the Geometry
  * @returns {Geometry} a GeoJSON Geometry
  * @example
- * let type = 'Point';
- * let coordinates = [110, 50];
- *
- * let geometry = turf.geometry(type, coordinates);
- *
- * //=geometry
+ * var type = "Point";
+ * var coordinates = [110, 50];
+ * var geometry = geometry(type, coordinates);
+ * // => geometry
  */
-export function geometry(type, coordinates, options) {
-  // Optional Parameters
-  options = options || {};
-  assert(!isObject(options), 'options is invalid');
-  const bbox = options.bbox;
-
-  // Validation
-  assert(!type, 'type is required');
-  assert(!coordinates, 'coordinates is required');
-  assert(!isArray(coordinates), 'coordinates must be an Array');
-  if (bbox) validateBBox(bbox);
-
-  // Main
-  let geom;
+export function geometry(
+  type: "Point" | "LineString" | "Polygon" | "MultiPoint" | "MultiLineString" | "MultiPolygon",
+  coordinates: any,
+  options: {} = {},
+) {
   switch (type) {
-    case 'Point':
-      geom = point(coordinates).geometry;
-      break;
-    case 'LineString':
-      geom = lineString(coordinates).geometry;
-      break;
-    case 'Polygon':
-      geom = polygon(coordinates).geometry;
-      break;
-    case 'MultiPoint':
-      geom = multiPoint(coordinates).geometry;
-      break;
-    case 'MultiLineString':
-      geom = multiLineString(coordinates).geometry;
-      break;
-    case 'MultiPolygon':
-      geom = multiPolygon(coordinates).geometry;
-      break;
-    default:
-      throw new Error(`${type} is invalid`);
+    case "Point": return point(coordinates).geometry;
+    case "LineString": return lineString(coordinates).geometry;
+    case "Polygon": return polygon(coordinates).geometry;
+    case "MultiPoint": return multiPoint(coordinates).geometry;
+    case "MultiLineString": return multiLineString(coordinates).geometry;
+    case "MultiPolygon": return multiPolygon(coordinates).geometry;
+    default: throw new Error(type + " is invalid");
   }
-  if (bbox) geom.bbox = bbox;
-  return geom;
 }
 
 /**
@@ -120,20 +86,20 @@ export function geometry(type, coordinates, options) {
  * @param {string|number} [options.id] Identifier associated with the Feature
  * @returns {Feature<Point>} a Point feature
  * @example
- * let point = turf.point([-75.343, 39.984]);
+ * var point = point([-75.343, 39.984]);
  *
  * //=point
  */
-export function point(coordinates, properties, options) {
-  assert(!coordinates, 'coordinates is required');
-  assert(!isArray(coordinates), 'coordinates must be an Array');
-  assert(coordinates.length < 2, 'coordinates must be at least 2 numbers long');
-  assert(!isNumber(coordinates[0]) || !isNumber(coordinates[1]), 'coordinates must contain numbers');
-
-  return feature({
-    type: 'Point',
+export function point<P = Properties>(
+  coordinates: Position,
+  properties?: P,
+  options: { bbox?: BBox, id?: Id } = {},
+): Feature<Point, P> {
+  const geom: Point = {
+    type: "Point",
     coordinates,
-  }, properties, options);
+  };
+  return feature(geom, properties, options);
 }
 
 /**
@@ -143,11 +109,12 @@ export function point(coordinates, properties, options) {
  * @param {Array<Array<number>>} coordinates an array of Points
  * @param {Object} [properties={}] Translate these properties to each Feature
  * @param {Object} [options={}] Optional Parameters
- * @param {Array<number>} [options.bbox] Bounding Box Array [west, south, east, north] associated with the FeatureCollection
+ * @param {Array<number>} [options.bbox] Bounding Box Array [west, south, east, north]
+ * associated with the FeatureCollection
  * @param {string|number} [options.id] Identifier associated with the FeatureCollection
  * @returns {FeatureCollection<Point>} Point Feature
  * @example
- * let points = turf.points([
+ * var points = points([
  *   [-75, 39],
  *   [-80, 45],
  *   [-78, 50]
@@ -155,11 +122,14 @@ export function point(coordinates, properties, options) {
  *
  * //=points
  */
-export function points(coordinates, properties, options) {
-  assert(!coordinates, 'coordinates is required');
-  assert(!isArray(coordinates), 'coordinates must be an Array');
-
-  return featureCollection(coordinates.map(coords => point(coords, properties)), options);
+export function points<P = Properties>(
+  coordinates: Position[],
+  properties?: P,
+  options: { bbox?: BBox, id?: Id } = {},
+): FeatureCollection<Point, P> {
+  return featureCollection(coordinates.map((coords) => {
+    return point(coords, properties);
+  }), options);
 }
 
 /**
@@ -173,27 +143,31 @@ export function points(coordinates, properties, options) {
  * @param {string|number} [options.id] Identifier associated with the Feature
  * @returns {Feature<Polygon>} Polygon Feature
  * @example
- * let polygon = turf.polygon([[[-5, 52], [-4, 56], [-2, 51], [-7, 54], [-5, 52]]], { name: 'poly1' });
+ * var polygon = polygon([[[-5, 52], [-4, 56], [-2, 51], [-7, 54], [-5, 52]]], { name: 'poly1' });
  *
  * //=polygon
  */
-export function polygon(coordinates, properties, options) {
-  assert(!coordinates, 'coordinates is required');
-
-  for (let i = 0; i < coordinates.length; i++) {
-    const ring = coordinates[i];
-    assert(ring.length < 4, 'Each LinearRing of a Polygon must have 4 or more Positions.');
+export function polygon<P = Properties>(
+  coordinates: Position[][],
+  properties?: P,
+  options: { bbox?: BBox, id?: Id } = {},
+): Feature<Polygon, P> {
+  for (const ring of coordinates) {
+    if (ring.length < 4) {
+      throw new Error("Each LinearRing of a Polygon must have 4 or more Positions.");
+    }
     for (let j = 0; j < ring[ring.length - 1].length; j++) {
       // Check if first point of Polygon contains two numbers
-      assert(i === 0 && j === 0 && !isNumber(ring[0][0]) || !isNumber(ring[0][1]), 'coordinates must contain numbers');
-      assert(ring[ring.length - 1][j] !== ring[0][j], 'First and last Position are not equivalent.');
+      if (ring[ring.length - 1][j] !== ring[0][j]) {
+        throw new Error("First and last Position are not equivalent.");
+      }
     }
   }
-
-  return feature({
-    type: 'Polygon',
+  const geom: Polygon = {
+    type: "Polygon",
     coordinates,
-  }, properties, options);
+  };
+  return feature(geom, properties, options);
 }
 
 /**
@@ -207,18 +181,21 @@ export function polygon(coordinates, properties, options) {
  * @param {string|number} [options.id] Identifier associated with the FeatureCollection
  * @returns {FeatureCollection<Polygon>} Polygon FeatureCollection
  * @example
- * let polygons = turf.polygons([
+ * var polygons = polygons([
  *   [[[-5, 52], [-4, 56], [-2, 51], [-7, 54], [-5, 52]]],
  *   [[[-15, 42], [-14, 46], [-12, 41], [-17, 44], [-15, 42]]],
  * ]);
  *
  * //=polygons
  */
-export function polygons(coordinates, properties, options) {
-  assert(!coordinates, 'coordinates is required');
-  assert(!isArray(coordinates), 'coordinates must be an Array');
-
-  return featureCollection(coordinates.map(coords => polygon(coords, properties)), options);
+export function polygons<P = Properties>(
+  coordinates: Position[][][],
+  properties?: P,
+  options: { bbox?: BBox, id?: Id } = {},
+): FeatureCollection<Polygon, P> {
+  return featureCollection(coordinates.map((coords) => {
+    return polygon(coords, properties);
+  }), options);
 }
 
 /**
@@ -232,47 +209,52 @@ export function polygons(coordinates, properties, options) {
  * @param {string|number} [options.id] Identifier associated with the Feature
  * @returns {Feature<LineString>} LineString Feature
  * @example
- * let linestring1 = turf.lineString([[-24, 63], [-23, 60], [-25, 65], [-20, 69]], {name: 'line 1'});
- * let linestring2 = turf.lineString([[-14, 43], [-13, 40], [-15, 45], [-10, 49]], {name: 'line 2'});
+ * var linestring1 = lineString([[-24, 63], [-23, 60], [-25, 65], [-20, 69]], {name: 'line 1'});
+ * var linestring2 = lineString([[-14, 43], [-13, 40], [-15, 45], [-10, 49]], {name: 'line 2'});
  *
  * //=linestring1
  * //=linestring2
  */
-export function lineString(coordinates, properties, options) {
-  assert(!coordinates, 'coordinates is required');
-  assert(coordinates.length < 2, 'coordinates must be an array of two or more positions');
-  // Check if first point of LineString contains two numbers
-  assert(!isNumber(coordinates[0][1]) || !isNumber(coordinates[0][1]), 'coordinates must contain numbers');
-
-  return feature({
-    type: 'LineString',
+export function lineString<P = Properties>(
+  coordinates: Position[],
+  properties?: P,
+  options: { bbox?: BBox, id?: Id } = {},
+): Feature<LineString, P> {
+  if (coordinates.length < 2) { throw new Error("coordinates must be an array of two or more positions"); }
+  const geom: LineString = {
+    type: "LineString",
     coordinates,
-  }, properties, options);
+  };
+  return feature(geom, properties, options);
 }
 
 /**
  * Creates a {@link LineString} {@link FeatureCollection} from an Array of LineString coordinates.
  *
  * @name lineStrings
- * @param {Array<Array<number>>} coordinates an array of LinearRings
+ * @param {Array<Array<Array<number>>>} coordinates an array of LinearRings
  * @param {Object} [properties={}] an Object of key-value pairs to add as properties
  * @param {Object} [options={}] Optional Parameters
- * @param {Array<number>} [options.bbox] Bounding Box Array [west, south, east, north] associated with the FeatureCollection
+ * @param {Array<number>} [options.bbox] Bounding Box Array [west, south, east, north]
+ * associated with the FeatureCollection
  * @param {string|number} [options.id] Identifier associated with the FeatureCollection
  * @returns {FeatureCollection<LineString>} LineString FeatureCollection
  * @example
- * let linestrings = turf.lineStrings([
+ * var linestrings = lineStrings([
  *   [[-24, 63], [-23, 60], [-25, 65], [-20, 69]],
  *   [[-14, 43], [-13, 40], [-15, 45], [-10, 49]]
  * ]);
  *
  * //=linestrings
  */
-export function lineStrings(coordinates, properties, options) {
-  assert(!coordinates, 'coordinates is required');
-  assert(!isArray(coordinates), 'coordinates must be an Array');
-
-  return featureCollection(coordinates.map(coords => lineString(coords, properties)), options);
+export function lineStrings<P = Properties>(
+  coordinates: Position[][],
+  properties?: P,
+  options: { bbox?: BBox, id?: Id } = {},
+): FeatureCollection<LineString, P> {
+  return featureCollection(coordinates.map((coords) => {
+    return lineString(coords, properties);
+  }), options);
 }
 
 /**
@@ -285,11 +267,11 @@ export function lineStrings(coordinates, properties, options) {
  * @param {string|number} [options.id] Identifier associated with the Feature
  * @returns {FeatureCollection} FeatureCollection of Features
  * @example
- * let locationA = turf.point([-75.343, 39.984], {name: 'Location A'});
- * let locationB = turf.point([-75.833, 39.284], {name: 'Location B'});
- * let locationC = turf.point([-75.534, 39.123], {name: 'Location C'});
+ * var locationA = point([-75.343, 39.984], {name: 'Location A'});
+ * var locationB = point([-75.833, 39.284], {name: 'Location B'});
+ * var locationC = point([-75.534, 39.123], {name: 'Location C'});
  *
- * let collection = turf.featureCollection([
+ * var collection = featureCollection([
  *   locationA,
  *   locationB,
  *   locationC
@@ -297,25 +279,13 @@ export function lineStrings(coordinates, properties, options) {
  *
  * //=collection
  */
-export function featureCollection(features, options) {
-  // Optional Parameters
-  options = options || {};
-  assert(!isObject(options), 'options is invalid');
-  const bbox = options.bbox;
-  const id = options.id;
-
-  // Validation
-  assert(!features, 'No features passed');
-  assert(!isArray(features), 'features must be an Array');
-  if (bbox) validateBBox(bbox);
-  if (id) validateId(id);
-
-  // Main
-  const fc = {
-    type: 'FeatureCollection',
-  };
-  if (id) fc.id = id;
-  if (bbox) fc.bbox = bbox;
+export function featureCollection<G = Geometry, P = Properties>(
+  features: Array<Feature>,
+  options: { bbox?: BBox, id?: Id } = {},
+): FeatureCollection<G, P> {
+  const fc: any = { type: "FeatureCollection" };
+  if (options.id) { fc.id = options.id; }
+  if (options.bbox) { fc.bbox = options.bbox; }
   fc.features = features;
   return fc;
 }
@@ -333,17 +303,20 @@ export function featureCollection(features, options) {
  * @returns {Feature<MultiLineString>} a MultiLineString feature
  * @throws {Error} if no coordinates are passed
  * @example
- * let multiLine = turf.multiLineString([[[0,0],[10,10]]]);
+ * var multiLine = multiLineString([[[0,0],[10,10]]]);
  *
  * //=multiLine
  */
-export function multiLineString(coordinates, properties, options) {
-  assert(!coordinates, 'coordinates is required');
-
-  return feature({
-    type: 'MultiLineString',
+export function multiLineString<P = Properties>(
+  coordinates: Position[][],
+  properties?: P,
+  options: { bbox?: BBox, id?: Id } = {},
+): Feature<MultiLineString, P> {
+  const geom: MultiLineString = {
+    type: "MultiLineString",
     coordinates,
-  }, properties, options);
+  };
+  return feature(geom, properties, options);
 }
 
 /**
@@ -359,17 +332,20 @@ export function multiLineString(coordinates, properties, options) {
  * @returns {Feature<MultiPoint>} a MultiPoint feature
  * @throws {Error} if no coordinates are passed
  * @example
- * let multiPt = turf.multiPoint([[0,0],[10,10]]);
+ * var multiPt = multiPoint([[0,0],[10,10]]);
  *
  * //=multiPt
  */
-export function multiPoint(coordinates, properties, options) {
-  assert(!coordinates, 'coordinates is required');
-
-  return feature({
-    type: 'MultiPoint',
+export function multiPoint<P = Properties>(
+  coordinates: Position[],
+  properties?: P,
+  options: { bbox?: BBox, id?: Id } = {},
+): Feature<MultiPoint, P> {
+  const geom: MultiPoint = {
+    type: "MultiPoint",
     coordinates,
-  }, properties, options);
+  };
+  return feature(geom, properties, options);
 }
 
 /**
@@ -385,18 +361,21 @@ export function multiPoint(coordinates, properties, options) {
  * @returns {Feature<MultiPolygon>} a multipolygon feature
  * @throws {Error} if no coordinates are passed
  * @example
- * let multiPoly = turf.multiPolygon([[[[0,0],[0,10],[10,10],[10,0],[0,0]]]]);
+ * var multiPoly = multiPolygon([[[[0,0],[0,10],[10,10],[10,0],[0,0]]]]);
  *
  * //=multiPoly
  *
  */
-export function multiPolygon(coordinates, properties, options) {
-  assert(!coordinates, 'coordinates is required');
-
-  return feature({
-    type: 'MultiPolygon',
+export function multiPolygon<P = Properties>(
+  coordinates: Position[][][],
+  properties?: P,
+  options: { bbox?: BBox, id?: Id } = {},
+): Feature<MultiPolygon, P> {
+  const geom: MultiPolygon = {
+    type: "MultiPolygon",
     coordinates,
-  }, properties, options);
+  };
+  return feature(geom, properties, options);
 }
 
 /**
@@ -411,26 +390,22 @@ export function multiPolygon(coordinates, properties, options) {
  * @param {string|number} [options.id] Identifier associated with the Feature
  * @returns {Feature<GeometryCollection>} a GeoJSON GeometryCollection Feature
  * @example
- * let pt = {
- *     "type": "Point",
- *       "coordinates": [100, 0]
- *     };
- * let line = {
- *     "type": "LineString",
- *     "coordinates": [ [101, 0], [102, 1] ]
- *   };
- * let collection = turf.geometryCollection([pt, line]);
+ * var pt = geometry("Point", [100, 0]);
+ * var line = geometry("LineString", [[101, 0], [102, 1]]);
+ * var collection = geometryCollection([pt, line]);
  *
- * //=collection
+ * // => collection
  */
-export function geometryCollection(geometries, properties, options) {
-  assert(!geometries, 'geometries is required');
-  assert(!isArray(geometries), 'geometries must be an Array');
-
-  return feature({
-    type: 'GeometryCollection',
+export function geometryCollection<P = Properties>(
+  geometries: Array<Point | LineString | Polygon | MultiPoint | MultiLineString | MultiPolygon>,
+  properties?: P,
+  options: { bbox?: BBox, id?: Id } = {},
+): Feature<GeometryCollection, P> {
+  const geom: GeometryCollection = {
+    type: "GeometryCollection",
     geometries,
-  }, properties, options);
+  };
+  return feature(geom, properties, options);
 }
 
 /**
@@ -454,12 +429,12 @@ export function geometryCollection(geometries, properties, options) {
  * validateBBox(undefined)
  * //=Error
  */
-export function validateBBox(bbox) {
-  assert(!bbox, 'bbox is required');
-  assert(!isArray(bbox), 'bbox must be an Array');
-  assert(bbox.length !== 4 && bbox.length !== 6, 'bbox must be an Array of 4 or 6 numbers');
+export function validateBBox(bbox: any): void {
+  if (!bbox) { throw new Error("bbox is required"); }
+  if (!Array.isArray(bbox)) { throw new Error("bbox must be an Array"); }
+  if (bbox.length !== 4 && bbox.length !== 6) { throw new Error("bbox must be an Array of 4 or 6 numbers"); }
   bbox.forEach((num) => {
-    assert(!isNumber(num), 'bbox must only contain numbers');
+    if (!isNumber(num)) { throw new Error("bbox must only contain numbers"); }
   });
 }
 
@@ -484,7 +459,7 @@ export function validateBBox(bbox) {
  * validateId(undefined)
  * //=Error
  */
-export function validateId(id) {
-  assert(!id, 'id is required');
-  assert(['string', 'number'].indexOf(typeof id) === -1, 'id must be a number or a string');
+export function validateId(id: any): void {
+  if (!id) { throw new Error("id is required"); }
+  if (["string", "number"].indexOf(typeof id) === -1) { throw new Error("id must be a number or a string"); }
 }

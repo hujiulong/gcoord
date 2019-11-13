@@ -1,6 +1,5 @@
 import {
   GeoJSON,
-  Geometry,
   Feature,
   FeatureCollection,
   GeometryCollection,
@@ -12,12 +11,8 @@ import {
   MultiPolygon,
 } from './geojson';
 
-export function assert(condition: boolean, msg: string): void | never {
-  if (condition) throw new Error(msg);
-}
-
-export function error(message: string): never {
-  throw new Error(message);
+export function assert(condition: boolean, msg?: string): asserts condition {
+  if (!condition) throw new Error(msg);
 }
 
 /**
@@ -206,7 +201,7 @@ export function coordEach(geojson: GeoJSON, callback: Function, excludeWrapCoord
           }
           break;
         default:
-          error('Unknown Geometry Type');
+          throw new Error('Unknown Geometry Type');
       }
     }
   }

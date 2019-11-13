@@ -1,19 +1,13 @@
 import {
   assert,
-  error,
-  isString,
   isNumber,
   isArray,
   coordEach,
 } from './helper';
-
 import { Position, GeoJSON } from './geojson';
+import * as CRS from './crs';
 
-import * as CRS from './crs/index';
-
-interface AllCRS {
-  [key: string]: CRS.CRS
-}
+type AllCRS = Record<string, CRS.CRS>;
 
 /**
  * transform
@@ -23,39 +17,33 @@ interface AllCRS {
  */
 /* eslint-disable no-param-reassign */
 export default function transform(input: any, crsFrom: string, crsTo: string): GeoJSON | Position | string {
-  /**
-   * TODO:
-   * if (condition) error(msg); -> assert(condition, msg);
-   * the limitation of TS. https://github.com/Microsoft/TypeScript/issues/8655
-   */
-
-  if (!input) error('coordinate is required');
-  if (!crsFrom) error('original coordinate system is required');
-  if (!crsTo) error('target coordinate system is required');
+  assert(!!input, 'Coordinate is required');
+  assert(!!crsFrom, 'Original coordinate system is required');
+  assert(!!crsTo, 'Target coordinate system is required');
 
   const from = (<AllCRS>CRS)[crsFrom];
-  if (!from) error('original coordinate system is invalid');
+  assert(!!from, 'Original coordinate system is invalid');
 
   if (crsFrom === crsTo) return input;
 
   const to: Function = from.to[crsTo];
-  if (!to) error('target coordinate system is invalid');
+  assert(!!to, 'Target coordinate system is invalid');
 
   const type = typeof (input);
-  if (type !== 'string' && type !== 'object') error('coordinate must be an geojson or an array of position');
+  assert(type === 'string' || type === 'object', 'Coordinate must be an geojson or an array of position');
 
   if (type === 'string') {
     try {
       input = JSON.parse(<string>input);
     } catch (e) {
-      error('input is not a legal JSON string');
+      throw new Error('Input is a invalid JSON string');
     }
   }
 
   let isPosition = false;
   if (isArray(input)) {
-    if (input.length < 2) error('position must be at 2 numbers long');
-    if (!isNumber(input[0]) || !isNumber(input[1])) error('position must contain numbers');
+    assert(input.length >= 2, 'The length of position must be greater than or equal to 2');
+    assert(isNumber(input[0]) && isNumber(input[1]), 'Position array members should be all numbers');
     input = input.map(Number);
     isPosition = true;
   }

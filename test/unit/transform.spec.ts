@@ -14,7 +14,7 @@ import each from '../fixtures/each';
 test('transform - position', () => {
 
   each('china-cities.json', item => {
-    let result;
+    let result: any;
     const { coords } = item;
 
     result = transform(coords.WGS84.map(String), WGS84, GCJ02);
@@ -62,8 +62,8 @@ test('transform - position', () => {
 });
 
 test('transform - geojson', () => {
-  let geojson; let
-    result;
+  let geojson;
+  let result;
 
   geojson = transform(point([123, 45], { a: 1 }), WGS84, GCJ02);
   result = geojson.geometry.coordinates;
@@ -119,10 +119,12 @@ test('transform - input check', () => {
   }).toThrow();
 
   expect(() => {
+    // @ts-ignore
     transform(pt, WGS84)
   }).toThrow();
 
   expect(() => {
+    // @ts-ignore
     transform(pt)
   }).toThrow();
 
