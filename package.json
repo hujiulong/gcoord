@@ -8,7 +8,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "rollup -c ./rollup.config.js",
-    "lint": "eslint src",
+    "lint": "eslint --ext .js,.ts, ./src",
     "test": "jest && codecov"
   },
   "repository": {
@@ -23,8 +23,11 @@
   "homepage": "https://github.com/hujiulong/gcoord#readme",
   "devDependencies": {
     "@types/jest": "^24.0.25",
+    "@typescript-eslint/eslint-plugin": "^2.13.0",
     "codecov": "^3.6.1",
     "eslint": "^6.8.0",
+    "eslint-config-airbnb-typescript": "^6.3.1",
+    "eslint-plugin-import": "^2.19.1",
     "jest": "^23.6.0",
     "rollup": "^1.27.0",
     "rollup-plugin-terser": "^5.1.2",
