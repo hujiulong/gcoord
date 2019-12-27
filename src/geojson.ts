@@ -20,12 +20,12 @@
  * The valid values for the 'type' property of GeoJSON geometry objects.
  */
 export type GeometryTypes = 'Point' |
-                            'LineString' |
-                            'Polygon' |
-                            'MultiPoint' |
-                            'MultiLineString' |
-                            'MultiPolygon' |
-                            'GeometryCollection';
+'LineString' |
+'Polygon' |
+'MultiPoint' |
+'MultiLineString' |
+'MultiPolygon' |
+'GeometryCollection';
 
 export type CollectionTypes = 'FeatureCollection' | 'GeometryCollection';
 
@@ -82,11 +82,11 @@ export type Properties = { [name: string]: any; } | null;
  * Geometries
  */
 export type Geometries = Point |
-                         LineString |
-                         Polygon |
-                         MultiPoint |
-                         MultiLineString |
-                         MultiPolygon;
+LineString |
+Polygon |
+MultiPoint |
+MultiLineString |
+MultiPolygon;
 
 /**
  * GeoJSON Object
@@ -126,9 +126,9 @@ export interface GeometryObject extends GeoJSONObject {
  */
 export interface Geometry extends GeoJSONObject {
   coordinates: Position |
-               Position[] |
-               Position[][] |
-               Position[][][];
+  Position[] |
+  Position[][] |
+  Position[][][];
 }
 
 /**

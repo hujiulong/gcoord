@@ -16,31 +16,6 @@ export function assert(condition: boolean, msg?: string): asserts condition {
 }
 
 /**
- * isNumber
- *
- * @param {*} num Number to validate
- * @returns {boolean} true/false
- * @example
- * isNumber(123)
- * //=true
- * isNumber('foo')
- * //=false
- */
-export function isNumber(input: any): input is number {
-  return !isNaN(input) && input !== null && !isArray(input);
-}
-
-/**
- * isString
- *
- * @param {*} input variable to validate
- * @returns {boolean} true/false
- */
-export function isString(input: any): input is string {
-  return typeof input === 'string';
-}
-
-/**
  * isObject
  *
  * @param {*} input variable to validate
@@ -66,6 +41,31 @@ export function isArray(input: any): input is any[] {
 }
 
 /**
+ * isNumber
+ *
+ * @param {*} num Number to validate
+ * @returns {boolean} true/false
+ * @example
+ * isNumber(123)
+ * //=true
+ * isNumber('foo')
+ * //=false
+ */
+export function isNumber(input: any): input is number {
+  return !Number.isNaN(Number(input)) && input !== null && !isArray(input);
+}
+
+/**
+ * isString
+ *
+ * @param {*} input variable to validate
+ * @returns {boolean} true/false
+ */
+export function isString(input: any): input is string {
+  return typeof input === 'string';
+}
+
+/**
  * compose
  *
  * @param {function[]} functions
@@ -73,6 +73,7 @@ export function isArray(input: any): input is any[] {
  */
 export function compose(...funcs: Function[]) {
   const start = funcs.length - 1;
+  /* eslint-disable func-names */
   return function (...args: any[]) {
     let i = start;
     let result = funcs[start].apply(null, args);
@@ -115,7 +116,7 @@ export function coordEach(geojson: GeoJSON, callback: Function, excludeWrapCoord
     coordIndex = 0,
     isGeometryCollection;
 
-  const type = geojson.type;
+  const { type } = geojson;
   const isFeatureCollection = type === 'FeatureCollection';
   const isFeature = type === 'Feature';
   const stop = isFeatureCollection ? (<FeatureCollection>geojson).features.length : 1;

@@ -7,38 +7,10 @@ const {
 const a = 6378245;
 const ee = 0.006693421622965823;
 
-export function GCJ02ToWGS84(coord: Position): Position {
-  const [lon, lat] = coord;
 
-  if (!isInChinaBbox(lon, lat)) return [lon, lat];
-
-  let [wgsLon, wgsLat] = [lon, lat];
-
-  let tempPoint = WGS84ToGCJ02([wgsLon, wgsLat]);
-
-  let dx = tempPoint[0] - lon;
-  let dy = tempPoint[1] - lat;
-
-  while (abs(dx) > 1e-6 || abs(dy) > 1e-6) {
-    wgsLon -= dx;
-    wgsLat -= dy;
-
-    tempPoint = WGS84ToGCJ02([wgsLon, wgsLat]);
-    dx = tempPoint[0] - lon;
-    dy = tempPoint[1] - lat;
-  }
-
-  return [wgsLon, wgsLat];
-}
-
-export function WGS84ToGCJ02(coord: Position): Position {
-  const [lon, lat] = coord;
-
-  if (!isInChinaBbox(lon, lat)) return [lon, lat];
-
-  const d = delta(lon, lat);
-
-  return [lon + d[0], lat + d[1]];
+// roughly check whether coordinates are in China.
+function isInChinaBbox(lon: number, lat: number): boolean {
+  return lon >= 72.004 && lon <= 137.8347 && lat >= 0.8293 && lat <= 55.8271;
 }
 
 function transformLat(x: number, y: number): number {
@@ -73,7 +45,36 @@ function delta(lon: number, lat: number): number[] {
   return [dLon, dLat];
 }
 
-// roughly check whether coordinates are in China.
-function isInChinaBbox(lon: number, lat: number): boolean {
-  return lon >= 72.004 && lon <= 137.8347 && lat >= 0.8293 && lat <= 55.8271;
+export function WGS84ToGCJ02(coord: Position): Position {
+  const [lon, lat] = coord;
+
+  if (!isInChinaBbox(lon, lat)) return [lon, lat];
+
+  const d = delta(lon, lat);
+
+  return [lon + d[0], lat + d[1]];
+}
+
+export function GCJ02ToWGS84(coord: Position): Position {
+  const [lon, lat] = coord;
+
+  if (!isInChinaBbox(lon, lat)) return [lon, lat];
+
+  let [wgsLon, wgsLat] = [lon, lat];
+
+  let tempPoint = WGS84ToGCJ02([wgsLon, wgsLat]);
+
+  let dx = tempPoint[0] - lon;
+  let dy = tempPoint[1] - lat;
+
+  while (abs(dx) > 1e-6 || abs(dy) > 1e-6) {
+    wgsLon -= dx;
+    wgsLat -= dy;
+
+    tempPoint = WGS84ToGCJ02([wgsLon, wgsLat]);
+    dx = tempPoint[0] - lon;
+    dy = tempPoint[1] - lat;
+  }
+
+  return [wgsLon, wgsLat];
 }
