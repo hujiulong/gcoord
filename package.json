@@ -31,7 +31,7 @@
     "jest": "^23.6.0",
     "rollup": "^1.27.0",
     "rollup-plugin-terser": "^5.1.2",
-    "rollup-plugin-typescript2": "^0.25.2",
+    "rollup-plugin-typescript2": "^0.26.0",
     "ts-jest": "^23.10.4",
     "typescript": "^3.7.2"
   }
