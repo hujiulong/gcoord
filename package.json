@@ -29,7 +29,7 @@
     "eslint-config-airbnb-typescript": "^6.3.1",
     "eslint-plugin-import": "^2.19.1",
     "jest": "^23.6.0",
-    "rollup": "^1.27.0",
+    "rollup": "^2.1.0",
     "rollup-plugin-terser": "^5.1.2",
     "rollup-plugin-typescript2": "^0.26.0",
     "ts-jest": "^23.10.4",
