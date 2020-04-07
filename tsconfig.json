@@ -5,9 +5,10 @@
     "strict": true,
     "esModuleInterop": true,
     "declaration": true,
-    "declarationDir": "./dist/types/"
+    "declarationDir": "./dist/types/",
+    "lib": ["ES2015"]
   },
   "include": [
     "src"
-	]
+  ]
 }
