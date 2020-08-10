@@ -30,7 +30,7 @@
     "eslint-plugin-import": "^2.19.1",
     "jest": "^23.6.0",
     "rollup": "^2.3.3",
-    "rollup-plugin-terser": "^5.1.2",
+    "rollup-plugin-terser": "^7.0.0",
     "rollup-plugin-typescript2": "^0.27.0",
     "ts-jest": "^23.10.4",
     "typescript": "^3.7.2"
