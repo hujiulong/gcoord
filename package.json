@@ -25,7 +25,7 @@
     "@types/jest": "^26.0.15",
     "@typescript-eslint/eslint-plugin": "^4.6.0",
     "codecov": "^3.6.1",
-    "eslint": "^6.8.0",
+    "eslint": "^7.12.1",
     "eslint-config-airbnb-typescript": "^7.2.0",
     "eslint-plugin-import": "^2.19.1",
     "jest": "^23.6.0",
