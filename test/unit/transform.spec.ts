@@ -1,15 +1,17 @@
 import transform from '../../src/transform';
+import { CRSTypes } from '../../src/crs';
 import {
+  point,
+} from '../helpers/geojson';
+import each from '../fixtures/each';
+
+const {
   WGS84,
   GCJ02,
   BD09,
   BD09MC,
   EPSG3857,
-} from '../../src/constants';
-import {
-  point,
-} from '../helpers/geojson';
-import each from '../fixtures/each';
+} = CRSTypes;
 
 test('transform - position', () => {
 
@@ -97,24 +99,29 @@ test('transform - input check', () => {
   }).toThrow();
 
   expect(() => {
+    // @ts-ignore
     transform(true, WGS84, GCJ02)
   }).toThrow();
 
   expect(() => {
+    // @ts-ignore
     transform([123], WGS84, GCJ02)
   }).toThrow();
 
   expect(() => {
+    // @ts-ignore
     transform([123, 'foo'], WGS84, GCJ02)
   }).toThrow();
 
   const pt = point([123, 45]);
 
   expect(() => {
+    // @ts-ignore
     transform(pt, 'Unknown', WGS84)
   }).toThrow();
 
   expect(() => {
+    // @ts-ignore
     transform(pt, WGS84, 'Unknown')
   }).toThrow();
 
