@@ -4,61 +4,91 @@ import { ESPG3857ToWGS84, WGS84ToEPSG3857 } from './EPSG3857';
 import { BD09MCtoBD09, BD09toBD09MC } from './BD09MC';
 import { compose } from '../helper';
 
+export enum CRSTypes {
+  // WGS84
+  WGS84 = 'WGS84',
+  WGS1984 = WGS84,
+  EPSG4326 = WGS84,
+
+  // GCJ02
+  GCJ02 = 'GCJ02',
+  AMap = GCJ02,
+
+  // BD09
+  BD09 = 'BD09',
+  BD09LL = BD09,
+  Baidu = BD09,
+  BMap = BD09,
+
+  // BD09MC
+  BD09MC = 'BD09MC',
+  BD09Meter = BD09MC,
+
+  // EPSG3857
+  EPSG3857 = 'EPSG3857',
+  EPSG900913 = EPSG3857,
+  EPSG102100 = EPSG3857,
+  WebMercator = EPSG3857,
+  WM = EPSG3857,
+}
+
 export interface CRS {
   to: {
-    [key: string]: Function
+    [key in keyof typeof CRSTypes]?: Function
   }
 }
 
-const WGS84: CRS = {
+export const WGS84: CRS = {
   to: {
-    GCJ02: WGS84ToGCJ02,
-    BD09: compose(GCJ02ToBD09, WGS84ToGCJ02),
-    BD09MC: compose(BD09toBD09MC, GCJ02ToBD09, WGS84ToGCJ02),
-    EPSG3857: WGS84ToEPSG3857,
+    [CRSTypes.GCJ02]: WGS84ToGCJ02,
+    [CRSTypes.BD09]: compose(GCJ02ToBD09, WGS84ToGCJ02),
+    [CRSTypes.BD09MC]: compose(BD09toBD09MC, GCJ02ToBD09, WGS84ToGCJ02),
+    [CRSTypes.EPSG3857]: WGS84ToEPSG3857,
   },
 };
 
-const GCJ02: CRS = {
+export const GCJ02: CRS = {
   to: {
-    WGS84: GCJ02ToWGS84,
-    BD09: GCJ02ToBD09,
-    BD09MC: compose(BD09toBD09MC, GCJ02ToBD09),
-    EPSG3857: compose(WGS84ToEPSG3857, GCJ02ToWGS84),
+    [CRSTypes.WGS84]: GCJ02ToWGS84,
+    [CRSTypes.BD09]: GCJ02ToBD09,
+    [CRSTypes.BD09MC]: compose(BD09toBD09MC, GCJ02ToBD09),
+    [CRSTypes.EPSG3857]: compose(WGS84ToEPSG3857, GCJ02ToWGS84),
   },
 };
 
-const BD09: CRS = {
+export const BD09: CRS = {
   to: {
-    WGS84: compose(GCJ02ToWGS84, BD09ToGCJ02),
-    GCJ02: BD09ToGCJ02,
-    EPSG3857: compose(WGS84ToEPSG3857, GCJ02ToWGS84, BD09ToGCJ02),
-    BD09MC: BD09toBD09MC,
+    [CRSTypes.WGS84]: compose(GCJ02ToWGS84, BD09ToGCJ02),
+    [CRSTypes.GCJ02]: BD09ToGCJ02,
+    [CRSTypes.EPSG3857]: compose(WGS84ToEPSG3857, GCJ02ToWGS84, BD09ToGCJ02),
+    [CRSTypes.BD09MC]: BD09toBD09MC,
   },
 };
 
-const EPSG3857: CRS = {
+export const EPSG3857: CRS = {
   to: {
-    WGS84: ESPG3857ToWGS84,
-    GCJ02: compose(WGS84ToGCJ02, ESPG3857ToWGS84),
-    BD09: compose(GCJ02ToBD09, WGS84ToGCJ02, ESPG3857ToWGS84),
-    BD09MC: compose(BD09toBD09MC, GCJ02ToBD09, WGS84ToGCJ02, ESPG3857ToWGS84),
+    [CRSTypes.WGS84]: ESPG3857ToWGS84,
+    [CRSTypes.GCJ02]: compose(WGS84ToGCJ02, ESPG3857ToWGS84),
+    [CRSTypes.BD09]: compose(GCJ02ToBD09, WGS84ToGCJ02, ESPG3857ToWGS84),
+    [CRSTypes.BD09MC]: compose(BD09toBD09MC, GCJ02ToBD09, WGS84ToGCJ02, ESPG3857ToWGS84),
   },
 };
 
-const BD09MC: CRS = {
+export const BD09MC: CRS = {
   to: {
-    WGS84: compose(GCJ02ToWGS84, BD09ToGCJ02, BD09MCtoBD09),
-    GCJ02: compose(BD09ToGCJ02, BD09MCtoBD09),
-    EPSG3857: compose(WGS84ToEPSG3857, GCJ02ToWGS84, BD09ToGCJ02, BD09MCtoBD09),
-    BD09: BD09MCtoBD09,
+    [CRSTypes.WGS84]: compose(GCJ02ToWGS84, BD09ToGCJ02, BD09MCtoBD09),
+    [CRSTypes.GCJ02]: compose(BD09ToGCJ02, BD09MCtoBD09),
+    [CRSTypes.EPSG3857]: compose(WGS84ToEPSG3857, GCJ02ToWGS84, BD09ToGCJ02, BD09MCtoBD09),
+    [CRSTypes.BD09]: BD09MCtoBD09,
   },
 };
 
-export {
+export const crsMap: Record<CRSTypes, CRS> = {
   WGS84,
   GCJ02,
   BD09,
   EPSG3857,
   BD09MC,
 };
+
+export default crsMap;

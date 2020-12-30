@@ -5,9 +5,7 @@ import {
   coordEach,
 } from './helper';
 import { Position, GeoJSON } from './geojson';
-import * as CRS from './crs';
-
-type AllCRS = Record<string, CRS.CRS>;
+import crsMap, { CRSTypes } from './crs';
 
 /**
  * transform
@@ -16,50 +14,50 @@ type AllCRS = Record<string, CRS.CRS>;
  * @returns {geojson|position} output
  */
 /* eslint-disable no-param-reassign */
-export default function transform(input: any, crsFrom: string, crsTo: string): GeoJSON | Position | string {
-  assert(!!input, 'Coordinate is required');
-  assert(!!crsFrom, 'Original coordinate system is required');
-  assert(!!crsTo, 'Target coordinate system is required');
+export default function transform<T extends GeoJSON | Position>(
+  input: T | string,
+  crsFrom: CRSTypes,
+  crsTo: CRSTypes
+): T {
+  assert(!!input, 'The args[0] input coordinate is required');
+  assert(!!crsFrom, 'The args[1] original coordinate system is required');
+  assert(!!crsTo, 'The args[2] target coordinate system is required');
 
-  const from = (<AllCRS>CRS)[crsFrom];
-  assert(!!from, 'Original coordinate system is invalid');
+  if (crsFrom === crsTo) return input as T;
 
-  if (crsFrom === crsTo) return input;
+  const from = crsMap[crsFrom];
+  assert(!!from, `Invalid original coordinate system: ${crsFrom}`);
 
-  const to: Function = from.to[crsTo];
-  assert(!!to, 'Target coordinate system is invalid');
+  const to: Function = from.to[crsTo]!;
+  assert(!!to, `Invalid target coordinate system: ${crsTo}`);
 
-  const type = typeof (input);
-  assert(type === 'string' || type === 'object', 'Coordinate must be an geojson or an array of position');
+  const type = typeof input;
+  assert(type === 'string' || type === 'object', `Invalid input coordinate type: ${type}`);
 
   if (type === 'string') {
     try {
       input = JSON.parse(<string>input);
     } catch (e) {
-      throw new Error('Input is a invalid JSON string');
+      throw new Error(`Invalid input coordinate: ${input}`);
     }
   }
 
   let isPosition = false;
   if (isArray(input)) {
-    assert(input.length >= 2, 'The length of position must be greater than or equal to 2');
-    assert(isNumber(input[0]) && isNumber(input[1]), 'Position array members should be all numbers');
-    input = input.map(Number);
+    assert(input.length >= 2, `Invalid input coordinate: ${input}`);
+    assert(isNumber(input[0]) && isNumber(input[1]), `Invalid input coordinate: ${input}`);
+    input = input.map(Number) as any;
     isPosition = true;
   }
 
-  let output = null;
   const convert = to;
 
-  if (isPosition) {
-    output = convert(<Position>input);
-  } else {
-    coordEach(<GeoJSON>input, (coord: number[]) => {
-      [coord[0], coord[1]] = convert(coord);
-    });
+  if (isPosition) return convert(<Position>input);
 
-    output = input;
-  }
+  // GeoJSON类型直接转换输入
+  coordEach(<GeoJSON>input, (coord: number[]) => {
+    [coord[0], coord[1]] = convert(coord);
+  });
 
-  return output;
+  return input as T;
 }
