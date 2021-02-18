@@ -2,20 +2,15 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   verbose: true,
-  roots: [
-    '<rootDir>/test/'
-  ],
+  roots: ['<rootDir>/test/'],
   testURL: 'http://localhost/',
   globals: {
     'ts-jest': {
       tsconfig: 'tsconfig.json',
-      isolatedModules: true
-    }
+      isolatedModules: true,
+    },
   },
-  coveragePathIgnorePatterns: [
-    '/node_modules/',
-    '/test/helpers/'
-  ],
+  coveragePathIgnorePatterns: ['/node_modules/', '/test/helpers/'],
   coverageDirectory: './coverage/',
-  collectCoverage: true
+  collectCoverage: true,
 };

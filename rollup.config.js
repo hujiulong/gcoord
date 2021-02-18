@@ -1,10 +1,10 @@
-import pkg from './package.json'
-import typescript from 'rollup-plugin-typescript2'
-import { terser } from 'rollup-plugin-terser'
+import pkg from './package.json';
+import typescript from 'rollup-plugin-typescript2';
+import { terser } from 'rollup-plugin-terser';
 
 const banner = `/* @preserve
  * gcoord ${pkg.version}, ${pkg.description}
- * Copyright (c) ${(new Date()).getFullYear()} Jiulong Hu <me@hujiulong.com>
+ * Copyright (c) ${new Date().getFullYear()} Jiulong Hu <me@hujiulong.com>
  */
 `;
 
@@ -17,19 +17,19 @@ export default {
       name: pkg.name,
       banner,
       sourcemap: true,
-      plugins: [terser()]
+      plugins: [terser()],
     },
     {
       file: pkg.module,
       format: 'es',
       banner,
-      sourcemap: true
-    }
+      sourcemap: true,
+    },
   ],
   plugins: [
     typescript({
       cacheRoot: './.tmp/.rpt2_cache',
-      useTsconfigDeclarationDir: true
-    })
-  ]
+      useTsconfigDeclarationDir: true,
+    }),
+  ],
 };

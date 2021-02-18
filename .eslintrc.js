@@ -1,12 +1,9 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    sourceType: 'module'
+    sourceType: 'module',
   },
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended'
-  ],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
   rules: {
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
@@ -17,6 +14,6 @@ module.exports = {
     'no-plusplus': 'off',
     'no-nested-ternary': 'off',
     'consistent-return': 'off',
-    'max-len': 'off'
-  }
+    'max-len': 'off',
+  },
 };
