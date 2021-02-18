@@ -1,6 +1,6 @@
 {
   "name": "gcoord",
-  "version": "0.3.0-beta.2",
+  "version": "v0.3.0-beta.2",
   "description": "geographic coordinate library",
   "main": "dist/gcoord.js",
   "module": "dist/gcoord.esm.js",
@@ -10,6 +10,7 @@
     "build": "rollup -c ./rollup.config.js",
     "lint": "eslint --ext .js,.ts, ./src",
     "test": "jest && codecov",
+    "release": "node scripts/release.js",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "format": "prettier --write \"src/**/*.ts\"",
     "gpr-setup": "node scripts/gpr-setup.js"
@@ -48,13 +49,17 @@
     "chalk": "^4.1.0",
     "codecov": "^3.8.1",
     "conventional-changelog-cli": "^2.1.1",
+    "enquirer": "^2.3.6",
     "eslint": "^7.20.0",
+    "execa": "^5.0.0",
     "jest": "^26.6.3",
     "lint-staged": "^10.5.4",
+    "minimist": "^1.2.5",
     "prettier": "^2.2.1",
     "rollup": "^2.39.0",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.29.0",
+    "semver": "^7.3.4",
     "ts-jest": "^26.5.1",
     "typescript": "^4.0.5",
     "yorkie": "^2.0.0"
