@@ -8,7 +8,7 @@ module.exports = {
   testURL: 'http://localhost/',
   globals: {
     'ts-jest': {
-      tsConfig: 'tsconfig.json',
+      tsconfig: 'tsconfig.json',
       isolatedModules: true
     }
   },
