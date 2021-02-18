@@ -1,9 +1,4 @@
-import {
-  assert,
-  isNumber,
-  isArray,
-  coordEach,
-} from './helper';
+import { assert, isNumber, isArray, coordEach } from './helper';
 import { Position, GeoJSON } from './geojson';
 import crsMap, { CRSTypes } from './crs';
 
@@ -32,7 +27,10 @@ export default function transform<T extends GeoJSON | Position>(
   assert(!!to, `Invalid target coordinate system: ${crsTo}`);
 
   const type = typeof input;
-  assert(type === 'string' || type === 'object', `Invalid input coordinate type: ${type}`);
+  assert(
+    type === 'string' || type === 'object',
+    `Invalid input coordinate type: ${type}`
+  );
 
   if (type === 'string') {
     try {
@@ -45,7 +43,10 @@ export default function transform<T extends GeoJSON | Position>(
   let isPosition = false;
   if (isArray(input)) {
     assert(input.length >= 2, `Invalid input coordinate: ${input}`);
-    assert(isNumber(input[0]) && isNumber(input[1]), `Invalid input coordinate: ${input}`);
+    assert(
+      isNumber(input[0]) && isNumber(input[1]),
+      `Invalid input coordinate: ${input}`
+    );
     input = input.map(Number) as any;
     isPosition = true;
   }

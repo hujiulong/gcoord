@@ -2,14 +2,7 @@ import { Position } from '../geojson';
 
 const { abs } = Math;
 
-const MCBAND = [
-  12890594.86,
-  8362377.87,
-  5591021,
-  3481989.83,
-  1678043.12,
-  0,
-];
+const MCBAND = [12890594.86, 8362377.87, 5591021, 3481989.83, 1678043.12, 0];
 const LLBAND = [75, 60, 45, 30, 15, 0];
 const MC2LL = [
   [
@@ -164,13 +157,14 @@ function transform(x: number, y: number, factors: number[]): Position {
   const cc = abs(y) / factors[9];
 
   let xt = factors[0] + factors[1] * abs(x);
-  let yt = factors[2]
-    + factors[3] * cc
-    + factors[4] * (cc ** 2)
-    + factors[5] * (cc ** 3)
-    + factors[6] * (cc ** 4)
-    + factors[7] * (cc ** 5)
-    + factors[8] * (cc ** 6);
+  let yt =
+    factors[2] +
+    factors[3] * cc +
+    factors[4] * cc ** 2 +
+    factors[5] * cc ** 3 +
+    factors[6] * cc ** 4 +
+    factors[7] * cc ** 5 +
+    factors[8] * cc ** 6;
 
   xt *= x < 0 ? -1 : 1;
   yt *= y < 0 ? -1 : 1;

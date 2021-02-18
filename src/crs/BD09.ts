@@ -1,10 +1,8 @@
 import { Position } from '../geojson';
 
-const {
-  sin, cos, atan2, sqrt, PI,
-} = Math;
+const { sin, cos, atan2, sqrt, PI } = Math;
 
-const baiduFactor = PI * 3000.0 / 180.0;
+const baiduFactor = (PI * 3000.0) / 180.0;
 
 export function BD09ToGCJ02(coord: Position): Position {
   const [lon, lat] = coord;

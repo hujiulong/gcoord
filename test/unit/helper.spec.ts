@@ -150,9 +150,11 @@ test('isNumber', () => {
   expect(isNumber(NaN)).toBeFalsy();
   expect(isNumber(undefined)).toBeFalsy();
   expect(isNumber(null)).toBeFalsy();
-  expect(isNumber({
-    a: 1,
-  })).toBeFalsy();
+  expect(
+    isNumber({
+      a: 1,
+    })
+  ).toBeFalsy();
   expect(isNumber({})).toBeFalsy();
   expect(isNumber([1, 2, 3])).toBeFalsy();
   expect(isNumber([])).toBeFalsy();
@@ -160,9 +162,11 @@ test('isNumber', () => {
 
 test('isObject', () => {
   // true
-  expect(isObject({
-    a: 1,
-  })).toBeTruthy();
+  expect(
+    isObject({
+      a: 1,
+    })
+  ).toBeTruthy();
   expect(isObject({})).toBeTruthy();
 
   // false
@@ -200,9 +204,11 @@ test('isArray', () => {
   // false
   expect(isArray(123)).toBeFalsy();
   expect(isArray({})).toBeFalsy();
-  expect(isArray({
-    a: 1,
-  })).toBeFalsy();
+  expect(
+    isArray({
+      a: 1,
+    })
+  ).toBeFalsy();
   expect(isArray(null)).toBeFalsy();
   expect(isArray(NaN)).toBeFalsy();
   expect(isArray(undefined)).toBeFalsy();
@@ -250,10 +256,14 @@ test('coordEach', () => {
   featureAndCollection(poly.geometry).forEach((input) => {
     const output = [];
     let lastIndex;
-    coordEach(input, (coord, index) => {
-      output.push(coord);
-      lastIndex = index;
-    }, true);
+    coordEach(
+      input,
+      (coord, index) => {
+        output.push(coord);
+        lastIndex = index;
+      },
+      true
+    );
     expect(lastIndex).toBe(2);
   });
 
@@ -312,23 +322,29 @@ test('coordEach', () => {
   multiFeatureIndexes = [];
   geometryIndexes = [];
 
-  coordEach(polyWithHole, (coords, coordIndex, featureIndex, multiFeatureIndex, geometryIndex) => {
-    coordIndexes.push(coordIndex);
-    featureIndexes.push(featureIndex);
-    multiFeatureIndexes.push(multiFeatureIndex);
-    geometryIndexes.push(geometryIndex);
-  });
+  coordEach(
+    polyWithHole,
+    (coords, coordIndex, featureIndex, multiFeatureIndex, geometryIndex) => {
+      coordIndexes.push(coordIndex);
+      featureIndexes.push(featureIndex);
+      multiFeatureIndexes.push(multiFeatureIndex);
+      geometryIndexes.push(geometryIndex);
+    }
+  );
   expect(coordIndexes).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
   expect(featureIndexes).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   expect(multiFeatureIndexes).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   expect(geometryIndexes).toEqual([0, 0, 0, 0, 0, 1, 1, 1, 1, 1]);
 
-  coordEach(geomCollectionDeep, (coords, coordIndex, featureIndex, multiFeatureIndex, geometryIndex) => {
-    coordIndexes.push(coordIndex);
-    featureIndexes.push(featureIndex);
-    multiFeatureIndexes.push(multiFeatureIndex);
-    geometryIndexes.push(geometryIndex);
-  });
+  coordEach(
+    geomCollectionDeep,
+    (coords, coordIndex, featureIndex, multiFeatureIndex, geometryIndex) => {
+      coordIndexes.push(coordIndex);
+      featureIndexes.push(featureIndex);
+      multiFeatureIndexes.push(multiFeatureIndex);
+      geometryIndexes.push(geometryIndex);
+    }
+  );
   expect(coordIndexes).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 1]);
   expect(featureIndexes).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   expect(multiFeatureIndexes).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
@@ -344,11 +360,15 @@ test('coordEach', () => {
 
   count = 0;
   // @ts-ignore
-  coordEach({
-    type: null,
-  }, (coord, index) => {
-    count++;
-  }, true);
+  coordEach(
+    {
+      type: null,
+    },
+    (coord, index) => {
+      count++;
+    },
+    true
+  );
   expect(count).toBe(0);
 
   count = 0;

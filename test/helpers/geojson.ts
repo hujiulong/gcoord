@@ -1,13 +1,20 @@
 import {
-  BBox, Feature, FeatureCollection,
-  Geometry, GeometryCollection,
-  Id, LineString, MultiLineString, MultiPoint,
-  MultiPolygon, Point, Polygon, Position,
+  BBox,
+  Feature,
+  FeatureCollection,
+  Geometry,
+  GeometryCollection,
+  Id,
+  LineString,
+  MultiLineString,
+  MultiPoint,
+  MultiPolygon,
+  Point,
+  Polygon,
+  Position,
   Properties,
 } from '../../src/geojson';
-import {
-  isNumber,
-} from '../../src/helper';
+import { isNumber } from '../../src/helper';
 
 // https://github.com/Turfjs/turf/blob/master/packages/turf-helpers/index.ts
 
@@ -23,22 +30,26 @@ import {
  * @returns {Feature} a GeoJSON Feature
  * @example
  * var geometry = {
-  *   "type": "Point",
-  *   "coordinates": [110, 50]
-  * };
-  *
-  * var feature = feature(geometry);
-  *
-  * //=feature
-  */
+ *   "type": "Point",
+ *   "coordinates": [110, 50]
+ * };
+ *
+ * var feature = feature(geometry);
+ *
+ * //=feature
+ */
 export function feature<G = Geometry, P = Properties>(
   geom: G,
   properties?: P,
-  options: { bbox?: BBox, id?: Id } = {},
+  options: { bbox?: BBox; id?: Id } = {}
 ): Feature<G, P> {
-  const feat: any = { type: "Feature" };
-  if (options.id === 0 || options.id) { feat.id = options.id; }
-  if (options.bbox) { feat.bbox = options.bbox; }
+  const feat: any = { type: 'Feature' };
+  if (options.id === 0 || options.id) {
+    feat.id = options.id;
+  }
+  if (options.bbox) {
+    feat.bbox = options.bbox;
+  }
   feat.properties = properties || {};
   feat.geometry = geom;
   return feat;
@@ -60,18 +71,31 @@ export function feature<G = Geometry, P = Properties>(
  * // => geometry
  */
 export function geometry(
-  type: "Point" | "LineString" | "Polygon" | "MultiPoint" | "MultiLineString" | "MultiPolygon",
+  type:
+    | 'Point'
+    | 'LineString'
+    | 'Polygon'
+    | 'MultiPoint'
+    | 'MultiLineString'
+    | 'MultiPolygon',
   coordinates: any,
-  options: {} = {},
+  options: {} = {}
 ) {
   switch (type) {
-    case "Point": return point(coordinates).geometry;
-    case "LineString": return lineString(coordinates).geometry;
-    case "Polygon": return polygon(coordinates).geometry;
-    case "MultiPoint": return multiPoint(coordinates).geometry;
-    case "MultiLineString": return multiLineString(coordinates).geometry;
-    case "MultiPolygon": return multiPolygon(coordinates).geometry;
-    default: throw new Error(type + " is invalid");
+    case 'Point':
+      return point(coordinates).geometry;
+    case 'LineString':
+      return lineString(coordinates).geometry;
+    case 'Polygon':
+      return polygon(coordinates).geometry;
+    case 'MultiPoint':
+      return multiPoint(coordinates).geometry;
+    case 'MultiLineString':
+      return multiLineString(coordinates).geometry;
+    case 'MultiPolygon':
+      return multiPolygon(coordinates).geometry;
+    default:
+      throw new Error(type + ' is invalid');
   }
 }
 
@@ -93,10 +117,10 @@ export function geometry(
 export function point<P = Properties>(
   coordinates: Position,
   properties?: P,
-  options: { bbox?: BBox, id?: Id } = {},
+  options: { bbox?: BBox; id?: Id } = {}
 ): Feature<Point, P> {
   const geom: Point = {
-    type: "Point",
+    type: 'Point',
     coordinates,
   };
   return feature(geom, properties, options);
@@ -125,11 +149,14 @@ export function point<P = Properties>(
 export function points<P = Properties>(
   coordinates: Position[],
   properties?: P,
-  options: { bbox?: BBox, id?: Id } = {},
+  options: { bbox?: BBox; id?: Id } = {}
 ): FeatureCollection<Point, P> {
-  return featureCollection(coordinates.map((coords) => {
-    return point(coords, properties);
-  }), options);
+  return featureCollection(
+    coordinates.map((coords) => {
+      return point(coords, properties);
+    }),
+    options
+  );
 }
 
 /**
@@ -150,21 +177,23 @@ export function points<P = Properties>(
 export function polygon<P = Properties>(
   coordinates: Position[][],
   properties?: P,
-  options: { bbox?: BBox, id?: Id } = {},
+  options: { bbox?: BBox; id?: Id } = {}
 ): Feature<Polygon, P> {
   for (const ring of coordinates) {
     if (ring.length < 4) {
-      throw new Error("Each LinearRing of a Polygon must have 4 or more Positions.");
+      throw new Error(
+        'Each LinearRing of a Polygon must have 4 or more Positions.'
+      );
     }
     for (let j = 0; j < ring[ring.length - 1].length; j++) {
       // Check if first point of Polygon contains two numbers
       if (ring[ring.length - 1][j] !== ring[0][j]) {
-        throw new Error("First and last Position are not equivalent.");
+        throw new Error('First and last Position are not equivalent.');
       }
     }
   }
   const geom: Polygon = {
-    type: "Polygon",
+    type: 'Polygon',
     coordinates,
   };
   return feature(geom, properties, options);
@@ -191,11 +220,14 @@ export function polygon<P = Properties>(
 export function polygons<P = Properties>(
   coordinates: Position[][][],
   properties?: P,
-  options: { bbox?: BBox, id?: Id } = {},
+  options: { bbox?: BBox; id?: Id } = {}
 ): FeatureCollection<Polygon, P> {
-  return featureCollection(coordinates.map((coords) => {
-    return polygon(coords, properties);
-  }), options);
+  return featureCollection(
+    coordinates.map((coords) => {
+      return polygon(coords, properties);
+    }),
+    options
+  );
 }
 
 /**
@@ -218,11 +250,13 @@ export function polygons<P = Properties>(
 export function lineString<P = Properties>(
   coordinates: Position[],
   properties?: P,
-  options: { bbox?: BBox, id?: Id } = {},
+  options: { bbox?: BBox; id?: Id } = {}
 ): Feature<LineString, P> {
-  if (coordinates.length < 2) { throw new Error("coordinates must be an array of two or more positions"); }
+  if (coordinates.length < 2) {
+    throw new Error('coordinates must be an array of two or more positions');
+  }
   const geom: LineString = {
-    type: "LineString",
+    type: 'LineString',
     coordinates,
   };
   return feature(geom, properties, options);
@@ -250,11 +284,14 @@ export function lineString<P = Properties>(
 export function lineStrings<P = Properties>(
   coordinates: Position[][],
   properties?: P,
-  options: { bbox?: BBox, id?: Id } = {},
+  options: { bbox?: BBox; id?: Id } = {}
 ): FeatureCollection<LineString, P> {
-  return featureCollection(coordinates.map((coords) => {
-    return lineString(coords, properties);
-  }), options);
+  return featureCollection(
+    coordinates.map((coords) => {
+      return lineString(coords, properties);
+    }),
+    options
+  );
 }
 
 /**
@@ -281,11 +318,15 @@ export function lineStrings<P = Properties>(
  */
 export function featureCollection<G = Geometry, P = Properties>(
   features: Array<Feature>,
-  options: { bbox?: BBox, id?: Id } = {},
+  options: { bbox?: BBox; id?: Id } = {}
 ): FeatureCollection<G, P> {
-  const fc: any = { type: "FeatureCollection" };
-  if (options.id) { fc.id = options.id; }
-  if (options.bbox) { fc.bbox = options.bbox; }
+  const fc: any = { type: 'FeatureCollection' };
+  if (options.id) {
+    fc.id = options.id;
+  }
+  if (options.bbox) {
+    fc.bbox = options.bbox;
+  }
   fc.features = features;
   return fc;
 }
@@ -310,10 +351,10 @@ export function featureCollection<G = Geometry, P = Properties>(
 export function multiLineString<P = Properties>(
   coordinates: Position[][],
   properties?: P,
-  options: { bbox?: BBox, id?: Id } = {},
+  options: { bbox?: BBox; id?: Id } = {}
 ): Feature<MultiLineString, P> {
   const geom: MultiLineString = {
-    type: "MultiLineString",
+    type: 'MultiLineString',
     coordinates,
   };
   return feature(geom, properties, options);
@@ -339,10 +380,10 @@ export function multiLineString<P = Properties>(
 export function multiPoint<P = Properties>(
   coordinates: Position[],
   properties?: P,
-  options: { bbox?: BBox, id?: Id } = {},
+  options: { bbox?: BBox; id?: Id } = {}
 ): Feature<MultiPoint, P> {
   const geom: MultiPoint = {
-    type: "MultiPoint",
+    type: 'MultiPoint',
     coordinates,
   };
   return feature(geom, properties, options);
@@ -369,10 +410,10 @@ export function multiPoint<P = Properties>(
 export function multiPolygon<P = Properties>(
   coordinates: Position[][][],
   properties?: P,
-  options: { bbox?: BBox, id?: Id } = {},
+  options: { bbox?: BBox; id?: Id } = {}
 ): Feature<MultiPolygon, P> {
   const geom: MultiPolygon = {
-    type: "MultiPolygon",
+    type: 'MultiPolygon',
     coordinates,
   };
   return feature(geom, properties, options);
@@ -397,12 +438,14 @@ export function multiPolygon<P = Properties>(
  * // => collection
  */
 export function geometryCollection<P = Properties>(
-  geometries: Array<Point | LineString | Polygon | MultiPoint | MultiLineString | MultiPolygon>,
+  geometries: Array<
+    Point | LineString | Polygon | MultiPoint | MultiLineString | MultiPolygon
+  >,
   properties?: P,
-  options: { bbox?: BBox, id?: Id } = {},
+  options: { bbox?: BBox; id?: Id } = {}
 ): Feature<GeometryCollection, P> {
   const geom: GeometryCollection = {
-    type: "GeometryCollection",
+    type: 'GeometryCollection',
     geometries,
   };
   return feature(geom, properties, options);
@@ -430,11 +473,19 @@ export function geometryCollection<P = Properties>(
  * //=Error
  */
 export function validateBBox(bbox: any): void {
-  if (!bbox) { throw new Error("bbox is required"); }
-  if (!Array.isArray(bbox)) { throw new Error("bbox must be an Array"); }
-  if (bbox.length !== 4 && bbox.length !== 6) { throw new Error("bbox must be an Array of 4 or 6 numbers"); }
+  if (!bbox) {
+    throw new Error('bbox is required');
+  }
+  if (!Array.isArray(bbox)) {
+    throw new Error('bbox must be an Array');
+  }
+  if (bbox.length !== 4 && bbox.length !== 6) {
+    throw new Error('bbox must be an Array of 4 or 6 numbers');
+  }
   bbox.forEach((num) => {
-    if (!isNumber(num)) { throw new Error("bbox must only contain numbers"); }
+    if (!isNumber(num)) {
+      throw new Error('bbox must only contain numbers');
+    }
   });
 }
 
@@ -460,6 +511,10 @@ export function validateBBox(bbox: any): void {
  * //=Error
  */
 export function validateId(id: any): void {
-  if (!id) { throw new Error("id is required"); }
-  if (["string", "number"].indexOf(typeof id) === -1) { throw new Error("id must be a number or a string"); }
+  if (!id) {
+    throw new Error('id is required');
+  }
+  if (['string', 'number'].indexOf(typeof id) === -1) {
+    throw new Error('id must be a number or a string');
+  }
 }

@@ -1,12 +1,10 @@
-import {
-  GCJ02,
-} from '../../../src/crs/index';
+import { GCJ02 } from '../../../src/crs/index';
 import each from '../../fixtures/each';
 
 test('GCJ02 to WGS84', () => {
   const transform = GCJ02.to.WGS84;
 
-  each('china-cities.json', item => {
+  each('china-cities.json', (item) => {
     const { coords } = item;
     const result = transform(coords.GCJ02);
     expect(result[0]).toBeCloseTo(coords.WGS84[0], 4);
@@ -20,7 +18,7 @@ test('GCJ02 to WGS84', () => {
 test('GCJ02 to BD09', () => {
   const transform = GCJ02.to.BD09;
 
-  each('china-cities.json', item => {
+  each('china-cities.json', (item) => {
     const { coords } = item;
     const result = transform(coords.GCJ02);
     expect(result[0]).toBeCloseTo(coords.BD09[0], 6);
@@ -31,7 +29,7 @@ test('GCJ02 to BD09', () => {
 test('GCJ02 to BD09MC', () => {
   const transform = GCJ02.to.BD09MC;
 
-  each('china-cities.json', item => {
+  each('china-cities.json', (item) => {
     const { coords } = item;
     const result = transform(coords.GCJ02);
     expect(result[0]).toBeCloseTo(coords.BD09MC[0], 1);
@@ -42,7 +40,7 @@ test('GCJ02 to BD09MC', () => {
 test('GCJ02 to EPSG3857', () => {
   const transform = GCJ02.to.EPSG3857;
 
-  each('china-cities.json', item => {
+  each('china-cities.json', (item) => {
     const { coords } = item;
     const result = transform(coords.GCJ02);
     expect(Math.abs(result[0] - coords.EPSG3857[0])).toBeLessThan(1);

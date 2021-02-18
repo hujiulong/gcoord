@@ -27,7 +27,7 @@ export function assert(condition: boolean, msg?: string): asserts condition {
  * //=false
  */
 export function isObject(input: any): input is object {
-  return (!!input) && (input.constructor === Object);
+  return !!input && input.constructor === Object;
 }
 
 /**
@@ -37,7 +37,7 @@ export function isObject(input: any): input is object {
  * @returns {boolean} true/false
  */
 export function isArray(input: any): input is any[] {
-  return (!!input) && Object.prototype.toString.call(input) === '[object Array]';
+  return !!input && Object.prototype.toString.call(input) === '[object Array]';
 }
 
 /**
@@ -106,11 +106,20 @@ export function compose(...funcs: Function[]) {
  * });
  */
 /* eslint-disable no-param-reassign */
-export function coordEach(geojson: GeoJSON, callback: Function, excludeWrapCoord = false): boolean | void | never {
+export function coordEach(
+  geojson: GeoJSON,
+  callback: Function,
+  excludeWrapCoord = false
+): boolean | void | never {
   // Handles null Geometry -- Skips this GeoJSON
   if (geojson === null) return;
   /* eslint-disable-next-line */
-  let j, k, l, geometry, stopG, coords,
+  let j,
+    k,
+    l,
+    geometry,
+    stopG,
+    coords,
     geometryMaybeCollection,
     wrapShrink = 0,
     coordIndex = 0,
@@ -119,7 +128,9 @@ export function coordEach(geojson: GeoJSON, callback: Function, excludeWrapCoord
   const { type } = geojson;
   const isFeatureCollection = type === 'FeatureCollection';
   const isFeature = type === 'Feature';
-  const stop = isFeatureCollection ? (<FeatureCollection>geojson).features.length : 1;
+  const stop = isFeatureCollection
+    ? (<FeatureCollection>geojson).features.length
+    : 1;
 
   // This logic may look a little weird. The reason why it is that way
   // is because it's trying to be fast. GeoJSON supports multiple kinds
@@ -134,28 +145,49 @@ export function coordEach(geojson: GeoJSON, callback: Function, excludeWrapCoord
   // few numbers and booleans, rather than any temporary arrays as would
   // be required with the normalization approach.
   for (let featureIndex = 0; featureIndex < stop; featureIndex++) {
-    geometryMaybeCollection = (isFeatureCollection ? (<FeatureCollection>geojson).features[featureIndex].geometry
-      : (isFeature ? (<Feature>geojson).geometry : geojson));
-    isGeometryCollection = (geometryMaybeCollection) ? geometryMaybeCollection.type === 'GeometryCollection' : false;
-    stopG = isGeometryCollection ? (<GeometryCollection>geometryMaybeCollection).geometries.length : 1;
+    geometryMaybeCollection = isFeatureCollection
+      ? (<FeatureCollection>geojson).features[featureIndex].geometry
+      : isFeature
+      ? (<Feature>geojson).geometry
+      : geojson;
+    isGeometryCollection = geometryMaybeCollection
+      ? geometryMaybeCollection.type === 'GeometryCollection'
+      : false;
+    stopG = isGeometryCollection
+      ? (<GeometryCollection>geometryMaybeCollection).geometries.length
+      : 1;
 
     for (let geomIndex = 0; geomIndex < stopG; geomIndex++) {
       let multiFeatureIndex = 0;
       let geometryIndex = 0;
       geometry = isGeometryCollection
-        ? (<GeometryCollection>geometryMaybeCollection).geometries[geomIndex] : geometryMaybeCollection;
+        ? (<GeometryCollection>geometryMaybeCollection).geometries[geomIndex]
+        : geometryMaybeCollection;
 
       // Handles null Geometry -- Skips this geometry
       if (geometry === null) continue;
       const geomType = geometry.type;
 
-      wrapShrink = (excludeWrapCoord && (geomType === 'Polygon' || geomType === 'MultiPolygon')) ? 1 : 0;
+      wrapShrink =
+        excludeWrapCoord &&
+        (geomType === 'Polygon' || geomType === 'MultiPolygon')
+          ? 1
+          : 0;
       switch (geomType) {
         case null:
           break;
         case 'Point':
           coords = (<Point>geometry).coordinates;
-          if (callback(coords, coordIndex, featureIndex, multiFeatureIndex, geometryIndex) === false) return false;
+          if (
+            callback(
+              coords,
+              coordIndex,
+              featureIndex,
+              multiFeatureIndex,
+              geometryIndex
+            ) === false
+          )
+            return false;
           coordIndex++;
           multiFeatureIndex++;
           break;
@@ -163,7 +195,16 @@ export function coordEach(geojson: GeoJSON, callback: Function, excludeWrapCoord
         case 'MultiPoint':
           coords = (<LineString | MultiPoint>geometry).coordinates;
           for (j = 0; j < coords.length; j++) {
-            if (callback(coords[j], coordIndex, featureIndex, multiFeatureIndex, geometryIndex) === false) return false;
+            if (
+              callback(
+                coords[j],
+                coordIndex,
+                featureIndex,
+                multiFeatureIndex,
+                geometryIndex
+              ) === false
+            )
+              return false;
             coordIndex++;
             if (geomType === 'MultiPoint') multiFeatureIndex++;
           }
@@ -174,7 +215,16 @@ export function coordEach(geojson: GeoJSON, callback: Function, excludeWrapCoord
           coords = (<Polygon | MultiLineString>geometry).coordinates;
           for (j = 0; j < coords.length; j++) {
             for (k = 0; k < coords[j].length - wrapShrink; k++) {
-              if (callback(coords[j][k], coordIndex, featureIndex, multiFeatureIndex, geometryIndex) === false) return false;
+              if (
+                callback(
+                  coords[j][k],
+                  coordIndex,
+                  featureIndex,
+                  multiFeatureIndex,
+                  geometryIndex
+                ) === false
+              )
+                return false;
               coordIndex++;
             }
             if (geomType === 'MultiLineString') multiFeatureIndex++;
@@ -188,7 +238,16 @@ export function coordEach(geojson: GeoJSON, callback: Function, excludeWrapCoord
             geometryIndex = 0;
             for (k = 0; k < coords[j].length; k++) {
               for (l = 0; l < coords[j][k].length - wrapShrink; l++) {
-                if (callback(coords[j][k][l], coordIndex, featureIndex, multiFeatureIndex, geometryIndex) === false) return false;
+                if (
+                  callback(
+                    coords[j][k][l],
+                    coordIndex,
+                    featureIndex,
+                    multiFeatureIndex,
+                    geometryIndex
+                  ) === false
+                )
+                  return false;
                 coordIndex++;
               }
               geometryIndex++;
@@ -197,8 +256,19 @@ export function coordEach(geojson: GeoJSON, callback: Function, excludeWrapCoord
           }
           break;
         case 'GeometryCollection':
-          for (j = 0; j < (<GeometryCollection>geometry).geometries.length; j++) {
-            if (coordEach((<GeometryCollection>geometry).geometries[j], callback, excludeWrapCoord) === false) return false;
+          for (
+            j = 0;
+            j < (<GeometryCollection>geometry).geometries.length;
+            j++
+          ) {
+            if (
+              coordEach(
+                (<GeometryCollection>geometry).geometries[j],
+                callback,
+                excludeWrapCoord
+              ) === false
+            )
+              return false;
           }
           break;
         default:

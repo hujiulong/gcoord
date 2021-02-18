@@ -1,21 +1,12 @@
 import transform from '../../src/transform';
 import { CRSTypes } from '../../src/crs';
-import {
-  point,
-} from '../helpers/geojson';
+import { point } from '../helpers/geojson';
 import each from '../fixtures/each';
 
-const {
-  WGS84,
-  GCJ02,
-  BD09,
-  BD09MC,
-  EPSG3857,
-} = CRSTypes;
+const { WGS84, GCJ02, BD09, BD09MC, EPSG3857 } = CRSTypes;
 
 test('transform - position', () => {
-
-  each('china-cities.json', item => {
+  each('china-cities.json', (item) => {
     let result: any;
     const { coords } = item;
 
@@ -84,55 +75,51 @@ test('transform - geojson', () => {
   result = geojson.geometry.coordinates;
 
   expect(result).toEqual([123, 45]);
-
 });
 
-
 test('transform - input check', () => {
-
   expect(() => {
-    transform('', WGS84, GCJ02)
+    transform('', WGS84, GCJ02);
   }).toThrow();
 
   expect(() => {
-    transform('foo', WGS84, GCJ02)
-  }).toThrow();
-
-  expect(() => {
-    // @ts-ignore
-    transform(true, WGS84, GCJ02)
+    transform('foo', WGS84, GCJ02);
   }).toThrow();
 
   expect(() => {
     // @ts-ignore
-    transform([123], WGS84, GCJ02)
+    transform(true, WGS84, GCJ02);
   }).toThrow();
 
   expect(() => {
     // @ts-ignore
-    transform([123, 'foo'], WGS84, GCJ02)
+    transform([123], WGS84, GCJ02);
+  }).toThrow();
+
+  expect(() => {
+    // @ts-ignore
+    transform([123, 'foo'], WGS84, GCJ02);
   }).toThrow();
 
   const pt = point([123, 45]);
 
   expect(() => {
     // @ts-ignore
-    transform(pt, 'Unknown', WGS84)
+    transform(pt, 'Unknown', WGS84);
   }).toThrow();
 
   expect(() => {
     // @ts-ignore
-    transform(pt, WGS84, 'Unknown')
+    transform(pt, WGS84, 'Unknown');
   }).toThrow();
 
   expect(() => {
     // @ts-ignore
-    transform(pt, WGS84)
+    transform(pt, WGS84);
   }).toThrow();
 
   expect(() => {
     // @ts-ignore
-    transform(pt)
+    transform(pt);
   }).toThrow();
-
-})
+});

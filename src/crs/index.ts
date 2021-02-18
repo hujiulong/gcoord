@@ -34,8 +34,8 @@ export enum CRSTypes {
 
 export interface CRS {
   to: {
-    [key in keyof typeof CRSTypes]?: Function
-  }
+    [key in keyof typeof CRSTypes]?: Function;
+  };
 }
 
 export const WGS84: CRS = {
@@ -70,7 +70,12 @@ export const EPSG3857: CRS = {
     [CRSTypes.WGS84]: ESPG3857ToWGS84,
     [CRSTypes.GCJ02]: compose(WGS84ToGCJ02, ESPG3857ToWGS84),
     [CRSTypes.BD09]: compose(GCJ02ToBD09, WGS84ToGCJ02, ESPG3857ToWGS84),
-    [CRSTypes.BD09MC]: compose(BD09toBD09MC, GCJ02ToBD09, WGS84ToGCJ02, ESPG3857ToWGS84),
+    [CRSTypes.BD09MC]: compose(
+      BD09toBD09MC,
+      GCJ02ToBD09,
+      WGS84ToGCJ02,
+      ESPG3857ToWGS84
+    ),
   },
 };
 
@@ -78,7 +83,12 @@ export const BD09MC: CRS = {
   to: {
     [CRSTypes.WGS84]: compose(GCJ02ToWGS84, BD09ToGCJ02, BD09MCtoBD09),
     [CRSTypes.GCJ02]: compose(BD09ToGCJ02, BD09MCtoBD09),
-    [CRSTypes.EPSG3857]: compose(WGS84ToEPSG3857, GCJ02ToWGS84, BD09ToGCJ02, BD09MCtoBD09),
+    [CRSTypes.EPSG3857]: compose(
+      WGS84ToEPSG3857,
+      GCJ02ToWGS84,
+      BD09ToGCJ02,
+      BD09MCtoBD09
+    ),
     [CRSTypes.BD09]: BD09MCtoBD09,
   },
 };

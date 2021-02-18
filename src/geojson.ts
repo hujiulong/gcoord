@@ -19,13 +19,14 @@
  * https://tools.ietf.org/html/rfc7946#section-1.4
  * The valid values for the 'type' property of GeoJSON geometry objects.
  */
-export type GeometryTypes = 'Point' |
-'LineString' |
-'Polygon' |
-'MultiPoint' |
-'MultiLineString' |
-'MultiPolygon' |
-'GeometryCollection';
+export type GeometryTypes =
+  | 'Point'
+  | 'LineString'
+  | 'Polygon'
+  | 'MultiPoint'
+  | 'MultiLineString'
+  | 'MultiPolygon'
+  | 'GeometryCollection';
 
 export type CollectionTypes = 'FeatureCollection' | 'GeometryCollection';
 
@@ -76,17 +77,18 @@ export type Position = [number, number] | [number, number, number];
  * A Feature object has a member with the name 'properties'.
  * The value of the properties member is an object (any JSON object or a JSON null value).
  */
-export type Properties = { [name: string]: any; } | null;
+export type Properties = { [name: string]: any } | null;
 
 /**
  * Geometries
  */
-export type Geometries = Point |
-LineString |
-Polygon |
-MultiPoint |
-MultiLineString |
-MultiPolygon;
+export type Geometries =
+  | Point
+  | LineString
+  | Polygon
+  | MultiPoint
+  | MultiLineString
+  | MultiPolygon;
 
 /**
  * GeoJSON Object
@@ -125,10 +127,7 @@ export interface GeometryObject extends GeoJSONObject {
  * https://tools.ietf.org/html/rfc7946#section-3
  */
 export interface Geometry extends GeoJSONObject {
-  coordinates: Position |
-  Position[] |
-  Position[][] |
-  Position[][][];
+  coordinates: Position | Position[] | Position[][] | Position[][][];
 }
 
 /**
@@ -203,7 +202,9 @@ export interface MultiPolygon extends GeometryObject {
  */
 export interface GeometryCollection extends GeometryObject {
   type: 'GeometryCollection';
-  geometries: Array<Point | LineString | Polygon | MultiPoint | MultiLineString | MultiPolygon>;
+  geometries: Array<
+    Point | LineString | Polygon | MultiPoint | MultiLineString | MultiPolygon
+  >;
 }
 
 /**
@@ -213,7 +214,8 @@ export interface GeometryCollection extends GeometryObject {
  * A Feature object represents a spatially bounded thing.
  * Every Feature object is a GeoJSON object no matter where it occurs in a GeoJSON text.
  */
-export interface Feature<G = Geometry | GeometryCollection, P = Properties> extends GeoJSONObject {
+export interface Feature<G = Geometry | GeometryCollection, P = Properties>
+  extends GeoJSONObject {
   type: 'Feature';
   geometry: G;
   /**
@@ -236,7 +238,10 @@ export interface Feature<G = Geometry | GeometryCollection, P = Properties> exte
  * The value of 'features' is a JSON array. Each element of the array is a Feature object as defined above.
  * It is possible for this array to be empty.
  */
-export interface FeatureCollection<G = Geometry | GeometryCollection, P = Properties> extends GeoJSONObject {
+export interface FeatureCollection<
+  G = Geometry | GeometryCollection,
+  P = Properties
+> extends GeoJSONObject {
   type: 'FeatureCollection';
   features: Array<Feature<G, P>>;
 }
@@ -246,4 +251,8 @@ export interface FeatureCollection<G = Geometry | GeometryCollection, P = Proper
  *
  * All GeoJSON objects
  */
-export type GeoJSON = Feature | FeatureCollection | Geometry | GeometryCollection;
+export type GeoJSON =
+  | Feature
+  | FeatureCollection
+  | Geometry
+  | GeometryCollection;

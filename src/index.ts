@@ -1,18 +1,13 @@
-import {
-  CRSTypes
-} from './crs';
+import { CRSTypes } from './crs';
 
 import transform from './transform';
 
-export {
+export { CRSTypes, transform };
+
+const exported = {
+  ...CRSTypes, // 兼容原来gcoord.WGS84的使用方式
   CRSTypes,
   transform,
 };
-
-const exported = {
-  ...CRSTypes,  // 兼容原来gcoord.WGS84的使用方式
-  CRSTypes,
-  transform,
-}
 
 export default exported;
