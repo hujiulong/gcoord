@@ -32,14 +32,10 @@ npm install gcoord --save
 CommonJS:
 ```js
 const gcoord = require('gcoord');
-// 或者
-const { transform, WGS84, GCJ02 } = require('gcoord');
 ```
 ES Module:
 ```js
-import gcoord from 'gcoord'
-// 或者
-import { transform, WGS84, GCJ02 } from 'gcoord'
+import gcoord from 'gcoord';
 ```
 同时也支持AMD和CMD规范
 
