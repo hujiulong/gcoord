@@ -1,3 +1,12 @@
+## [0.3.1](https://github.com/hujiulong/gcoord/compare/v0.3.0...v0.3.1) (2021-02-23)
+
+
+### Bug Fixes
+
+* use default export only ([ae0d806](https://github.com/hujiulong/gcoord/commit/ae0d80602934589f57f53e97dd0c6b9b187e53e7))
+
+
+
 # [0.3.0](https://github.com/hujiulong/gcoord/compare/v0.3.0-beta.2...v0.3.0) (2021-02-18)
 
 
