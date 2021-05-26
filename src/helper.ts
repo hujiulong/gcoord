@@ -52,7 +52,7 @@ export function isArray(input: any): input is any[] {
  * //=false
  */
 export function isNumber(input: any): input is number {
-  return !Number.isNaN(Number(input)) && input !== null && !isArray(input);
+  return !isNaN(Number(input)) && input !== null && !isArray(input);
 }
 
 /**
