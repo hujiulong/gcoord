@@ -51,7 +51,7 @@
     "conventional-changelog-cli": "^2.1.1",
     "enquirer": "^2.3.6",
     "eslint": "^7.20.0",
-    "execa": "^5.0.0",
+    "execa": "^6.0.0",
     "jest": "^27.0.4",
     "lint-staged": "^11.0.0",
     "minimist": "^1.2.5",
