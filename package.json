@@ -53,7 +53,7 @@
     "eslint": "^7.20.0",
     "execa": "^5.0.0",
     "jest": "^27.0.4",
-    "lint-staged": "^11.0.0",
+    "lint-staged": "^12.2.0",
     "minimist": "^1.2.5",
     "prettier": "^2.2.1",
     "rollup": "^2.39.0",
