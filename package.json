@@ -43,7 +43,7 @@
   },
   "homepage": "https://github.com/hujiulong/gcoord#readme",
   "devDependencies": {
-    "@types/jest": "^27.0.1",
+    "@types/jest": "^29.2.2",
     "@typescript-eslint/eslint-plugin": "^4.15.1",
     "@typescript-eslint/parser": "^4.15.1",
     "chalk": "^4.1.0",
