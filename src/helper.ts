@@ -3,6 +3,8 @@ import {
   Feature,
   FeatureCollection,
   GeometryCollection,
+  Geometry,
+  Position,
   Point,
   LineString,
   MultiPoint,
@@ -67,11 +69,8 @@ export function isString(input: any): input is string {
 
 /**
  * compose
- *
- * @param {function[]} functions
- * @returns {function}
  */
-export function compose(...funcs: Function[]) {
+export function compose(...funcs: Function[]): Function {
   const start = funcs.length - 1;
   /* eslint-disable func-names */
   return function (...args: any[]) {
@@ -108,22 +107,32 @@ export function compose(...funcs: Function[]) {
 /* eslint-disable no-param-reassign */
 export function coordEach(
   geojson: GeoJSON,
-  callback: Function,
+  callback: (
+    currentCoord: Position,
+    coordIndex: number,
+    featureIndex: number,
+    multiFeatureIndex: number,
+    geometryIndex: number
+  ) => any,
   excludeWrapCoord = false
 ): boolean | void | never {
   // Handles null Geometry -- Skips this GeoJSON
   if (geojson === null) return;
   /* eslint-disable-next-line */
-  let j,
-    k,
-    l,
-    geometry,
-    stopG,
-    coords,
-    geometryMaybeCollection,
-    wrapShrink = 0,
-    coordIndex = 0,
-    isGeometryCollection;
+
+  let j: number;
+  let k: number;
+  let l: number;
+  let geometry: Geometry | GeometryCollection | null;
+  let coords: Position | Position[] | Position[][] | Position[][][];
+  let stopG: number;
+
+  let wrapShrink = 0;
+  let coordIndex = 0;
+
+  let geometryMaybeCollection: any;
+
+  let isGeometryCollection: boolean;
 
   const { type } = geojson;
   const isFeatureCollection = type === 'FeatureCollection';
