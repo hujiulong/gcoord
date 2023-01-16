@@ -2,8 +2,8 @@
 
 [![npm version](https://img.shields.io/npm/v/gcoord.svg)](https://www.npmjs.com/package/gcoord)
 [![codecov](https://codecov.io/gh/hujiulong/gcoord/branch/master/graph/badge.svg)](https://codecov.io/gh/hujiulong/gcoord)
-[![gzip size](http://img.badgesize.io/https://unpkg.com/gcoord/dist/gcoord.js?compression=gzip)](https://unpkg.com/gcoord/dist/gcoord.js)
-[![LICENSE](https://img.shields.io/npm/l/vue.svg)](https://www.npmjs.com/package/gcoord)
+[![gzip size](http://img.badgesize.io/https://unpkg.com/gcoord/dist/gcoord.global.prod.js?compression=gzip)](https://unpkg.com/gcoord/dist/gcoord.global.prod.js)
+[![LICENSE](https://img.shields.io/npm/l/gcoord.svg)](https://www.npmjs.com/package/gcoord)
 [![996.icu](https://img.shields.io/badge/link-996.icu-red.svg)](https://996.icu)
 
 **gcoord**(**g**eographic **coord**inates)是一个处理地理坐标系的JS库，用来修正百度地图、高德地图及其它互联网地图坐标系不统一的问题。
