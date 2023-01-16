@@ -3,12 +3,16 @@ module.exports = {
   testEnvironment: 'node',
   verbose: true,
   roots: ['<rootDir>/test/'],
-  testURL: 'http://localhost/',
-  globals: {
-    'ts-jest': {
-      tsconfig: 'tsconfig.json',
-      isolatedModules: true,
-    },
+  transform: {
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        tsconfig: {
+          target: 'esnext',
+          sourceMap: true,
+        },
+      },
+    ],
   },
   coveragePathIgnorePatterns: ['/node_modules/', '/test/helpers/'],
   coverageDirectory: './coverage/',

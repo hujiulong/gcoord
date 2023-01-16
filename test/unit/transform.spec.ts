@@ -1,5 +1,6 @@
 import transform from '../../src/transform';
 import { CRSTypes } from '../../src/crs';
+import { GeoJSON } from '../../src/geojson';
 import { point } from '../helpers/geojson';
 import each from '../fixtures/each';
 
@@ -65,7 +66,7 @@ test('transform - geojson', () => {
   expect(result[1]).toBeCloseTo(45.00197815, 5);
 
   const pt = point([123, 45]);
-  geojson = transform(JSON.stringify(pt), WGS84, GCJ02);
+  geojson = transform(JSON.stringify(pt), WGS84, GCJ02) as any;
   result = geojson.geometry.coordinates;
 
   expect(result[0]).toBeCloseTo(123.00607541, 5);
