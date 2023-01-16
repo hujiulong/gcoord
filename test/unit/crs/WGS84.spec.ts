@@ -2,7 +2,7 @@ import { WGS84 } from '../../../src/crs/index';
 import each from '../../fixtures/each';
 
 test('WGS84 to BD09', () => {
-  const transform = WGS84.to.BD09;
+  const transform = WGS84.to.BD09!;
 
   each('china-cities.json', (item) => {
     const { coords } = item;
@@ -13,7 +13,7 @@ test('WGS84 to BD09', () => {
 });
 
 test('WGS84 to BD09MC', () => {
-  const transform = WGS84.to.BD09MC;
+  const transform = WGS84.to.BD09MC!;
 
   each('china-cities.json', (item) => {
     const { coords } = item;
@@ -24,7 +24,7 @@ test('WGS84 to BD09MC', () => {
 });
 
 test('WGS84 to GCJ02', () => {
-  const transform = WGS84.to.GCJ02;
+  const transform = WGS84.to.GCJ02!;
 
   each('china-cities.json', (item) => {
     const { coords } = item;
@@ -38,7 +38,7 @@ test('WGS84 to GCJ02', () => {
 });
 
 test('WGS84 to EPSG3857', () => {
-  const transform = WGS84.to.EPSG3857;
+  const transform = WGS84.to.EPSG3857!;
 
   each('china-cities.json', (item) => {
     const { coords } = item;

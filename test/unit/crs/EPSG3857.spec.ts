@@ -2,7 +2,7 @@ import { EPSG3857 } from '../../../src/crs/index';
 import each from '../../fixtures/each';
 
 test('EPSG3857 to WGS84', () => {
-  const transform = EPSG3857.to.WGS84;
+  const transform = EPSG3857.to.WGS84!;
 
   each('china-cities.json', (item) => {
     const { coords } = item;
@@ -15,7 +15,7 @@ test('EPSG3857 to WGS84', () => {
 });
 
 test('EPSG3857 to GCJ02', () => {
-  const transform = EPSG3857.to.GCJ02;
+  const transform = EPSG3857.to.GCJ02!;
 
   each('china-cities.json', (item) => {
     const { coords } = item;
@@ -26,7 +26,7 @@ test('EPSG3857 to GCJ02', () => {
 });
 
 test('EPSG3857 to BD09', () => {
-  const transform = EPSG3857.to.BD09;
+  const transform = EPSG3857.to.BD09!;
 
   each('china-cities.json', (item) => {
     const { coords } = item;
@@ -37,7 +37,7 @@ test('EPSG3857 to BD09', () => {
 });
 
 test('EPSG3857 to BD09MC', () => {
-  const transform = EPSG3857.to.BD09MC;
+  const transform = EPSG3857.to.BD09MC!;
 
   each('china-cities.json', (item) => {
     const { coords } = item;

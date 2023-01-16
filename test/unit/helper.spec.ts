@@ -6,7 +6,7 @@ import {
   isArray,
   coordEach,
 } from '../../src/helper';
-
+import { Position } from '../../src/geojson';
 import {
   feature,
   point,
@@ -85,7 +85,7 @@ const multiPoly = multiPolygon([
 ]);
 const geomCollection = geometryCollection([pt.geometry, line.geometry]);
 const geomCollectionDeep = geometryCollection([geomCollection.geometry as any]);
-const fcNull = featureCollection([feature(null), feature(null)]);
+const fcNull = featureCollection([feature(null) as any, feature(null)] as any);
 const fcMixed = featureCollection([
   point([0, 0]),
   lineString([
@@ -104,7 +104,7 @@ const fcMixed = featureCollection([
   ]),
 ]);
 
-function featureAndCollection(geometry) {
+function featureAndCollection(geometry: any) {
   const feature = {
     type: 'Feature',
     geometry,
@@ -226,7 +226,7 @@ test('coordEach', () => {
   });
 
   featureAndCollection(line.geometry).forEach((input) => {
-    const output = [];
+    const output: Position[] = [];
     let lastIndex;
     coordEach(input, (coord, index) => {
       output.push(coord);
@@ -240,7 +240,7 @@ test('coordEach', () => {
   });
 
   featureAndCollection(multiPt.geometry).forEach((input) => {
-    const output = [];
+    const output: Position[] = [];
     let lastIndex;
     coordEach(input, (coord, index) => {
       output.push(coord);
@@ -254,7 +254,7 @@ test('coordEach', () => {
   });
 
   featureAndCollection(poly.geometry).forEach((input) => {
-    const output = [];
+    const output: Position[] = [];
     let lastIndex;
     coordEach(
       input,
@@ -268,7 +268,7 @@ test('coordEach', () => {
   });
 
   featureAndCollection(poly.geometry).forEach((input) => {
-    const output = [];
+    const output: Position[] = [];
     let lastIndex;
     coordEach(input, (coord, index) => {
       output.push(coord);
@@ -283,11 +283,11 @@ test('coordEach', () => {
     expect(lastIndex).toBe(3);
   });
 
-  let coords = [];
-  let coordIndexes = [];
-  let featureIndexes = [];
-  let multiFeatureIndexes = [];
-  let geometryIndexes = [];
+  let coords: Position[] = [];
+  let coordIndexes: number[] = [];
+  let featureIndexes: number[] = [];
+  let multiFeatureIndexes: number[] = [];
+  let geometryIndexes: number[] = [];
 
   coordEach(multiPoly, (coord, coordIndex, featureIndex, multiFeatureIndex) => {
     coords.push(coord);
@@ -355,7 +355,7 @@ test('coordEach', () => {
   expect(count).toBe(0);
 
   count = 0;
-  coordEach(null, () => count++);
+  coordEach(null as any, () => count++);
   expect(count).toBe(0);
 
   count = 0;
@@ -363,7 +363,7 @@ test('coordEach', () => {
   coordEach(
     {
       type: null,
-    },
+    } as any,
     (coord, index) => {
       count++;
     },

@@ -146,7 +146,7 @@ export function point<P = Properties>(
  *
  * //=points
  */
-export function points<P = Properties>(
+export function points<P extends Properties>(
   coordinates: Position[],
   properties?: P,
   options: { bbox?: BBox; id?: Id } = {}
@@ -217,7 +217,7 @@ export function polygon<P = Properties>(
  *
  * //=polygons
  */
-export function polygons<P = Properties>(
+export function polygons<P extends Properties>(
   coordinates: Position[][][],
   properties?: P,
   options: { bbox?: BBox; id?: Id } = {}
@@ -281,7 +281,7 @@ export function lineString<P = Properties>(
  *
  * //=linestrings
  */
-export function lineStrings<P = Properties>(
+export function lineStrings<P extends Properties>(
   coordinates: Position[][],
   properties?: P,
   options: { bbox?: BBox; id?: Id } = {}

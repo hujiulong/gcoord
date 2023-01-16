@@ -1,12 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES3",
+    "target": "ES2016",
+    "sourceMap": false,
+    "newLine": "LF",
     "outDir": "./.tmp/ts",
     "strict": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
     "esModuleInterop": true,
-    "declaration": true,
-    "declarationDir": "./dist/types/",
-    "lib": ["ES2015"]
+    "lib": ["ESNext"]
   },
   "include": [
     "src"
