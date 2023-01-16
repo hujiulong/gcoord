@@ -1,3 +1,13 @@
+# [1.0.0](https://github.com/hujiulong/gcoord/compare/v0.3.2...v1.0.0) (2023-01-16)
+
+
+### Features
+
+* provide building products in more formats ([da8d857](https://github.com/hujiulong/gcoord/commit/da8d857b9af372fe5edb9436a46c7f9be12e78da))
+* type-friendly export mode ([dc48766](https://github.com/hujiulong/gcoord/commit/dc4876628603ec099066962473fa769f66bb035b))
+
+
+
 ## [0.3.1](https://github.com/hujiulong/gcoord/compare/v0.3.0...v0.3.1) (2021-02-23)
 
 

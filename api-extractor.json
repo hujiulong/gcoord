@@ -1,0 +1,66 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
+
+  "mainEntryPointFilePath": "./dist/types/index.d.ts",
+
+  "apiReport": {
+    "enabled": false
+  },
+
+  "docModel": {
+    "enabled": false
+  },
+
+  "dtsRollup": {
+    "enabled": true
+  },
+
+  "tsdocMetadata": {
+    "enabled": false
+  },
+
+  "messages": {
+    "compilerMessageReporting": {
+      "default": {
+        "logLevel": "warning"
+      }
+    },
+
+    "extractorMessageReporting": {
+      "default": {
+        "logLevel": "warning",
+        "addToApiReportFile": true
+      },
+
+      "ae-missing-release-tag": {
+        "logLevel": "none"
+      }
+    },
+
+    "tsdocMessageReporting": {
+      "default": {
+        "logLevel": "warning"
+      },
+
+      "tsdoc-undefined-tag": {
+        "logLevel": "none"
+      },
+
+      "tsdoc-escape-greater-than": {
+        "logLevel": "none"
+      },
+
+      "tsdoc-malformed-inline-tag": {
+        "logLevel": "none"
+      },
+
+      "tsdoc-escape-right-brace": {
+        "logLevel": "none"
+      },
+
+      "tsdoc-unnecessary-backslash": {
+        "logLevel": "none"
+      }
+    }
+  }
+}
