@@ -19,16 +19,16 @@
 
 > 导航电子地图在公开出版、销售、传播、展示和使用前，必须进行空间位置技术处理。<br> — GB 20263―2006《导航电子地图安全处理技术基本要求》，4.1
 
-## Install
+## 安装
 通过npm安装:
 ```bash
 npm install gcoord --save
 ```
 或者直接在页面中引入:
 ```html
-<script src="https://unpkg.com/gcoord/dist/gcoord.js"></script>
+<script src="https://unpkg.com/gcoord/dist/gcoord.global.prod.js"></script>
 ```
-## Import
+## 引入
 CommonJS:
 ```js
 const gcoord = require('gcoord');
@@ -40,7 +40,7 @@ import gcoord from 'gcoord';
 同时也支持AMD和CMD规范
 
 
-## Usage
+## 使用
 例如从手机的GPS得到一个经纬度坐标，需要将其展示在百度地图上，则应该将当前坐标从[WGS-84](https://github.com/hujiulong/gcoord/wiki/%E5%9C%B0%E7%90%86%E5%9D%90%E6%A0%87%E7%B3%BB#wgs-84---%E4%B8%96%E7%95%8C%E5%A4%A7%E5%9C%B0%E6%B5%8B%E9%87%8F%E7%B3%BB%E7%BB%9F)坐标系转换为[BD-09](https://github.com/hujiulong/gcoord/wiki/%E5%9C%B0%E7%90%86%E5%9D%90%E6%A0%87%E7%B3%BB#bd-09---%E7%99%BE%E5%BA%A6%E5%9D%90%E6%A0%87%E7%B3%BB)坐标系
 ```js
 var result = gcoord.transform(
