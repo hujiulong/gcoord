@@ -8,7 +8,7 @@
 
 **gcoord**(**g**eographic **coord**inates)是一个处理地理坐标系的JS库，用来修正百度地图、高德地图及其它互联网地图坐标系不统一的问题。
 
-支持转换坐标数组和GeoJSON数据，能在node环境以及所有现代浏览器（IE8+）中运行，gzip后仅3kb。
+支持转换坐标数组和 GeoJSON 数据，能在node环境以及所有现代浏览器（IE8+）中运行，gzip后仅3kb。
 
 更多信息可以阅读[地理坐标系](https://github.com/hujiulong/gcoord/wiki/%E5%9C%B0%E7%90%86%E5%9D%90%E6%A0%87%E7%B3%BB)
 
@@ -24,20 +24,25 @@
 ```bash
 npm install gcoord --save
 ```
-或者直接在页面中引入:
+
+或者直接在页面中通过 script 标签引入:
 ```html
 <script src="https://unpkg.com/gcoord/dist/gcoord.global.prod.js"></script>
 ```
+注意：通过 script 标签引入时请务必指定版本号
+
 ## 引入
 CommonJS:
 ```js
 const gcoord = require('gcoord');
 ```
+
 ES Module:
 ```js
 import gcoord from 'gcoord';
 ```
-同时也支持AMD和CMD规范
+
+通过 script 标签引入可以直接使用全局变量 `gcoord` 或 `window.gcoord`
 
 
 ## 使用
