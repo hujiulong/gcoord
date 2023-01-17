@@ -1,3 +1,18 @@
+## [1.0.1](https://github.com/hujiulong/gcoord/compare/v0.3.2...v1.0.1) (2023-01-17)
+
+
+### Bug Fixes
+
+* fix export of global and cjs formats ([c9be685](https://github.com/hujiulong/gcoord/commit/c9be685b61730b3e3b6d53ba54582b6a463699e4))
+
+
+### Features
+
+* provide building products in more formats ([549931c](https://github.com/hujiulong/gcoord/commit/549931c50e701ab17e4a44bb667b9f0dc6f2da27))
+* type-friendly export mode ([dc48766](https://github.com/hujiulong/gcoord/commit/dc4876628603ec099066962473fa769f66bb035b))
+
+
+
 # [1.0.0](https://github.com/hujiulong/gcoord/compare/v0.3.2...v1.0.0) (2023-01-16)
 
 
