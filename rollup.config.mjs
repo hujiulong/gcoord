@@ -63,7 +63,7 @@ function createConfig(format, output, plugins = []) {
 
   const isGlobalBuild = /global/.test(format)
 
-  output.exports = 'named';
+  output.exports = 'default';
   output.sourcemap = !!process.env.SOURCE_MAP
   output.banner = `/**
  * @preserve
