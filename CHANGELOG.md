@@ -1,3 +1,7 @@
+## [1.0.2](https://github.com/hujiulong/gcoord/compare/v1.0.1...v1.0.2) (2023-02-02)
+
+
+
 ## [1.0.1](https://github.com/hujiulong/gcoord/compare/v0.3.2...v1.0.1) (2023-01-17)
 
 
