@@ -93,7 +93,7 @@ async function main() {
   // build package
   step('\nBuilding package...');
   if (!skipBuild && !isDryRun) {
-    await run('npm', ['run', 'build', '--release']);
+    await run('npm', ['run', 'build', '--', '--release']);
   } else {
     console.log(`(skipped)`);
   }
