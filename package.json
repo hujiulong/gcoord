@@ -1,6 +1,6 @@
 {
   "name": "gcoord",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "geographic coordinate library",
   "main": "index.js",
   "module": "dist/gcoord.esm-bundler.js",
