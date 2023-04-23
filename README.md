@@ -8,7 +8,7 @@
 
 **gcoord**(**g**eographic **coord**inates)是一个处理地理坐标系的JS库，用来修正百度地图、高德地图及其它互联网地图坐标系不统一的问题。
 
-支持转换坐标数组和 GeoJSON 数据，能在node环境以及所有现代浏览器（IE8+）中运行，gzip后仅3kb。
+支持转换坐标数组和 GeoJSON 数据，无外部依赖，能在 nodejs、所有现代浏览器（IE8+）和 React Native 等环境中运行，gzip后仅3kb。
 
 更多信息可以阅读[地理坐标系](https://github.com/hujiulong/gcoord/wiki/%E5%9C%B0%E7%90%86%E5%9D%90%E6%A0%87%E7%B3%BB)
 
