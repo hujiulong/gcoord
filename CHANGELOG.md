@@ -1,3 +1,12 @@
+## [1.0.6](https://github.com/hujiulong/gcoord/compare/v1.0.5...v1.0.6) (2024-03-12)
+
+
+### Bug Fixes
+
+* support for mini-program (closes [#232](https://github.com/hujiulong/gcoord/issues/232)) ([b62a3b9](https://github.com/hujiulong/gcoord/commit/b62a3b96ddd897ca067ed51f7fd117c0268dded3))
+
+
+
 ## [1.0.5](https://github.com/hujiulong/gcoord/compare/v1.0.4...v1.0.5) (2023-02-02)
 
 
