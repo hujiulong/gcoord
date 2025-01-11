@@ -103,7 +103,7 @@ export function BD09MCtoBD09(coord: Position): Position {
   const [x, y] = coord;
   let factors: number[] = [];
   for (let i = 0; i < MCBAND.length; i++) {
-    if (y >= MCBAND[i]) {
+    if (Math.abs(y) >= MCBAND[i]) {
       factors = MC2LL[i];
       break;
     }
