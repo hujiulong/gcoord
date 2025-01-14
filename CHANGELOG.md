@@ -1,3 +1,14 @@
+## [1.0.7](https://github.com/hujiulong/gcoord/compare/v1.0.6...v1.0.7) (2025-01-14)
+
+
+### Bug Fixes
+
+* BD09MCtoBD09 error when latitude < 0 ([#236](https://github.com/hujiulong/gcoord/issues/236)) ([fc6bb6d](https://github.com/hujiulong/gcoord/commit/fc6bb6d105e9427d2deff6ad3d633e547cceb1cd))
+* fix typo ([#237](https://github.com/hujiulong/gcoord/issues/237)) ([af03233](https://github.com/hujiulong/gcoord/commit/af032334791b82c65eebc3d21be6e15ee983eca6))
+* rename ESPG3857 to EPSG3857 ([#238](https://github.com/hujiulong/gcoord/issues/238)) ([0639cf8](https://github.com/hujiulong/gcoord/commit/0639cf81ecefdb2eabb3142e56be3c6bdf71edb2))
+
+
+
 ## [1.0.6](https://github.com/hujiulong/gcoord/compare/v1.0.5...v1.0.6) (2024-03-12)
 
 
