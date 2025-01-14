@@ -7,7 +7,7 @@ const D2R = Math.PI / 180;
 const A = 6378137.0;
 const MAXEXTENT = 20037508.342789244;
 
-export function ESPG3857ToWGS84(xy: Position): Position {
+export function EPSG3857ToWGS84(xy: Position): Position {
   return [
     (xy[0] * R2D) / A,
     (Math.PI * 0.5 - 2.0 * Math.atan(Math.exp(-xy[1] / A))) * R2D,
