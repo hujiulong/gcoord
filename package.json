@@ -16,7 +16,7 @@
   "scripts": {
     "build": "node scripts/build.js",
     "lint": "eslint --ext .js,.ts, ./src",
-    "test": "jest && codecov",
+    "test": "jest",
     "release": "node scripts/release.js",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "format": "prettier --write \"src/**/*.ts\"",
@@ -63,7 +63,6 @@
     "@typescript-eslint/eslint-plugin": "^5.50.0",
     "@typescript-eslint/parser": "^5.48.1",
     "chalk": "^4.1.2",
-    "codecov": "^3.8.1",
     "conventional-changelog-cli": "^2.2.2",
     "enquirer": "^2.3.6",
     "eslint": "^8.33.0",

@@ -17,4 +17,5 @@ module.exports = {
   coveragePathIgnorePatterns: ['/node_modules/', '/test/helpers/'],
   coverageDirectory: './coverage/',
   collectCoverage: true,
+  coverageReporters: ['text', 'cobertura'],
 };
