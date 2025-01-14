@@ -1,6 +1,6 @@
 import { GCJ02ToWGS84, WGS84ToGCJ02 } from './GCJ02';
 import { BD09ToGCJ02, GCJ02ToBD09 } from './BD09';
-import { ESPG3857ToWGS84, WGS84ToEPSG3857 } from './EPSG3857';
+import { EPSG3857ToWGS84, WGS84ToEPSG3857 } from './EPSG3857';
 import { BD09MCtoBD09, BD09toBD09MC } from './BD09MC';
 import { compose } from '../helper';
 
@@ -67,14 +67,14 @@ export const BD09: CRS = {
 
 export const EPSG3857: CRS = {
   to: {
-    [CRSTypes.WGS84]: ESPG3857ToWGS84,
-    [CRSTypes.GCJ02]: compose(WGS84ToGCJ02, ESPG3857ToWGS84),
-    [CRSTypes.BD09]: compose(GCJ02ToBD09, WGS84ToGCJ02, ESPG3857ToWGS84),
+    [CRSTypes.WGS84]: EPSG3857ToWGS84,
+    [CRSTypes.GCJ02]: compose(WGS84ToGCJ02, EPSG3857ToWGS84),
+    [CRSTypes.BD09]: compose(GCJ02ToBD09, WGS84ToGCJ02, EPSG3857ToWGS84),
     [CRSTypes.BD09MC]: compose(
       BD09toBD09MC,
       GCJ02ToBD09,
       WGS84ToGCJ02,
-      ESPG3857ToWGS84
+      EPSG3857ToWGS84
     ),
   },
 };
