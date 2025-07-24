@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coordinate Converter (WGS84 → GCJ02, BD09)</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 0; }
+    .container { max-width: 400px; margin: 60px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 32px; }
+    h1 { font-size: 1.4em; margin-bottom: 0.5em; }
+    label { display: block; margin-bottom: 0.5em; font-weight: bold; }
+    input[type="text"] { width: 100%; padding: 8px; font-size: 1em; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 1em; }
+    .hint { color: #888; font-size: 0.95em; margin-bottom: 1em; }
+    button { background: #007bff; color: #fff; border: none; padding: 10px 18px; border-radius: 4px; font-size: 1em; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    .results { margin-top: 2em; }
+    .result-label { font-weight: bold; margin-top: 1em; }
+    .error { color: #c00; margin-top: 1em; }
+    #map-container {
+    flex: 1 1 auto;
+    min-height: 750px; /* fallback for very small screens */
+    margin-top: 2em;
+  }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Coordinate Converter</h1>
+    <div class="hint">Enter WGS84 coordinates as <b>longitude, latitude</b> (e.g., <code>116.391212, 39.90779</code>)</div>
+    <form id="convert-form">
+      <label for="wgs84">WGS84 Coordinates</label>
+      <input type="text" id="wgs84" name="wgs84" placeholder="116.391212, 39.90779" required />
+      <button type="submit">Convert</button>
+      <div style="margin-top:1em;">
+        <label style="display:flex;align-items:center;gap:0.5em;">
+          <input type="checkbox" id="swapOrder" checked />
+          Swap lon/lat order in output
+        </label>
+        <label style="display:flex;align-items:center;gap:0.5em;">
+          <input type="checkbox" id="dmsFormat" checked />
+          Convert to deg-minutes-secs format
+        </label>
+      </div>
+    </form>
+    <div style="margin-top:2em;">
+      <label for="srt-upload" style="font-weight:bold;">Upload SRT file for locus extraction</label>
+      <input type="file" id="srt-upload" accept=".srt" />
+      <button id="srt-upload-btn" type="button">Process SRT</button>
+    </div>
+    <div class="results" id="results" style="display:none;">
+      <div class="result-label">GCJ02:</div>
+      <div id="gcj02"></div>
+      <div class="result-label">BD09:</div>
+      <div id="bd09"></div>
+    </div>
+    <div class="error" id="error" style="display:none;"></div>
+
+  </div>
+  <div id="map-container" style="height: max-content;margin-top: 2em;"></div>
+  <script src="../../dist/gcoord.global.prod.js"></script>
+  <script src="main.js"></script>
+  <!-- 加载地图JSAPI脚本 -->
+<!-- The AMap API key is now loaded dynamically from a separate JS file for security. See map-key.js. -->
+<script src="map-key.js"></script>
+<script id="amap-script"></script>
+<script>
+  function initMap() {
+    var map = new AMap.Map('map-container', {
+      viewMode: '2D', // 默认使用 2D 模式，如果希望使用带有俯仰角的 3D 模式，请设置 viewMode: '3D'
+      zoom:20, // 初始化地图层级，maximum 20
+      center: [116.397453, 39.909191] // 初始化地图中心点
+    });
+    const lineArr = [
+      [116.397553, 39.909291],
+      [116.397553, 39.909091],
+      [116.397353, 39.909091],
+      [116.397353, 39.909291]
+    ];
+    const polyline = new AMap.Polyline({
+      path: lineArr, //设置线覆盖物路径
+      strokeColor: "#cf663F", //线颜色
+      strokeWeight: 2, //线宽
+      strokeStyle: "dot", //线样式
+    });
+    map.add(polyline);
+    const infoWindow = new AMap.InfoWindow({
+      //创建信息窗体
+      isCustom: true, //使用自定义窗体
+      content: "<div>HELLO,AMAP!</div>", //信息窗体的内容可以是任意html片段
+      offset: new AMap.Pixel(16, -45),
+    });
+    const onMarkerClick = function (e) {
+      infoWindow.open(map, e.target.getPosition()); //打开信息窗体
+      //e.target就是被点击的Marker
+    };
+    const marker = new AMap.Marker({
+      position: [116.397453, 39.909191],
+    });
+    map.add(marker);
+    marker.on("click", onMarkerClick); //绑定click事件
+    window.map = map; // Make map global if needed elsewhere
+  }
+</script>
+</body>
+</html> 
