@@ -1,6 +1,7 @@
 let lastCoords = null; // Store last valid coordinates
 
-function addPolygon(mapele, data) {
+function AMAPaddPolygon(mapele, data) {
+  // AMAP api for adding polygon
   if (mapele == null) {
     return;
   }
@@ -29,6 +30,27 @@ function addPolygon(mapele, data) {
   mapele.add(polygon);
 }
 
+function TDTaddPolygon(mapele, data) {
+  // TDT api for adding polygon
+  if (mapele == null) {
+    return;
+  }
+  var TDTpoints = [];
+  for (var i = 0; i < data.length; i++) {
+    TDTpoints.push(new T.LngLat(data[i][0], data[i][1]));
+  }
+  //创建面对象
+  var polygon = new T.Polygon(TDTpoints, {
+    color: 'green',
+    weight: 2,
+    opacity: 0.2,
+    fillColor: '#0FcF7F',
+    fillOpacity: 0.3,
+  });
+  //向地图上添加面
+  mapele.addOverLay(polygon);
+}
+
 function pointBBox(center, side) {
   // 计算点周围矩形的四个顶点
   const bbox = [];
@@ -45,6 +67,42 @@ function pointBBox(center, side) {
   return bbox;
 }
 
+function panToPoint(coords) {
+  var hasAMap = map ? true : false;
+  var hasTDTMap = tdtmap ? true : false;
+  if (hasAMap) {
+    var position = new AMap.LngLat(coords[0], coords[1]);
+
+    map.setCenter(position, false, 500);
+    var bbox = pointBBox(coords, 0.01);
+    AMAPaddPolygon(map, bbox);
+    console.log(bbox);
+  }
+  if (hasTDTMap) {
+    var position = new T.LngLat(coords[0], coords[1]);
+    tdtmap.panTo(position);
+    tdtmap.clearOverLays();
+
+    marker = new T.Marker(position); // 创建点
+
+    tdtmap.addOverLay(marker);
+    var label = new T.Label({
+      text: '<b>' + coords.toString() + '<b>',
+      position: marker.getLngLat(),
+      offset: new T.Point(3, -30),
+    });
+    tdtmap.addOverLay(label);
+
+    marker.enableDragging();
+    marker.addEventListener('drag', function (e) {
+      label.setLngLat(marker.getLngLat());
+      var p = marker.getLngLat();
+      var ob = [p.getLng(), p.getLat()];
+      label.setLabel('<b>' + ob.toString() + '<b>');
+    });
+  }
+}
+
 function renderResults(coords) {
   const errorDiv = document.getElementById('error');
   const resultsDiv = document.getElementById('results');
@@ -55,6 +113,7 @@ function renderResults(coords) {
 
   // Access the map instance that's defined in the HTML
   var hasMap = map ? true : false;
+  var hasTDTMap = tdtmap ? true : false;
 
   errorDiv.style.display = 'none';
   resultsDiv.style.display = 'none';
@@ -94,14 +153,10 @@ function renderResults(coords) {
     bd09Div.textContent = formatOutput(bd09);
     resultsDiv.style.display = 'block';
 
-    if (hasMap) {
-      var position = new AMap.LngLat(gcj02[0], gcj02[1]);
-      map.setCenter(position, false, 500);
-      var bbox = pointBBox(gcj02, 0.01);
-      addPolygon(map, bbox);
-      console.log(bbox);
-      // console.log(position.toJSON());
-      // console.log(map.getZoom());
+    if (hasTDTMap) {
+      panToPoint(coords);
+    } else {
+      panToPoint(gcj02);
     }
   } catch (err) {
     errorDiv.textContent = 'Conversion failed: ' + (err.message || err);
@@ -167,24 +222,39 @@ srtBtn &&
       const gcj02PolygonPoints = polygonPoints.map((pt) =>
         gcoord.transform(pt, gcoord.WGS84, gcoord.GCJ02)
       );
-      if (gcj02PolygonPoints.length >= 3 && typeof map !== 'undefined' && map) {
-        addPolygon(map, gcj02PolygonPoints);
-        // Compute center of mass
-        const sum = gcj02PolygonPoints.reduce(
-          (acc, pt) => [acc[0] + pt[0], acc[1] + pt[1]],
-          [0, 0]
-        );
-        const center = [
-          sum[0] / gcj02PolygonPoints.length,
-          sum[1] / gcj02PolygonPoints.length,
-        ];
-        map.setCenter(new AMap.LngLat(center[0], center[1]), false, 500);
-        console.log('Polygon points (GCJ02):', gcj02PolygonPoints);
-        console.log('Center of mass:', center);
-      } else {
-        console.log(
-          'Not enough points to form a polygon or map not available.'
-        );
+      if (gcj02PolygonPoints.length >= 3) {
+        if (typeof map !== 'undefined' && map) {
+          AMAPaddPolygon(map, gcj02PolygonPoints);
+          // Compute center of mass
+          const sum = gcj02PolygonPoints.reduce(
+            (acc, pt) => [acc[0] + pt[0], acc[1] + pt[1]],
+            [0, 0]
+          );
+          const center = [
+            sum[0] / gcj02PolygonPoints.length,
+            sum[1] / gcj02PolygonPoints.length,
+          ];
+          map.setCenter(new AMap.LngLat(center[0], center[1]), false, 500);
+          console.log('Polygon points (GCJ02):', gcj02PolygonPoints);
+          console.log('Center of mass:', center);
+        } else if (typeof tdtmap !== 'undefined' && tdtmap) {
+          console.log('TDTmap available' + tdtmap);
+          TDTaddPolygon(tdtmap, polygonPoints);
+          // Compute center of mass
+          const sum = polygonPoints.reduce(
+            (acc, pt) => [acc[0] + pt[0], acc[1] + pt[1]],
+            [0, 0]
+          );
+          const center = [
+            sum[0] / polygonPoints.length,
+            sum[1] / polygonPoints.length,
+          ];
+          tdtmap.panTo(new T.LngLat(center[0], center[1]));
+        } else {
+          console.log(
+            'Not enough points to form a polygon or map not available.'
+          );
+        }
       }
     };
     reader.readAsText(file);

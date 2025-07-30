@@ -16,7 +16,7 @@
     .results { margin-top: 2em; }
     .result-label { font-weight: bold; margin-top: 1em; }
     .error { color: #c00; margin-top: 1em; }
-    #map-container {
+    #amap-container {
     flex: 1 1 auto;
     min-height: 750px; /* fallback for very small screens */
     margin-top: 2em;
@@ -56,7 +56,8 @@
     <div class="error" id="error" style="display:none;"></div>
 
   </div>
-  <div id="map-container" style="height: max-content;margin-top: 2em;"></div>
+  <div id="tdtmap-container" style="height:750px"></div>
+  <div id="amap-container" style="height: max-content;margin-top: 2em;"></div>
   <script src="../../dist/gcoord.global.prod.js"></script>
   <script src="main.js"></script>
   <!-- 加载地图JSAPI脚本 -->
@@ -64,41 +65,77 @@
 <script src="map-key.js"></script>
 <script id="amap-script"></script>
 <script>
-  function initMap() {
-    var map = new AMap.Map('map-container', {
-      viewMode: '2D', // 默认使用 2D 模式，如果希望使用带有俯仰角的 3D 模式，请设置 viewMode: '3D'
-      zoom:20, // 初始化地图层级，maximum 20
-      center: [116.397453, 39.909191] // 初始化地图中心点
-    });
-    const lineArr = [
-      [116.397553, 39.909291],
-      [116.397553, 39.909091],
-      [116.397353, 39.909091],
-      [116.397353, 39.909291]
-    ];
-    const polyline = new AMap.Polyline({
-      path: lineArr, //设置线覆盖物路径
-      strokeColor: "#cf663F", //线颜色
-      strokeWeight: 2, //线宽
-      strokeStyle: "dot", //线样式
-    });
-    map.add(polyline);
-    const infoWindow = new AMap.InfoWindow({
-      //创建信息窗体
-      isCustom: true, //使用自定义窗体
-      content: "<div>HELLO,AMAP!</div>", //信息窗体的内容可以是任意html片段
-      offset: new AMap.Pixel(16, -45),
-    });
-    const onMarkerClick = function (e) {
-      infoWindow.open(map, e.target.getPosition()); //打开信息窗体
-      //e.target就是被点击的Marker
-    };
-    const marker = new AMap.Marker({
-      position: [116.397453, 39.909191],
-    });
-    map.add(marker);
-    marker.on("click", onMarkerClick); //绑定click事件
-    window.map = map; // Make map global if needed elsewhere
+  function initTDTMap() {
+    var map = new T.Map('tdtmap-container');
+    map.centerAndZoom(new T.LngLat(116.39129,39.90707), 16);
+    //创建比例尺控件对象
+    var scale = new T.Control.Scale();
+    //添加比例尺控件
+    map.addControl(scale);
+    //创建鹰眼控件对象
+    var overview = new T.Control.OverviewMap({
+                isOpen: true,
+                size: new T.Point(150, 150)
+            });
+    //添加鹰眼控件
+    map.addControl(overview);
+    //创建对象
+    var ctrl = new T.Control.MapType();
+    //添加控件
+    map.addControl(ctrl);
+    map.clearOverLays();
+    window.tdtmap = map;
+  }
+  function initAMap() {
+    try {
+      // Check if AMap is available before trying to use it
+      if (typeof AMap === 'undefined') {
+        throw new Error('AMap API not loaded. Please check if the API key is provided.');
+      }
+      
+      var map = new AMap.Map('amap-container', {
+        viewMode: '2D', // 默认使用 2D 模式，如果希望使用带有俯仰角的 3D 模式，请设置 viewMode: '3D'
+        zoom:20, // 初始化地图层级，maximum 20
+        center: [116.397453, 39.909191] // 初始化地图中心点
+      });
+      const lineArr = [
+        [116.397553, 39.909291],
+        [116.397553, 39.909091],
+        [116.397353, 39.909091],
+        [116.397353, 39.909291]
+      ];
+      const polyline = new AMap.Polyline({
+        path: lineArr, //设置线覆盖物路径
+        strokeColor: "#cf663F", //线颜色
+        strokeWeight: 2, //线宽
+        strokeStyle: "dot", //线样式
+      });
+      map.add(polyline);
+      const infoWindow = new AMap.InfoWindow({
+        //创建信息窗体
+        isCustom: true, //使用自定义窗体
+        content: "<div>HELLO,AMAP!</div>", //信息窗体的内容可以是任意html片段
+        offset: new AMap.Pixel(16, -45),
+      });
+      const onMarkerClick = function (e) {
+        infoWindow.open(map, e.target.getPosition()); //打开信息窗体
+        //e.target就是被点击的Marker
+      };
+      const marker = new AMap.Marker({
+        position: [116.397453, 39.909191],
+      });
+      map.add(marker);
+      marker.on("click", onMarkerClick); //绑定click事件
+      window.map = map; // Make map global if needed elsewhere
+    } catch (error) {
+      console.log('Failed to initialize AMap:');
+      window.map = null;
+      // Optionally show a user-friendly message
+      const mapContainer = document.getElementById('amap-container');
+      if (mapContainer) {
+        mapContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">AMap initialization failed. Please check if the API key is provided.</div>';
+      }
+    }
   }
 </script>
 </body>
