@@ -1,6 +1,6 @@
 {
   "name": "gcoord",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "description": "geographic coordinate library",
   "main": "index.js",
   "module": "dist/gcoord.esm-bundler.js",
@@ -20,7 +20,9 @@
     "release": "node scripts/release.js",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "format": "prettier --write \"src/**/*.ts\"",
-    "gpr-setup": "node scripts/gpr-setup.js"
+    "gpr-setup": "node scripts/gpr-setup.js",
+    "webui": "nodemon src/webui/server.js",
+    "build:fitsdk": "rollup -c rollup.config.fitsdk.mjs"
   },
   "gitHooks": {
     "pre-commit": "lint-staged",
@@ -70,6 +72,7 @@
     "jest": "^29.3.1",
     "lint-staged": "^13.1.0",
     "minimist": "^1.2.5",
+    "nodemon": "^3.1.10",
     "prettier": "^2.2.1",
     "rollup": "^3.10.0",
     "rollup-plugin-typescript2": "^0.34.1",
@@ -77,5 +80,9 @@
     "ts-jest": "^29.0.4",
     "typescript": "^4.0.5",
     "yorkie": "^2.0.0"
+  },
+  "dependencies": {
+    "@garmin/fitsdk": "^21.194.0",
+    "express": "^5.1.0"
   }
 }

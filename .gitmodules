@@ -1,0 +1,3 @@
+[submodule "fit-javascript-sdk"]
+	path = fit-javascript-sdk
+	url = https://github.com/garmin/fit-javascript-sdk.git
