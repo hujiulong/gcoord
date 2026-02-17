@@ -893,7 +893,7 @@ html, body {
 .track-line-indicator {
   width: 16px;
   height: 3px;
-  background: #3b82f6;
+  background: currentColor;
   border-radius: 2px;
   flex-shrink: 0;
 }

@@ -320,7 +320,9 @@
     state.tracks.forEach((track) => {
       html += `
         <div class="legend-item">
-          <span class="legend-line" style="background: #3b82f6"></span>
+          <span class="legend-line" style="background: ${
+            track.color || '#3b82f6'
+          }"></span>
           <span class="legend-text">${track.displayName}</span>
         </div>
       `;
@@ -1055,6 +1057,33 @@ Return ONLY valid JSON, no markdown or explanation. All location names must be i
   // ============================================
 
   const SEMICIRCLES_TO_DEGREES = 180 / Math.pow(2, 31);
+  const TRACK_MAX_SEGMENTS = 200;
+
+  // Map time of day to hue: 8:00 AM = 0 (red), through rainbow, 7:59 AM next day = ~360
+  function timeOfDayToHue(timestamp) {
+    const d = new Date(timestamp);
+    let minutesSince8AM = (d.getHours() - 8) * 60 + d.getMinutes();
+    if (minutesSince8AM < 0) minutesSince8AM += 1440;
+    return (minutesSince8AM / 1440) * 360;
+  }
+
+  function hslToHex(h, s, l) {
+    s /= 100;
+    l /= 100;
+    const a = s * Math.min(l, 1 - l);
+    const f = (n) => {
+      const k = (n + h / 30) % 12;
+      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * color)
+        .toString(16)
+        .padStart(2, '0');
+    };
+    return `#${f(0)}${f(8)}${f(4)}`;
+  }
+
+  function getTrackColorForTime(timestamp) {
+    return hslToHex(timeOfDayToHue(timestamp), 80, 50);
+  }
 
   function parseFitFile(arrayBuffer, fileName) {
     const { Decoder, Stream } = window.FitSDK;
@@ -1267,15 +1296,33 @@ Return ONLY valid JSON, no markdown or explanation. All location names must be i
       }
     }
 
-    // Create polyline
-    const lngLats = displayPoints.map((p) => new T.LngLat(p.lon, p.lat));
-    const polyline = new T.Polyline(lngLats, {
-      color: '#3b82f6',
-      weight: 3,
-      opacity: 0.8,
-    });
-    state.map.addOverLay(polyline);
-    track.overlays.push(polyline);
+    // Compute average track color from start/end timestamps
+    const startTime = points[0].timestamp;
+    const endTime = points[points.length - 1].timestamp;
+    const avgTime = new Date((startTime.getTime() + endTime.getTime()) / 2);
+    track.color = getTrackColorForTime(avgTime);
+
+    // Create segmented polylines with time-based rainbow coloring
+    const allLngLats = [];
+    const segSize = Math.max(
+      2,
+      Math.ceil(displayPoints.length / TRACK_MAX_SEGMENTS)
+    );
+    for (let i = 0; i < displayPoints.length - 1; i += segSize) {
+      const end = Math.min(i + segSize, displayPoints.length - 1);
+      const segPoints = displayPoints.slice(i, end + 1);
+      const midIdx = Math.floor((i + end) / 2);
+      const color = getTrackColorForTime(displayPoints[midIdx].timestamp);
+      const lngLats = segPoints.map((p) => new T.LngLat(p.lon, p.lat));
+      allLngLats.push(...lngLats);
+      const polyline = new T.Polyline(lngLats, {
+        color: color,
+        weight: 3,
+        opacity: 0.8,
+      });
+      state.map.addOverLay(polyline);
+      track.overlays.push(polyline);
+    }
 
     // Start marker (green)
     const startPoint = points[0];
@@ -1317,7 +1364,7 @@ Return ONLY valid JSON, no markdown or explanation. All location names must be i
     track.overlays.push(endMarker);
 
     // Fit map to track bounds
-    state.map.setViewport(lngLats);
+    state.map.setViewport(allLngLats);
   }
 
   function createTrackMarkerIcon(color, letter) {
@@ -1422,7 +1469,9 @@ Return ONLY valid JSON, no markdown or explanation. All location names must be i
 
       const trackHtml = `
         <div class="tree-day track-section" data-track-id="${track.id}">
-          <div class="tree-day-header track-header">
+          <div class="tree-day-header track-header" style="border-left-color: ${
+            track.color || '#3b82f6'
+          }">
             <button class="tree-toggle" data-track-toggle="${track.id}">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M6 9l6 6 6-6"/>
@@ -1431,7 +1480,9 @@ Return ONLY valid JSON, no markdown or explanation. All location names must be i
             <input type="checkbox" class="tree-cb" ${
               track.visible ? 'checked' : ''
             } data-type="track" data-track-id="${track.id}">
-            <span class="track-line-indicator"></span>
+            <span class="track-line-indicator" style="background: ${
+              track.color || '#3b82f6'
+            }"></span>
             <span class="day-title track-name" data-track-id="${
               track.id
             }" title="Double-click to rename">${track.displayName}</span>
