@@ -66,7 +66,15 @@
             </svg>
             Save
           </button>
-          <input type="file" id="file-input" accept=".md,.txt" hidden>
+          <button class="btn" id="export-kml" title="Export checked tracks to KML">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            KML
+          </button>
+          <input type="file" id="file-input" accept=".md,.txt,.fit,.kml,.gpx" multiple hidden>
         </div>
         <div class="toolbar-group">
           <button class="btn-icon" id="toggle-right-sidebar" title="Toggle editor">
@@ -237,6 +245,7 @@ Day 2 - Great Wall Adventure
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Scripts -->
+  <script src="../../dist/fitsdk.global.prod.js"></script>
   <script src="../../dist/gcoord.global.prod.js"></script>
   <script src="trip-planner.js"></script>
 </body>

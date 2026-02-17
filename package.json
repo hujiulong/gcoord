@@ -21,7 +21,8 @@
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "format": "prettier --write \"src/**/*.ts\"",
     "gpr-setup": "node scripts/gpr-setup.js",
-    "webui": "nodemon src/webui/server.js"
+    "webui": "nodemon src/webui/server.js",
+    "build:fitsdk": "rollup -c rollup.config.fitsdk.mjs"
   },
   "gitHooks": {
     "pre-commit": "lint-staged",
@@ -81,6 +82,7 @@
     "yorkie": "^2.0.0"
   },
   "dependencies": {
+    "@garmin/fitsdk": "^21.194.0",
     "express": "^5.1.0"
   }
 }

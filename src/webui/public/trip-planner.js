@@ -28,10 +28,13 @@
     geocodeApi: 'https://api.tianditu.gov.cn/geocoder',
   };
 
+  let nextTrackId = 1;
+
   const state = {
     map: null,
     markers: [],
     tripData: null,
+    tracks: [], // [{id, displayName, trackData, overlays, visible}]
     allMarkersVisible: true,
     settings: {
       llmProvider: 'local',
@@ -202,6 +205,8 @@
       if (marker.label) state.map.removeOverLay(marker.label);
     });
     state.markers = [];
+    clearAllTrackOverlays();
+    state.tracks = [];
     updateLegend();
   }
 
@@ -309,23 +314,39 @@
 
   function updateLegend() {
     const legendItems = document.getElementById('legend-items');
-    if (!state.tripData || !state.tripData.days) {
-      legendItems.innerHTML = '<p class="hint">No locations to display</p>';
-      return;
+    let html = '';
+
+    // Track legends
+    state.tracks.forEach((track) => {
+      html += `
+        <div class="legend-item">
+          <span class="legend-line" style="background: #3b82f6"></span>
+          <span class="legend-text">${track.displayName}</span>
+        </div>
+      `;
+    });
+
+    // Trip day legends
+    if (state.tripData && state.tripData.days) {
+      html += state.tripData.days
+        .map(
+          (day, i) => `
+        <div class="legend-item">
+          <span class="legend-color" style="background: ${
+            CONFIG.markerColors[i % CONFIG.markerColors.length]
+          }"></span>
+          <span class="legend-text">${day.title}</span>
+        </div>
+      `
+        )
+        .join('');
     }
 
-    legendItems.innerHTML = state.tripData.days
-      .map(
-        (day, i) => `
-      <div class="legend-item">
-        <span class="legend-color" style="background: ${
-          CONFIG.markerColors[i % CONFIG.markerColors.length]
-        }"></span>
-        <span class="legend-text">${day.title}</span>
-      </div>
-    `
-      )
-      .join('');
+    if (!html) {
+      legendItems.innerHTML = '<p class="hint">No locations to display</p>';
+    } else {
+      legendItems.innerHTML = html;
+    }
   }
 
   // ============================================
@@ -630,13 +651,24 @@ Return ONLY valid JSON, no markdown or explanation. All location names must be i
   function renderTreeView(tripData) {
     const treeContainer = document.getElementById('trip-tree');
 
+    // Remove existing trip day sections (but preserve track sections)
+    treeContainer
+      .querySelectorAll('.tree-day:not([data-track-id])')
+      .forEach((el) => el.remove());
+
+    // Remove empty state
+    const emptyState = treeContainer.querySelector('.empty-state');
+    if (emptyState) emptyState.remove();
+
     if (!tripData || !tripData.days || tripData.days.length === 0) {
-      treeContainer.innerHTML = `
-        <div class="empty-state">
-          <p>No trip loaded</p>
-          <p class="hint">Enter a trip plan or load a markdown file to get started</p>
-        </div>
-      `;
+      if (state.tracks.length === 0) {
+        treeContainer.innerHTML = `
+          <div class="empty-state">
+            <p>No trip loaded</p>
+            <p class="hint">Enter a trip plan or load a markdown file to get started</p>
+          </div>
+        `;
+      }
       return;
     }
 
@@ -694,7 +726,8 @@ Return ONLY valid JSON, no markdown or explanation. All location names must be i
       })
       .join('');
 
-    treeContainer.innerHTML = html;
+    // Append trip days after any track sections
+    treeContainer.insertAdjacentHTML('beforeend', html);
     bindTreeEvents();
   }
 
@@ -1018,6 +1051,636 @@ Return ONLY valid JSON, no markdown or explanation. All location names must be i
   }
 
   // ============================================
+  // FIT File Import
+  // ============================================
+
+  const SEMICIRCLES_TO_DEGREES = 180 / Math.pow(2, 31);
+
+  function parseFitFile(arrayBuffer, fileName) {
+    const { Decoder, Stream } = window.FitSDK;
+    const stream = Stream.fromArrayBuffer(arrayBuffer);
+
+    if (!Decoder.isFIT(stream)) {
+      throw new Error('Not a valid FIT file');
+    }
+
+    const decoder = new Decoder(stream);
+    const { messages, errors } = decoder.read({
+      applyScaleAndOffset: true,
+      convertDateTimesToDates: true,
+      expandComponents: true,
+      includeUnknownData: false,
+      convertTypesToStrings: true,
+    });
+
+    if (errors.length > 0) {
+      console.warn('FIT decode warnings:', errors);
+    }
+
+    const records = messages.recordMesgs || [];
+    const sessions = messages.sessionMesgs || [];
+
+    // Filter to records with GPS data
+    const gpsRecords = records.filter(
+      (r) => r.positionLat != null && r.positionLong != null
+    );
+
+    if (gpsRecords.length === 0) {
+      throw new Error('No GPS data found in FIT file');
+    }
+
+    // Distance filter: keep points >= 5m apart
+    const filteredRecords = [gpsRecords[0]];
+    for (let i = 1; i < gpsRecords.length; i++) {
+      const prev = filteredRecords[filteredRecords.length - 1];
+      const curr = gpsRecords[i];
+      const dist = haversineDistance(
+        prev.positionLat * SEMICIRCLES_TO_DEGREES,
+        prev.positionLong * SEMICIRCLES_TO_DEGREES,
+        curr.positionLat * SEMICIRCLES_TO_DEGREES,
+        curr.positionLong * SEMICIRCLES_TO_DEGREES
+      );
+      if (dist >= 5) {
+        filteredRecords.push(curr);
+      }
+    }
+    // Always include the last point
+    const lastRecord = gpsRecords[gpsRecords.length - 1];
+    if (filteredRecords[filteredRecords.length - 1] !== lastRecord) {
+      filteredRecords.push(lastRecord);
+    }
+
+    // Convert to track points
+    const points = filteredRecords.map((r) => ({
+      timestamp: r.timestamp,
+      latSemicircles: r.positionLat,
+      lonSemicircles: r.positionLong,
+      lat: r.positionLat * SEMICIRCLES_TO_DEGREES,
+      lon: r.positionLong * SEMICIRCLES_TO_DEGREES,
+      enhancedAltitude: r.enhancedAltitude ?? r.altitude ?? null,
+      enhancedSpeed: r.enhancedSpeed ?? r.speed ?? null,
+      distance: r.distance ?? null,
+      heartRate: r.heartRate ?? null,
+      cadence: r.cadence ?? null,
+      power: r.power ?? null,
+    }));
+
+    // Session summary
+    const session = sessions[0] || {};
+    const summary = {
+      sport: session.sport || 'unknown',
+      startTime: points[0].timestamp,
+      endTime: points[points.length - 1].timestamp,
+      totalDistance: session.totalDistance ?? null,
+      startPosition: [points[0].lon, points[0].lat],
+      endPosition: [
+        points[points.length - 1].lon,
+        points[points.length - 1].lat,
+      ],
+    };
+
+    // Compute stats
+    let maxAltitude = -Infinity;
+    let minAltitude = Infinity;
+    let maxSpeed = 0;
+    for (const p of points) {
+      if (p.enhancedAltitude != null) {
+        if (p.enhancedAltitude > maxAltitude) maxAltitude = p.enhancedAltitude;
+        if (p.enhancedAltitude < minAltitude) minAltitude = p.enhancedAltitude;
+      }
+      if (p.enhancedSpeed != null && p.enhancedSpeed > maxSpeed) {
+        maxSpeed = p.enhancedSpeed;
+      }
+    }
+
+    const stats = {
+      maxAltitude: maxAltitude === -Infinity ? null : maxAltitude,
+      minAltitude: minAltitude === Infinity ? null : minAltitude,
+      maxSpeed: maxSpeed || null,
+      totalDistance: summary.totalDistance,
+      pointCount: points.length,
+      rawPointCount: gpsRecords.length,
+    };
+
+    const waypoints = [
+      { type: 'start', pointIndex: 0, label: 'Start' },
+      { type: 'end', pointIndex: points.length - 1, label: 'End' },
+    ];
+
+    return { fileName, summary, points, waypoints, stats };
+  }
+
+  function haversineDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371000; // Earth radius in meters
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  async function loadFitTracks(files) {
+    const fitFiles = Array.from(files).filter((f) =>
+      f.name.toLowerCase().endsWith('.fit')
+    );
+    if (fitFiles.length === 0) return;
+
+    showLoading(`Loading ${fitFiles.length} FIT file(s)...`);
+    let loaded = 0;
+
+    for (const file of fitFiles) {
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const trackData = parseFitFile(arrayBuffer, file.name);
+
+        const track = {
+          id: nextTrackId++,
+          displayName: file.name,
+          trackData: trackData,
+          overlays: [],
+          visible: true,
+        };
+        state.tracks.push(track);
+        displayTrackOnMap(track);
+        loaded++;
+
+        console.log(
+          `FIT loaded: ${trackData.stats.pointCount} points ` +
+            `(filtered from ${trackData.stats.rawPointCount}), ` +
+            `sport: ${trackData.summary.sport}`
+        );
+      } catch (err) {
+        console.error(`Failed to load ${file.name}:`, err);
+        showToast(`Failed: ${file.name} - ${err.message}`, 'error');
+      }
+    }
+
+    renderAllTracksInTree();
+    updateLegend();
+
+    // Fit map to show all tracks
+    if (state.map && loaded > 0) {
+      const allPoints = [];
+      state.tracks.forEach((t) => {
+        if (t.visible && t.trackData.points.length > 0) {
+          allPoints.push(t.trackData.points[0]);
+          allPoints.push(t.trackData.points[t.trackData.points.length - 1]);
+        }
+      });
+      if (allPoints.length > 0) {
+        const lngLats = allPoints.map((p) => new T.LngLat(p.lon, p.lat));
+        state.map.setViewport(lngLats);
+      }
+    }
+
+    hideLoading();
+    if (loaded > 0) {
+      showToast(`${loaded} track(s) loaded successfully`, 'success');
+    }
+  }
+
+  function displayTrackOnMap(track) {
+    if (!state.map) {
+      showToast('Map not initialized', 'warning');
+      return;
+    }
+
+    const points = track.trackData.points;
+
+    // For very large tracks, sample points for polyline display
+    let displayPoints = points;
+    if (points.length > 10000) {
+      const step = Math.ceil(points.length / 10000);
+      displayPoints = [];
+      for (let i = 0; i < points.length; i += step) {
+        displayPoints.push(points[i]);
+      }
+      // Always include last point
+      if (
+        displayPoints[displayPoints.length - 1] !== points[points.length - 1]
+      ) {
+        displayPoints.push(points[points.length - 1]);
+      }
+    }
+
+    // Create polyline
+    const lngLats = displayPoints.map((p) => new T.LngLat(p.lon, p.lat));
+    const polyline = new T.Polyline(lngLats, {
+      color: '#3b82f6',
+      weight: 3,
+      opacity: 0.8,
+    });
+    state.map.addOverLay(polyline);
+    track.overlays.push(polyline);
+
+    // Start marker (green)
+    const startPoint = points[0];
+    const startIcon = new T.Icon({
+      iconUrl: createTrackMarkerIcon('#10b981', 'S'),
+      iconSize: new T.Point(32, 40),
+      iconAnchor: new T.Point(16, 40),
+    });
+    const startMarker = new T.Marker(
+      new T.LngLat(startPoint.lon, startPoint.lat),
+      { icon: startIcon }
+    );
+    startMarker.addEventListener('click', () => {
+      const infoWin = new T.InfoWindow({
+        content: formatTrackMarkerInfo('Start', startPoint),
+      });
+      startMarker.openInfoWindow(infoWin);
+    });
+    state.map.addOverLay(startMarker);
+    track.overlays.push(startMarker);
+
+    // End marker (red)
+    const endPoint = points[points.length - 1];
+    const endIcon = new T.Icon({
+      iconUrl: createTrackMarkerIcon('#ef4444', 'E'),
+      iconSize: new T.Point(32, 40),
+      iconAnchor: new T.Point(16, 40),
+    });
+    const endMarker = new T.Marker(new T.LngLat(endPoint.lon, endPoint.lat), {
+      icon: endIcon,
+    });
+    endMarker.addEventListener('click', () => {
+      const infoWin = new T.InfoWindow({
+        content: formatTrackMarkerInfo('End', endPoint),
+      });
+      endMarker.openInfoWindow(infoWin);
+    });
+    state.map.addOverLay(endMarker);
+    track.overlays.push(endMarker);
+
+    // Fit map to track bounds
+    state.map.setViewport(lngLats);
+  }
+
+  function createTrackMarkerIcon(color, letter) {
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">
+        <path d="M16 0C7.163 0 0 7.163 0 16c0 8.837 16 24 16 24s16-15.163 16-24C32 7.163 24.837 0 16 0z" fill="${color}"/>
+        <circle cx="16" cy="14" r="10" fill="white"/>
+        <text x="16" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="${color}">${letter}</text>
+      </svg>
+    `;
+    return 'data:image/svg+xml;base64,' + btoa(svg);
+  }
+
+  function formatTrackMarkerInfo(label, point) {
+    const time = point.timestamp
+      ? new Date(point.timestamp).toLocaleString()
+      : 'N/A';
+    const alt =
+      point.enhancedAltitude != null
+        ? point.enhancedAltitude.toFixed(1) + ' m'
+        : 'N/A';
+    return `
+      <div class="info-window">
+        <h4>${label}</h4>
+        <p><strong>Time:</strong> ${time}</p>
+        <p><strong>Coordinates:</strong> ${point.lon.toFixed(
+          6
+        )}, ${point.lat.toFixed(6)}</p>
+        <p><strong>Altitude:</strong> ${alt}</p>
+      </div>
+    `;
+  }
+
+  function clearAllTrackOverlays() {
+    if (!state.map) return;
+    state.tracks.forEach((track) => {
+      track.overlays.forEach((overlay) => state.map.removeOverLay(overlay));
+      track.overlays = [];
+    });
+  }
+
+  function removeTrack(trackId) {
+    const idx = state.tracks.findIndex((t) => t.id === trackId);
+    if (idx === -1) return;
+    const track = state.tracks[idx];
+    if (state.map) {
+      track.overlays.forEach((overlay) => state.map.removeOverLay(overlay));
+    }
+    state.tracks.splice(idx, 1);
+    renderAllTracksInTree();
+    updateLegend();
+  }
+
+  function renderAllTracksInTree() {
+    const treeContainer = document.getElementById('trip-tree');
+
+    // Remove all existing track sections
+    treeContainer
+      .querySelectorAll('[data-track-id]')
+      .forEach((el) => el.remove());
+
+    if (state.tracks.length === 0 && !state.tripData) {
+      // Only show empty state if there's also no trip data
+      if (!treeContainer.querySelector('.tree-day:not([data-track-id])')) {
+        treeContainer.innerHTML = `
+          <div class="empty-state">
+            <p>No trip loaded</p>
+            <p class="hint">Enter a trip plan or load a markdown file to get started</p>
+          </div>
+        `;
+      }
+      return;
+    }
+
+    // Remove empty state if present
+    const emptyState = treeContainer.querySelector('.empty-state');
+    if (emptyState) emptyState.remove();
+
+    // Render each track
+    state.tracks.forEach((track) => {
+      const trackData = track.trackData;
+
+      const startTime = trackData.summary.startTime
+        ? new Date(trackData.summary.startTime).toLocaleString()
+        : 'N/A';
+      const endTime = trackData.summary.endTime
+        ? new Date(trackData.summary.endTime).toLocaleString()
+        : 'N/A';
+
+      const distKm =
+        trackData.stats.totalDistance != null
+          ? (trackData.stats.totalDistance / 1000).toFixed(2) + ' km'
+          : 'N/A';
+      const maxAlt =
+        trackData.stats.maxAltitude != null
+          ? trackData.stats.maxAltitude.toFixed(1) + ' m'
+          : 'N/A';
+      const maxSpd =
+        trackData.stats.maxSpeed != null
+          ? (trackData.stats.maxSpeed * 3.6).toFixed(1) + ' km/h'
+          : 'N/A';
+
+      const trackHtml = `
+        <div class="tree-day track-section" data-track-id="${track.id}">
+          <div class="tree-day-header track-header">
+            <button class="tree-toggle" data-track-toggle="${track.id}">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </button>
+            <input type="checkbox" class="tree-cb" ${
+              track.visible ? 'checked' : ''
+            } data-type="track" data-track-id="${track.id}">
+            <span class="track-line-indicator"></span>
+            <span class="day-title track-name" data-track-id="${
+              track.id
+            }" title="Double-click to rename">${track.displayName}</span>
+            <span class="location-count">(${
+              trackData.stats.pointCount
+            } pts)</span>
+            <button class="btn-icon track-remove-btn" data-track-id="${
+              track.id
+            }" title="Remove track">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+          <ul class="tree-locations expanded">
+            <li class="tree-location track-waypoint" data-track-id="${
+              track.id
+            }" data-wp="start">
+              <span class="track-wp-icon track-wp-start">S</span>
+              <span class="location-info">
+                <span class="location-name">Start</span>
+                <span class="location-time">${startTime}</span>
+              </span>
+            </li>
+            <li class="tree-location track-waypoint" data-track-id="${
+              track.id
+            }" data-wp="end">
+              <span class="track-wp-icon track-wp-end">E</span>
+              <span class="location-info">
+                <span class="location-name">End</span>
+                <span class="location-time">${endTime}</span>
+              </span>
+            </li>
+            <li class="track-stats-row">
+              <span class="track-stat">
+                <span class="track-stat-label">Dist</span>
+                <span class="track-stat-value">${distKm}</span>
+              </span>
+              <span class="track-stat">
+                <span class="track-stat-label">Max Alt</span>
+                <span class="track-stat-value">${maxAlt}</span>
+              </span>
+              <span class="track-stat">
+                <span class="track-stat-label">Max Spd</span>
+                <span class="track-stat-value">${maxSpd}</span>
+              </span>
+            </li>
+          </ul>
+        </div>
+      `;
+
+      treeContainer.insertAdjacentHTML('afterbegin', trackHtml);
+    });
+
+    bindTrackTreeEvents();
+  }
+
+  function bindTrackTreeEvents() {
+    // Toggle expand/collapse
+    document.querySelectorAll('[data-track-toggle]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const dayEl = e.target.closest('.tree-day');
+        const locations = dayEl.querySelector('.tree-locations');
+        locations.classList.toggle('expanded');
+        btn.classList.toggle('collapsed');
+      });
+    });
+
+    // Track visibility checkboxes
+    document.querySelectorAll('input[data-type="track"]').forEach((cb) => {
+      cb.addEventListener('click', (e) => e.stopPropagation());
+      cb.addEventListener('change', (e) => {
+        e.stopPropagation();
+        const trackId = parseInt(e.target.dataset.trackId);
+        const track = state.tracks.find((t) => t.id === trackId);
+        if (!track || !state.map) return;
+        const visible = e.target.checked;
+        track.visible = visible;
+        track.overlays.forEach((overlay) => {
+          if (visible) {
+            state.map.addOverLay(overlay);
+          } else {
+            state.map.removeOverLay(overlay);
+          }
+        });
+      });
+    });
+
+    // Remove track buttons
+    document.querySelectorAll('.track-remove-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const trackId = parseInt(btn.dataset.trackId);
+        removeTrack(trackId);
+      });
+    });
+
+    // Double-click to rename track
+    document.querySelectorAll('.track-name').forEach((nameEl) => {
+      nameEl.addEventListener('dblclick', (e) => {
+        e.stopPropagation();
+        const trackId = parseInt(nameEl.dataset.trackId);
+        const track = state.tracks.find((t) => t.id === trackId);
+        if (!track) return;
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'track-name-input';
+        input.value = track.displayName;
+
+        const commitRename = () => {
+          const newName = input.value.trim();
+          if (newName && newName !== track.displayName) {
+            track.displayName = newName;
+            updateLegend();
+          }
+          nameEl.textContent = track.displayName;
+          nameEl.style.display = '';
+          input.remove();
+        };
+
+        input.addEventListener('blur', commitRename);
+        input.addEventListener('keydown', (ev) => {
+          if (ev.key === 'Enter') {
+            ev.preventDefault();
+            input.blur();
+          } else if (ev.key === 'Escape') {
+            input.value = track.displayName;
+            input.blur();
+          }
+        });
+
+        nameEl.style.display = 'none';
+        nameEl.parentNode.insertBefore(input, nameEl.nextSibling);
+        input.focus();
+        input.select();
+      });
+    });
+
+    // Click waypoints to pan
+    document.querySelectorAll('.track-waypoint').forEach((wpEl) => {
+      wpEl.addEventListener('click', () => {
+        const trackId = parseInt(wpEl.dataset.trackId);
+        const track = state.tracks.find((t) => t.id === trackId);
+        if (!track || !state.map) return;
+        const wp = wpEl.dataset.wp;
+        const points = track.trackData.points;
+        const point = wp === 'start' ? points[0] : points[points.length - 1];
+        state.map.panTo(new T.LngLat(point.lon, point.lat));
+        state.map.setZoom(15);
+      });
+    });
+  }
+
+  // ============================================
+  // KML Export
+  // ============================================
+
+  function exportTracksToKml() {
+    const checkedTracks = state.tracks.filter((t) => t.visible);
+    if (checkedTracks.length === 0) {
+      showToast('No tracks selected for export', 'warning');
+      return;
+    }
+
+    const placemarks = checkedTracks
+      .map((track) => {
+        const points = track.trackData.points;
+        const coordLines = points
+          .map((p) => {
+            const alt = p.enhancedAltitude != null ? p.enhancedAltitude : 0;
+            return `${p.lon},${p.lat},${alt}`;
+          })
+          .join('\n            ');
+
+        const startTime = track.trackData.summary.startTime
+          ? new Date(track.trackData.summary.startTime).toISOString()
+          : '';
+        const endTime = track.trackData.summary.endTime
+          ? new Date(track.trackData.summary.endTime).toISOString()
+          : '';
+
+        let timeSpan = '';
+        if (startTime && endTime) {
+          timeSpan = `
+        <TimeSpan>
+          <begin>${startTime}</begin>
+          <end>${endTime}</end>
+        </TimeSpan>`;
+        }
+
+        return `
+    <Placemark>
+      <name>${escapeXml(track.displayName)}</name>${timeSpan}
+      <Style>
+        <LineStyle>
+          <color>fff68c3b</color>
+          <width>3</width>
+        </LineStyle>
+      </Style>
+      <LineString>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>absolute</altitudeMode>
+        <coordinates>
+            ${coordLines}
+        </coordinates>
+      </LineString>
+    </Placemark>`;
+      })
+      .join('\n');
+
+    const kml = `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Trip Planner Export</name>
+    <description>Exported ${checkedTracks.length} track(s)</description>
+${placemarks}
+  </Document>
+</kml>`;
+
+    const blob = new Blob([kml], {
+      type: 'application/vnd.google-earth.kml+xml',
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const fileName =
+      checkedTracks.length === 1
+        ? checkedTracks[0].displayName.replace(/\.\w+$/, '') + '.kml'
+        : 'trip-export.kml';
+    a.download = fileName;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    showToast(`Exported ${checkedTracks.length} track(s) to KML`, 'success');
+  }
+
+  function escapeXml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+  }
+
+  // ============================================
   // File Operations
   // ============================================
 
@@ -1227,9 +1890,27 @@ Return ONLY valid JSON, no markdown or explanation. All location names must be i
     });
 
     document.getElementById('file-input').addEventListener('change', (e) => {
-      if (e.target.files.length > 0) {
-        loadTrip(e.target.files[0]);
+      if (e.target.files.length === 0) return;
+      const files = e.target.files;
+      const fitFiles = [];
+      let otherFile = null;
+
+      for (const file of files) {
+        if (file.name.toLowerCase().endsWith('.fit')) {
+          fitFiles.push(file);
+        } else {
+          otherFile = file;
+        }
       }
+
+      if (fitFiles.length > 0) {
+        loadFitTracks(fitFiles);
+      }
+      if (otherFile) {
+        loadTrip(otherFile);
+      }
+
+      e.target.value = '';
     });
 
     document
@@ -1242,6 +1923,11 @@ Return ONLY valid JSON, no markdown or explanation. All location names must be i
       clearMarkers();
       showToast('All markers cleared', 'info');
     });
+
+    // Export KML
+    document
+      .getElementById('export-kml')
+      .addEventListener('click', exportTracksToKml);
 
     // Markdown actions
     document.getElementById('copy-markdown').addEventListener('click', () => {

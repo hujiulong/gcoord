@@ -13,3 +13,6 @@ yarn-error.log
 *.njsproj
 *.sln
 src/webui/public/map-key.js
+
+# Activities files
+test/Activities/*.fit

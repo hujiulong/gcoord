@@ -883,6 +883,112 @@ html, body {
 }
 
 /* ============================================
+   GPS Track Tree View
+   ============================================ */
+
+.track-section .track-header {
+  border-left: 3px solid #3b82f6;
+}
+
+.track-line-indicator {
+  width: 16px;
+  height: 3px;
+  background: #3b82f6;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.track-wp-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  color: white;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-right: var(--spacing-sm);
+}
+
+.track-wp-start {
+  background: #10b981;
+}
+
+.track-wp-end {
+  background: #ef4444;
+}
+
+.track-stats-row {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.track-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.track-stat-label {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.track-stat-value {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.legend-line {
+  width: 16px;
+  height: 3px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.track-name {
+  cursor: default;
+}
+
+.track-name-input {
+  flex: 1;
+  min-width: 0;
+  padding: 2px 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--border-radius-sm);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.track-remove-btn {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.tree-day-header:hover .track-remove-btn {
+  opacity: 0.6;
+}
+
+.track-remove-btn:hover {
+  opacity: 1 !important;
+  color: var(--color-error);
+}
+
+/* ============================================
    Print Styles
    ============================================ */
 
