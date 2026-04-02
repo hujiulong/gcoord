@@ -54,7 +54,11 @@ export function isArray(input: any): input is any[] {
  * //=false
  */
 export function isNumber(input: any): input is number {
-  return !isNaN(Number(input)) && input !== null && !isArray(input);
+  if (typeof input === 'number') return Number.isFinite(input);
+  if (typeof input === 'string' && input.trim() !== '') {
+    return Number.isFinite(Number(input));
+  }
+  return false;
 }
 
 /**
@@ -70,12 +74,12 @@ export function isString(input: any): input is string {
 /**
  * compose
  */
-export function compose(...funcs: Function[]): Function {
+export function compose<T>(...funcs: Array<(arg: T) => T>): (arg: T) => T {
   const start = funcs.length - 1;
   /* eslint-disable func-names */
-  return function (...args: any[]) {
+  return function (arg: T) {
     let i = start;
-    let result = funcs[start].apply(null, args);
+    let result = funcs[start](arg);
     while (i--) result = funcs[i].call(null, result);
     return result;
   };
@@ -112,9 +116,9 @@ export function coordEach(
     coordIndex: number,
     featureIndex: number,
     multiFeatureIndex: number,
-    geometryIndex: number
+    geometryIndex: number,
   ) => any,
-  excludeWrapCoord = false
+  excludeWrapCoord = false,
 ): boolean | void | never {
   // Handles null Geometry -- Skips this GeoJSON
   if (geojson === null) return;
@@ -157,8 +161,8 @@ export function coordEach(
     geometryMaybeCollection = isFeatureCollection
       ? (<FeatureCollection>geojson).features[featureIndex].geometry
       : isFeature
-      ? (<Feature>geojson).geometry
-      : geojson;
+        ? (<Feature>geojson).geometry
+        : geojson;
     isGeometryCollection = geometryMaybeCollection
       ? geometryMaybeCollection.type === 'GeometryCollection'
       : false;
@@ -193,7 +197,7 @@ export function coordEach(
               coordIndex,
               featureIndex,
               multiFeatureIndex,
-              geometryIndex
+              geometryIndex,
             ) === false
           )
             return false;
@@ -210,7 +214,7 @@ export function coordEach(
                 coordIndex,
                 featureIndex,
                 multiFeatureIndex,
-                geometryIndex
+                geometryIndex,
               ) === false
             )
               return false;
@@ -230,7 +234,7 @@ export function coordEach(
                   coordIndex,
                   featureIndex,
                   multiFeatureIndex,
-                  geometryIndex
+                  geometryIndex,
                 ) === false
               )
                 return false;
@@ -253,7 +257,7 @@ export function coordEach(
                     coordIndex,
                     featureIndex,
                     multiFeatureIndex,
-                    geometryIndex
+                    geometryIndex,
                   ) === false
                 )
                   return false;
@@ -274,7 +278,7 @@ export function coordEach(
               coordEach(
                 (<GeometryCollection>geometry).geometries[j],
                 callback,
-                excludeWrapCoord
+                excludeWrapCoord,
               ) === false
             )
               return false;

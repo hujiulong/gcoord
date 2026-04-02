@@ -47,4 +47,8 @@ test('BD09 to BD09MC', () => {
   const result = transform([-123, -45]);
   expect(result[0]).toBeCloseTo(-13692446.35077864, 6);
   expect(result[1]).toBeCloseTo(-5591020.962240655, 6);
+
+  const equatorResult = transform([123, 0]);
+  expect(equatorResult[0]).toBeCloseTo(13692446.35430805, 6);
+  expect(equatorResult[1]).toBeCloseTo(0.00369383431289, 6);
 });

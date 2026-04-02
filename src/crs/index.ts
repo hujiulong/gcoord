@@ -3,6 +3,7 @@ import { BD09ToGCJ02, GCJ02ToBD09 } from './BD09';
 import { EPSG3857ToWGS84, WGS84ToEPSG3857 } from './EPSG3857';
 import { BD09MCtoBD09, BD09toBD09MC } from './BD09MC';
 import { compose } from '../helper';
+import { Position } from '../geojson';
 
 export enum CRSTypes {
   // WGS84
@@ -32,10 +33,10 @@ export enum CRSTypes {
   WM = EPSG3857,
 }
 
+export type CRSTransform = (coord: Position) => Position;
+
 export interface CRS {
-  to: {
-    [key in keyof typeof CRSTypes]?: Function;
-  };
+  to: Partial<Record<CRSTypes, CRSTransform>>;
 }
 
 export const WGS84: CRS = {
@@ -74,7 +75,7 @@ export const EPSG3857: CRS = {
       BD09toBD09MC,
       GCJ02ToBD09,
       WGS84ToGCJ02,
-      EPSG3857ToWGS84
+      EPSG3857ToWGS84,
     ),
   },
 };
@@ -87,7 +88,7 @@ export const BD09MC: CRS = {
       WGS84ToEPSG3857,
       GCJ02ToWGS84,
       BD09ToGCJ02,
-      BD09MCtoBD09
+      BD09MCtoBD09,
     ),
     [CRSTypes.BD09]: BD09MCtoBD09,
   },

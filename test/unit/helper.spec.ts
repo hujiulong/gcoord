@@ -138,12 +138,16 @@ test('isNumber', () => {
   expect(isNumber(-123)).toBeTruthy();
   expect(isNumber('123')).toBeTruthy();
   expect(isNumber(+'123')).toBeTruthy();
-  expect(isNumber('1e10000')).toBeTruthy();
-  expect(isNumber(1e10000)).toBeTruthy();
-  expect(isNumber(Infinity)).toBeTruthy();
-  expect(isNumber(-Infinity)).toBeTruthy();
 
   // false
+  expect(isNumber('')).toBeFalsy();
+  expect(isNumber('  ')).toBeFalsy();
+  expect(isNumber(false)).toBeFalsy();
+  expect(isNumber(true)).toBeFalsy();
+  expect(isNumber('1e10000')).toBeFalsy();
+  expect(isNumber(1e10000)).toBeFalsy();
+  expect(isNumber(Infinity)).toBeFalsy();
+  expect(isNumber(-Infinity)).toBeFalsy();
   expect(isNumber(+'ciao')).toBeFalsy();
   expect(isNumber('foo')).toBeFalsy();
   expect(isNumber('10px')).toBeFalsy();
@@ -153,7 +157,7 @@ test('isNumber', () => {
   expect(
     isNumber({
       a: 1,
-    })
+    }),
   ).toBeFalsy();
   expect(isNumber({})).toBeFalsy();
   expect(isNumber([1, 2, 3])).toBeFalsy();
@@ -165,7 +169,7 @@ test('isObject', () => {
   expect(
     isObject({
       a: 1,
-    })
+    }),
   ).toBeTruthy();
   expect(isObject({})).toBeTruthy();
 
@@ -207,7 +211,7 @@ test('isArray', () => {
   expect(
     isArray({
       a: 1,
-    })
+    }),
   ).toBeFalsy();
   expect(isArray(null)).toBeFalsy();
   expect(isArray(NaN)).toBeFalsy();
@@ -262,7 +266,7 @@ test('coordEach', () => {
         output.push(coord);
         lastIndex = index;
       },
-      true
+      true,
     );
     expect(lastIndex).toBe(2);
   });
@@ -329,7 +333,7 @@ test('coordEach', () => {
       featureIndexes.push(featureIndex);
       multiFeatureIndexes.push(multiFeatureIndex);
       geometryIndexes.push(geometryIndex);
-    }
+    },
   );
   expect(coordIndexes).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
   expect(featureIndexes).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
@@ -343,7 +347,7 @@ test('coordEach', () => {
       featureIndexes.push(featureIndex);
       multiFeatureIndexes.push(multiFeatureIndex);
       geometryIndexes.push(geometryIndex);
-    }
+    },
   );
   expect(coordIndexes).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 1]);
   expect(featureIndexes).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
@@ -367,7 +371,7 @@ test('coordEach', () => {
     (coord, index) => {
       count++;
     },
-    true
+    true,
   );
   expect(count).toBe(0);
 

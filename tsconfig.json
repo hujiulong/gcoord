@@ -4,14 +4,14 @@
     "sourceMap": false,
     "newLine": "LF",
     "outDir": "./.tmp/ts",
+    "rootDir": "./src",
     "strict": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    "ignoreDeprecations": "6.0",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "lib": ["ESNext"]
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }

@@ -1,11 +1,14 @@
 const args = require('minimist')(process.argv.slice(2));
 const fs = require('fs');
 const path = require('path');
-const chalk = require('chalk');
+const chalkModule = require('chalk');
 const semver = require('semver');
 const { prompt } = require('enquirer');
-const execa = require('execa');
+const execaModule = require('execa');
 const pkg = require('../package.json');
+
+const chalk = chalkModule.default || chalkModule;
+const execa = execaModule.execa || execaModule.default || execaModule;
 
 const currentVersion = pkg.version;
 const preId =
@@ -93,7 +96,7 @@ async function main() {
   // build package
   step('\nBuilding package...');
   if (!skipBuild && !isDryRun) {
-    await run('npm', ['run', 'build', '--', '--release']);
+    await run('npm', ['run', 'build']);
   } else {
     console.log(`(skipped)`);
   }

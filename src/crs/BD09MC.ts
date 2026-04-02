@@ -89,7 +89,7 @@ function transform(x: number, y: number, factors: number[]): Position {
 
 export function BD09toBD09MC(coord: Position): Position {
   const [lng, lat] = coord;
-  let factors: number[] = [];
+  let factors = LL2MC[LL2MC.length - 1];
   for (let i = 0; i < LLBAND.length; i++) {
     if (abs(lat) > LLBAND[i]) {
       factors = LL2MC[i];

@@ -1,10 +1,16 @@
 import transform from '../../src/transform';
+import gcoord from '../../src';
 import { CRSTypes } from '../../src/crs';
 import { GeoJSON } from '../../src/geojson';
 import { point } from '../helpers/geojson';
 import each from '../fixtures/each';
 
 const { WGS84, GCJ02, BD09, BD09MC, EPSG3857 } = CRSTypes;
+
+test('default export', () => {
+  expect(gcoord.WGS84).toBe(WGS84);
+  expect(gcoord.transform([123, 45], WGS84, WGS84)).toEqual([123, 45]);
+});
 
 test('transform - position', () => {
   each('china-cities.json', (item) => {
@@ -53,6 +59,11 @@ test('transform - position', () => {
   });
 
   expect(transform([123, 45], WGS84, WGS84)).toEqual([123, 45]);
+  expect(transform([123, 45, 10], WGS84, GCJ02)).toEqual([
+    expect.any(Number),
+    expect.any(Number),
+    10,
+  ]);
 });
 
 test('transform - geojson', () => {
@@ -76,6 +87,9 @@ test('transform - geojson', () => {
   result = geojson.geometry.coordinates;
 
   expect(result).toEqual([123, 45]);
+
+  geojson = transform(JSON.stringify(pt), WGS84, WGS84) as any;
+  expect(geojson.geometry.coordinates).toEqual([123, 45]);
 });
 
 test('transform - input check', () => {
@@ -85,6 +99,15 @@ test('transform - input check', () => {
 
   expect(() => {
     transform('foo', WGS84, GCJ02);
+  }).toThrow();
+
+  expect(() => {
+    transform('foo', WGS84, WGS84);
+  }).toThrow();
+
+  expect(() => {
+    // @ts-ignore
+    transform([Infinity, 45], WGS84, GCJ02);
   }).toThrow();
 
   expect(() => {
