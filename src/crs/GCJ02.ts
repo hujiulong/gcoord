@@ -11,20 +11,22 @@ function isInChinaBbox(lon: number, lat: number): boolean {
 }
 
 function transformLat(x: number, y: number): number {
-  let ret =
+  const yPI = y * PI;
+  const ret =
     -100 + 2 * x + 3 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * sqrt(abs(x));
-  ret += ((20 * sin(6 * x * PI) + 20 * sin(2 * x * PI)) * 2) / 3;
-  ret += ((20 * sin(y * PI) + 40 * sin((y / 3) * PI)) * 2) / 3;
-  ret += ((160 * sin((y / 12) * PI) + 320 * sin((y * PI) / 30)) * 2) / 3;
-  return ret;
+  let sum = 20 * sin(6 * x * PI) + 20 * sin(2 * x * PI);
+  sum += 20 * sin(yPI) + 40 * sin(yPI / 3);
+  sum += 160 * sin(yPI / 12) + 320 * sin(yPI / 30);
+  return ret + (sum * 2) / 3;
 }
 
 function transformLon(x: number, y: number): number {
-  let ret = 300 + x + 2 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * sqrt(abs(x));
-  ret += ((20 * sin(6 * x * PI) + 20 * sin(2 * x * PI)) * 2) / 3;
-  ret += ((20 * sin(x * PI) + 40 * sin((x / 3) * PI)) * 2) / 3;
-  ret += ((150 * sin((x / 12) * PI) + 300 * sin((x / 30) * PI)) * 2) / 3;
-  return ret;
+  const xPI = x * PI;
+  const ret = 300 + x + 2 * y + 0.1 * x * (x + y) + 0.1 * sqrt(abs(x));
+  let sum = 20 * sin(6 * xPI) + 20 * sin(2 * xPI);
+  sum += 20 * sin(xPI) + 40 * sin(xPI / 3);
+  sum += 150 * sin(xPI / 12) + 300 * sin(xPI / 30);
+  return ret + (sum * 2) / 3;
 }
 
 function delta(lon: number, lat: number): number[] {

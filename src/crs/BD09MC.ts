@@ -91,7 +91,7 @@ export function BD09toBD09MC(coord: Position): Position {
   const [lng, lat] = coord;
   let factors: number[] = [];
   for (let i = 0; i < LLBAND.length; i++) {
-    if (abs(lat) > LLBAND[i]) {
+    if (abs(lat) >= LLBAND[i]) {
       factors = LL2MC[i];
       break;
     }
