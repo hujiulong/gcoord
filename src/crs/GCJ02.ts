@@ -60,18 +60,17 @@ export function GCJ02ToWGS84(coord: Position): Position {
 
   let [wgsLon, wgsLat] = [lon, lat];
 
-  let tempPoint = WGS84ToGCJ02([wgsLon, wgsLat]);
+  // Keep the offset calculation continuous when a guess crosses the bbox.
+  // Rechecking the bbox here can make the guesses bounce indefinitely.
+  for (let i = 0; i < 10; i++) {
+    const d = delta(wgsLon, wgsLat);
+    const dx = wgsLon + d[0] - lon;
+    const dy = wgsLat + d[1] - lat;
 
-  let dx = tempPoint[0] - lon;
-  let dy = tempPoint[1] - lat;
+    if (abs(dx) <= 1e-6 && abs(dy) <= 1e-6) break;
 
-  while (abs(dx) > 1e-6 || abs(dy) > 1e-6) {
     wgsLon -= dx;
     wgsLat -= dy;
-
-    tempPoint = WGS84ToGCJ02([wgsLon, wgsLat]);
-    dx = tempPoint[0] - lon;
-    dy = tempPoint[1] - lat;
   }
 
   return [wgsLon, wgsLat];
