@@ -1,3 +1,15 @@
+## [1.0.8](https://github.com/hujiulong/gcoord/compare/v1.0.7...v1.0.8) (2026-11-15)
+
+### Bug Fixes
+
+* Prevent GCJ02 to WGS84 conversions from looping indefinitely near bounding-box edges, including composed BD09 and BD09MC conversions. Use continuous offset refinement with an iteration limit ([#243](https://github.com/hujiulong/gcoord/issues/243), [70df7e8](https://github.com/hujiulong/gcoord/commit/70df7e8c6b6803f71a784fd3007b506005c74bff)).
+* Preserve altitude and additional dimensions when transforming plain coordinate arrays, matching GeoJSON behavior ([fa43556](https://github.com/hujiulong/gcoord/commit/fa43556eaa0a55a25895d4e7b0aca4d2c2f4320e)).
+* Validate and normalize inputs even when the source and target coordinate systems are identical ([fa43556](https://github.com/hujiulong/gcoord/commit/fa43556eaa0a55a25895d4e7b0aca4d2c2f4320e)).
+
+### Build and Packaging
+
+* Modernize builds with tsup and tests with Vitest. Add explicit package exports for CommonJS, ES modules, and the browser global bundle, along with updated TypeScript declarations ([fa43556](https://github.com/hujiulong/gcoord/commit/fa43556eaa0a55a25895d4e7b0aca4d2c2f4320e)).
+
 ## [1.0.7](https://github.com/hujiulong/gcoord/compare/v1.0.6...v1.0.7) (2025-01-14)
 
 

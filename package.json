@@ -1,6 +1,6 @@
 {
   "name": "gcoord",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "geographic coordinate library",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
